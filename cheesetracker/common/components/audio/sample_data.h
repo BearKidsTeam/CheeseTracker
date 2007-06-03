@@ -62,7 +62,8 @@ that will make your life easier
 
 #define IS_16_BIT true
 
-#define SAMPLE_INT_T_TO_FLOAT(x) ((float)(x)/SAMPLE_INT_T_MAX)
+#define SAMPLE_INT_T_TO_FLOAT(x) ((float)(x)/(float)SAMPLE_INT_T_MAX)
+#define FLOAT_TO_SAMPLE_INT_T(x) ((float)SAMPLE_INT_T_MAX*x)
 
 DERIVE_EMPTY(Error, Sample_Error);
 DERIVE_EMPTY(Sample_Error, Sample_EOF_Error);
@@ -121,8 +122,13 @@ class Sample_Data {
 
 	size_t size; // in samples, not bytes.
 	size_t channels;
+
+	// Interleaved sample data. Each "frame" of the sample
+	// contains {channels} samples.
+
 	sample_int_t *data_ptr;
-	void sd_realloc(size_t chan, size_t new_size);
+
+	void sd_realloc(size_t new_size);
 	void correct_loop_pointers();
 
 	// DEPRECATED!!!!
@@ -161,42 +167,57 @@ public:
 	//
 
 	size_t num_channels() const;
-	void alloc_channels(size_t num);
-	size_t get_current_pos(size_t chan) const;
-        sample_int_t get_int_sample(size_t chan);
-	float get_f_sample(size_t chan);
-	void put_f_sample(size_t chan, float p_val);
-        void put_sample(size_t chan, sample_int_t smp);
-	void set_size(size_t chan, size_t new_size);
-        void seek(size_t chan, size_t new_pos);
+	void set_num_channels(size_t num);
+	size_t get_current_pos() const;
 
-	sample_int_t get_data_value(size_t chan, size_t p_pos);
-	void put_data_value(size_t chan, size_t p_pos,sample_int_t p_val);
+	// Several methods of getting and setting
+	// data from the sample buffer are supported.
+	//
+	// The ones that return const pointers are returning
+	// pointers into the actual sample buffer.
+	//
+	// All the functions deal with buffers of sample
+	// data that contain one sample_int_t for each
+	// channel.
 
-        size_t get_sample_array(size_t chan, sample_int_t *dest, size_t len);
-        void put_sample_array(size_t chan, const sample_int_t *src, size_t len);
-	void truncate(size_t chan);
-        bool eof_reached(size_t chan);
-	bool is_empty();
+        inline const sample_int_t *get_int_sample();
+        inline void put_sample(const sample_int_t *smp);
 
-	float get_sample_for_cosine_mixer(size_t chan, bool use_cosine_mode);
-	float do_cubic_mixer_voodoo(size_t chan);
-	float get_sample_for_linear_mixer(size_t chan);
+	inline void get_f_sample(float *dest);
+	inline void put_f_sample(const float *p_val);
+
+	inline const sample_int_t *get_data_value(size_t p_pos);
+	inline void put_data_value(size_t p_pos, const sample_int_t *p_val);
+
+        inline size_t get_sample_array(sample_int_t *dest, size_t len);
+        inline void put_sample_array(const sample_int_t *src, size_t len);
+
+	inline void get_sample(size_t p_index, float *dest)  const;
+	inline void set_sample(size_t p_idx, const float *p_val);
+
+	inline void set_size(size_t new_size);
+	inline size_t get_size()  const;
+
+        inline void seek(size_t new_pos);
+	inline void truncate();
+        inline bool eof_reached();
+	inline bool is_empty();
+
+	inline void get_sample_for_cosine_mixer(float *dest, bool use_cosine_mode);
+	inline void do_cubic_mixer_voodoo(float *dest);
+	inline void get_sample_for_linear_mixer(float *dest);
 
 	void use_fixedpoint(bool yes_or_no);
 	void fixedpoint_aboutface();
 	void fixedpoint_set_resample_rate(size_t current_freq, size_t mix_freq, bool backwards=false);
 	bool fixedpoint_is_backwards();
-	void fixedpoint_move_cursor();
+	inline void fixedpoint_move_cursor();
 
 	const Sample_Data& operator=(const Sample_Data &r_data);
 
 
-	inline size_t get_size(size_t chan=0)  const;
 	inline bool is_16bit()  const;
 
-	float get_sample(size_t p_index)  const;
-	void set_sample(size_t p_idx,float p_val);
 
         void set_c5_freq(int p_c5_freq);
         inline int get_c5_freq()  const;
@@ -242,7 +263,7 @@ inline int Sample_Data::get_c5_freq()  const{
 	return c5_freq;
 }
 
-inline size_t Sample_Data::get_size(size_t chan)   const{
+inline size_t Sample_Data::get_size()   const{
 
 	return size;
 }

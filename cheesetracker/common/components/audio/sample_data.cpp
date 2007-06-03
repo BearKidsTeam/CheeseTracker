@@ -36,6 +36,7 @@
 #include <cmath>
 #include "sample_data.h"
 
+#define CURRENT_FRAME current_pos*channels+chan
 #define FIXEDPOINT_INT_PART_BITS 11
 #define FRACTIONAL_MASK ((1 << FIXEDPOINT_INT_PART_BITS)-1)
 #define COSINE_LEN (1 << FIXEDPOINT_INT_PART_BITS)
@@ -183,34 +184,30 @@ Sample_Data::~Sample_Data(){
 }
 
 
-float Sample_Data::get_sample(size_t p_index)  const{
+void Sample_Data::get_sample(size_t p_index, float *dest)  const{
 
-	if ( (p_index<0) || (p_index>=size)) return 0.0f;
+	if(p_index >= size) {
+		throw Out_Of_Bounds();
+	}
+	assert(is_16bits);
 
-        if (is_16bits)
-		return (float)get_data_16()[p_index]/32768.0;
-        else
-		return (float)get_data_8()[p_index]/128.0;
+	for(size_t chan=0; chan<channels; chan++) {
+		dest[chan] = SAMPLE_INT_T_TO_FLOAT(data_ptr[p_index*channels+chan]);
+	}
+	
 }
 
-void Sample_Data::set_sample(size_t p_idx,float p_val) {
+void Sample_Data::set_sample(size_t p_idx, const float *p_val) {
 	ASSERT_NOTFIXEDPOINT("set_sample");
+	assert(is_16bits);
 
-	if ( (p_idx<0) || (p_idx>=size)) return;
+	if ((p_idx>=size)) return;
 
 	if (p_val>1.0) p_val=1.0;
 	if (p_val<(-1.0)) p_val=(-1.0);
 
-        if (is_16bits) {
-
-		p_val*=32768.0;
-		if (p_val>32767.0) p_val=32767.0;
-		get_data_16()[p_idx]=(int)p_val;
-        } else {
-
-		p_val*=128.0;
-		if (p_val>127.0) p_val=127.0;
-		get_data_8()[p_idx]=(int)p_val;
+	for(size_t chan=0; chan<channels; chan++) {
+		data_ptr[p_index*channels+chan] = FLOAT_TO_SAMPLE_INT_T(p_val[chan]);
 	}
 }
 
@@ -261,44 +258,26 @@ void Sample_Data::change_sign() {
 
 
 /* Misc internal Editing Utils */
-sample_int_t Sample_Data::
-get_data_value(size_t chan, size_t p_pos) {
+const sample_int_t *Sample_Data::get_data_value(size_t p_pos) {
 
-	if (data_ptr==NULL) return 0;
-
-	if (p_pos>size) return 0;
+	if (p_pos >= size || data_ptr == NULL) {
+		throw Out_Of_Bounds();
+	}
+	assert(is_16bits);
 
         if (is_16bits) {
 
-		return data_ptr[p_pos];
-	} else {
-
-		Sint8 *sample_8bits_ptr=(Sint8*)data_ptr;
-		return sample_8bits_ptr[p_pos] << ((sizeof(sample_int_t)-1)*BITS_PER_BYTE);
-
-	}
+	return &data_ptr[p_pos*channels];
 
 }
-void Sample_Data::put_data_value(size_t chan, size_t p_pos, sample_int_t p_val) {
+void Sample_Data::put_data_value(size_t p_pos, const sample_int_t *p_val) {
 	ASSERT_NOTFIXEDPOINT("put_data_value");
+	assert(is_16bits);
 
-	if (data_ptr==NULL) return;
-
-	if ((p_pos<0) || (p_pos>size)) return;
-
-        if (is_16bits) {
-
-		data_ptr[p_pos]=p_val;
-
-	} else {
-
-		p_val=p_val >> (BITS_PER_BYTE*sizeof(sample_int_t)-1);
-
-		Sint8 *sample_8bits_ptr=(Sint8*)data_ptr;
-		sample_8bits_ptr[p_pos]=p_val;
-
-	}
-
+	if(data_ptr == NULL || p_pos >= size)
+		return;
+	for(size_t chan=0; chan<channels; chan++)
+		data_ptr[CURRENT_FRAME] = p_val[chan];
 }
 
 /*
@@ -377,38 +356,18 @@ void Sample_Data::toggle_quality() {
 
 	if (data_ptr==NULL) return;
 
-	Sint8 *new_sample_8bits;
-	Sint16 *new_sample_16bits;
-	size_t i;
+	size_t ix;
 
-	if (is_16bits) {
+	// Sun Jun  3 15:07:38 EDT 2007
+	//
+	// From now on, we fake this functionality by degrading the quality
+	// of the data. All bits except the top 8 bits will be dropped, but
+	// the data is still represented internally as 16 bits.
 
-		new_sample_8bits=(Sint8*)malloc(size);
-		if (new_sample_8bits==NULL) {
-
-			ERROR("Cannot convert sample! not enough memory?");
-			return;
-		}
-		for (i=0;i<size;i++) new_sample_8bits[i]=data_ptr[i] >> 8;
-		free(data_ptr);
-		data_ptr=(Sint16*)new_sample_8bits;
-		is_16bits=false;
-
-	} else {
-
-		Sint8 *sample_8bits_ptr=(Sint8*)data_ptr;
-		new_sample_16bits=(Sint16*)malloc(size*2);
-		if (new_sample_16bits==NULL) {
-
-			ERROR("Cannot convert sample! not enough memory?");
-			return;
-		}
-
-		for (i=0;i<size;i++) new_sample_16bits[i]=(Sint16)sample_8bits_ptr[i] << 8;
-		free(data_ptr);
-		data_ptr=new_sample_16bits;
-		is_16bits=true;
+	for (ix=0; ix < size; ix++) {
+		data_ptr[ix] &= 0xFF << (sizeof(sample_int_t)-sizeof(Sint8))*BITS_PER_BYTE;
 	}
+
 
 
 }
@@ -422,24 +381,20 @@ void Sample_Data::toggle_quality() {
 // see also		- use_fixedpoint, fixedpoint_set_resample_rate, fixedpoint_aboutface,
 //                        seek, fixedpoint_move_cursor
 
-sample_int_t
-Sample_Data::get_int_sample(size_t chan) {
-	sample_int_t retval;
+const sample_int_t *
+Sample_Data::get_int_sample() {
+	const sample_int_t *retval;
 
-	if(eof_reached(chan)) {
+	assert(is_16bits);
+
+	if(eof_reached()) {
 		Sample_EOF_Error E;
 		E.set_error_pfx("get_sample");
 		E.set_error("End of sample reached");
 		throw E;
 	}
-	if(is_16bits) {
-		retval=data_ptr[current_pos];
-	} else {
-		sample_8s_t temp;
-		temp = ((sample_8s_t*)data_ptr)[current_pos];
-		retval=temp;
-		retval <<= 8;
-	}
+	retval=&data_ptr[current_pos*channels];
+
 	if(!fixedpoint_mode) 
 		current_pos++;
 	return retval;
@@ -449,14 +404,13 @@ Sample_Data::get_int_sample(size_t chan) {
 
 
 void 
-Sample_Data::sd_realloc(size_t chan, size_t new_size) {
+Sample_Data::sd_realloc(size_t new_size) {
         sample_int_t *new_data;
-	size_t multiplier=sizeof(sample_int_t);
+	assert(is_16bits);
 
-	if(!is_16bits)
-		multiplier=sizeof(sample_8s_t);
+	size_t multiplier=sizeof(sample_int_t)*num_channels();
 	
-	new_data = (sample_int_t*)malloc(new_size*multiplier);
+	new_data = new sample_int_t[new_size*num_channels()];
 	if(new_data == NULL) {
 		throw std::bad_alloc();
 	}
@@ -468,17 +422,10 @@ Sample_Data::sd_realloc(size_t chan, size_t new_size) {
 	if(new_size > size) {
 		// Initialize any newly-allocated data with zero.
 
-		if(is_16bits) {
-			memset((void*)(new_data+size), 0,
-			       (new_size-size)*sizeof(sample_int_t));
-		} else {
-			sample_8s_t *ptr = (sample_8s_t*)new_data;
-			memset((void*)(ptr+size), 0,
-			       (new_size-size)*sizeof(sample_8s_t));
-		}
+		memset((void*)(new_data+size), 0, (new_size-size)*multiplier);
 	}
 
-        free(data_ptr);
+	delete[] data_ptr;
         data_ptr=new_data;
         size=new_size;
 }
@@ -489,11 +436,11 @@ Sample_Data::sd_realloc(size_t chan, size_t new_size) {
 //               backwards).
 
 bool
-Sample_Data::eof_reached(size_t chan) {
+Sample_Data::eof_reached() {
 	if(fixedpoint_mode && fixedpoint_backwards) {
-			return (get_current_pos(chan) > 0);
+		return (get_current_pos() > 0);
 	} else {
-		return !(get_current_pos(chan) < get_size(chan));
+		return !(get_current_pos() < get_size());
 	}
 }
 
@@ -505,27 +452,24 @@ Sample_Data::eof_reached(size_t chan) {
 // see also   - set_size, get_size
 
 void
-Sample_Data::put_sample(size_t chan, sample_int_t smp) {
+Sample_Data::put_sample(const sample_int_t *smp) {
 	ASSERT_NOTFIXEDPOINT("put_sample");
-	if(chan != 0)
-		return;
+	assert(is_16bits);
 
 	if(eof_reached(chan)) 
-		sd_realloc(chan, size+1);
+		sd_realloc(size+1);
 
-	if(is_16bits)
-		data_ptr[current_pos] = smp;
-	else
-		((sample_8s_t*)data_ptr)[current_pos] = (smp >> BITS_PER_BYTE);
+	for(size_t chan=0; chan<num_channels(); chan++)
+		data_ptr[CURRENT_FRAME] = smp[chan];
 
 	current_pos++;
 }
 
-// seek - Set the position indicator of a channel
+// seek - Set the position.
 //
-//          - If the size of the channel is less than {new_pos}, then
+//          - If the size of the sample is less than {new_pos}, then
 //            the position indicator will be set to the size of the
-//            channel.
+//            sample.
 //
 //          - If not in fixed-point mode, the fixed-point incrementation
 //            cache is left alone.
@@ -533,11 +477,9 @@ Sample_Data::put_sample(size_t chan, sample_int_t smp) {
 // see also - get_size
 
 void
-Sample_Data::seek(size_t chan, size_t new_pos) {
-	if(chan != 0)
-		return;
-	if(new_pos > get_size(chan))
-		new_pos = get_size(chan);
+Sample_Data::seek(size_t new_pos) {
+	if(new_pos > get_size())
+		new_pos = get_size();
 	current_pos = new_pos;
 	if(fixedpoint_mode)
 		fixedpoint_offset=0;
@@ -546,7 +488,7 @@ Sample_Data::seek(size_t chan, size_t new_pos) {
 // get_current_pos - Get the position indicator of the specified channel.
 
 size_t
-Sample_Data::get_current_pos(size_t chan) const {
+Sample_Data::get_current_pos() const {
 	return current_pos;
 }
 
@@ -562,26 +504,19 @@ Sample_Data::get_current_pos(size_t chan) const {
 // see also         - get_size, get_int_sample
 
 size_t
-Sample_Data::get_sample_array(size_t chan, sample_int_t *dest, size_t len) {
+Sample_Data::get_sample_array(sample_int_t *dest, size_t len) {
 	size_t ix;
+	assert(is_16bits);
 
-
-        if(get_current_pos(chan)+len > get_size(chan)) {
+        if(get_current_pos()+len > get_size()) {
                 len -= (get_current_pos(chan)+len)-get_size(chan);
                 if(len == 0)
                         return 0;
         }
 
-	if(is_16bits) {
-        	memcpy((void*)dest, (void*)(data_ptr+current_pos),
-               	       len*sizeof(sample_int_t));
-		current_pos += len;
-	} else {
-		for(ix=0; ix<len; ix++, current_pos++) {
-			dest[ix] = ((sample_8s_t*)data_ptr)[current_pos];
-			dest[ix] <<= BITS_PER_BYTE;
-		}
-	}
+	memcpy((void*)dest, (void*)(data_ptr+current_pos*channels),
+	       len*sizeof(sample_int_t)*channels);
+	current_pos += len;
         return len;
 }
 
@@ -590,12 +525,9 @@ Sample_Data::get_sample_array(size_t chan, sample_int_t *dest, size_t len) {
 //                  - Extends the buffer as necessary.
 
 void
-Sample_Data::put_sample_array(size_t chan, const sample_int_t *src,
-                              size_t len) {
+Sample_Data::put_sample_array(const sample_int_t *src, size_t len) {
 	ASSERT_NOTFIXEDPOINT("put_sample_array");
-
-	if(chan != 0)
-		return;
+	assert(is_16bits);
 
         size_t ix;
 
@@ -603,18 +535,9 @@ Sample_Data::put_sample_array(size_t chan, const sample_int_t *src,
                 sd_realloc(chan, len-get_size(chan)-get_current_pos(chan));
         }
 
-	if(is_16bits) {
-		memcpy((void*)(data_ptr+current_pos), src,
-		       len*sizeof(sample_int_t));
-		current_pos+=len;
-	} else {
-		sample_8s_t *ptr = (sample_8s_t*)data_ptr;
-
-		for(ix=0; ix<len; ix++,current_pos++) {
-			ptr[current_pos] = (src[ix] >> BITS_PER_BYTE);
-		}
-
-	}
+	memcpy((void*)(data_ptr+current_pos*channels), src,
+	       len*sizeof(sample_int_t)*channels);
+	current_pos+=len;
 
 }
 
@@ -626,28 +549,25 @@ Sample_Data::put_sample_array(size_t chan, const sample_int_t *src,
 //          - Reallocates memory.
 
 void
-Sample_Data::truncate(size_t chan) {
+Sample_Data::truncate() {
 	ASSERT_NOTFIXEDPOINT("truncate");
+	assert(is_16bits);
 	if(current_pos==0) {
-		free(data_ptr);
+		delete[] data_ptr;
 		data_ptr=NULL;
 		size=0;
 		return;
 	}
-	if(eof_reached(chan)) {
+	if(eof_reached()) {
 		return;
 	}
 	sample_int_t *new_data;
-	size_t multiplier=sizeof(sample_int_t);
+	size_t multiplier=sizeof(sample_int_t)*channels;
 
-	if(!is_16bits) {
-		multiplier=sizeof(sample_8s_t);
-	}
-
-	new_data=(sample_int_t*)malloc(current_pos*multiplier);
+	new_data = new sample_int_t[current_pos*channels];
 	memcpy((void*)new_data, (void*)data_ptr, current_pos*multiplier);
 	size=current_pos;
-	free(data_ptr);
+	delete[] data_ptr;
 	data_ptr=new_data;
 	correct_loop_pointers();
 }
@@ -662,17 +582,16 @@ Sample_Data::truncate(size_t chan) {
 //                while in fixedpoint_mode, an exception is
 //                thrown.
 
-float Sample_Data::get_f_sample(size_t chan) {
+float Sample_Data::get_f_sample(float *dest) {
+	assert(is_16bits);
 	if(eof_reached(chan)) {
 		return 0.0f;
 	}
 
-	float retval;
+	for(size_t chan=0; chan<channels; chan++) {
+		dest[chan] = SAMPLE_INT_T_TO_FLOAT(data_ptr[CURRENT_FRAME]);
+	}
 
-        if (is_16bits)
-		retval=(float)data_ptr[current_pos]/32768.0;
-        else
-		retval=(float)((sample_8s_t*)data_ptr)[current_pos]/128.0;
 	if(!fixedpoint_mode) {
 		current_pos++; 
 		if(current_pos>size)
@@ -683,30 +602,24 @@ float Sample_Data::get_f_sample(size_t chan) {
 
 // put_f_sample - Add a floating-point sample to the specified channel.
 //
-// notes        - Reallocating one byte at a time is inefficient.
+// notes        - Reallocating one frame at a time is inefficient.
 //
 // see also     - set_size
 
-void Sample_Data::put_f_sample(size_t chan, float p_val) {
+void Sample_Data::put_f_sample(const float p_val) {
 	ASSERT_NOTFIXEDPOINT("put_f_sample");
+	assert(is_16bits);
 
 	if(eof_reached(chan))
 		sd_realloc(chan, size+1);
 
-	if (p_val>1.0) p_val=1.0;
-	if (p_val<(-1.0)) p_val=(-1.0);
+	for(size_t chan=0; chan<channels; chan++) {
+		if (p_val[chan]>1.0) p_val[chan]=1.0;
+		if (p_val[chan]<(-1.0)) p_val[chan]=(-1.0);
 
-        if (is_16bits) {
-
-		p_val*=32768.0;
-		if (p_val>32767.0) p_val=32767.0;
-		data_ptr[current_pos]=(sample_int_t)p_val;
-        } else {
-
-		p_val*=128.0;
-		if (p_val>127.0) p_val=127.0;
-		((sample_8s_t*)data_ptr)[current_pos]=(int)p_val;
+		data_ptr[CURRENT_FRAME] = FLOAT_TO_SAMPLE_INT_T(p_val);
 	}
+
 	current_pos++;
 }
 
@@ -723,19 +636,17 @@ void Sample_Data::put_f_sample(size_t chan, float p_val) {
 //          - set_size(0) deletes the buffer.
 
 void
-Sample_Data::set_size(size_t chan, size_t new_size) {
+Sample_Data::set_size(size_t new_size) {
 	ASSERT_NOTFIXEDPOINT("set_size");
-	if(chan != 0)
-		return;
 	if(size == new_size)
 		return;
 	if(new_size == 0) {
-		seek(chan, 0);
-		truncate(chan);
+		seek(0);
+		truncate();
 	} else {
-		sd_realloc(chan, new_size);
+		sd_realloc(new_size);
 	}
-	seek(chan, current_pos);
+	seek(current_pos);
 	correct_loop_pointers();
 }
 
@@ -746,19 +657,15 @@ Sample_Data::num_channels() const {
 	return channels;
 }
 
-// alloc_channels - Set the number of channels for this sample.
+// set_num_channels - Set the number of channels for this sample.
 // 
-//                - Allocates or frees buffers to make the sample
-//                  have the desired number of samples.
-//
-//                - Newly allocated channels will have zero-length
-//                  buffers.
+//                  - Interleaves existing data with zeroes.
 //
 // see also	  - set_size
 
 void
-Sample_Data::alloc_channels(size_t num) {
-	ASSERT_NOTFIXEDPOINT("alloc_channels");
+Sample_Data::set_num_channels(size_t num) {
+	ASSERT_NOTFIXEDPOINT("set_num_channels");
 	// Not implemented.
 	return;
 }
@@ -773,27 +680,16 @@ Sample_Data::operator=(const Sample_Data &r_data) {
 	ASSERT_NOTFIXEDPOINT("operator=");
 	size_t chan_ix;
 	alloc_channels(r_data.num_channels());
+	assert(r_data.is_16bit());
 
-	// Copy all sample buffers
+	// Copy sample buffer
 
-	for(chan_ix = 0; chan_ix < r_data.num_channels(); chan_ix++) {
-		seek(chan_ix, 0);
-		set_size(chan_ix, r_data.get_size(chan_ix));
+	fixedpoint_offset	= r_data.fixedpoint_offset;
 
-		// FIXME: When multiple channels are actually
-		// implemented, this will need to be changed.
-
-		fixedpoint_offset	= r_data.fixedpoint_offset;
-
-		for(size_t jx=0; jx<r_data.get_size(chan_ix); jx++) {
-			if(r_data.is_16bit())
-				put_sample(chan_ix,
-				           ((Uint16*)r_data.data_ptr)[jx]);
-			else
-				put_sample(chan_ix,
-				           ((Uint8*)r_data.data_ptr)[jx]);
-		}
-		seek(chan_ix, 0);
+	seek(0);
+	set_size(r_data.get_size());
+	for(size_t jx=0; jx<r_data.get_size(chan_ix); jx+=rdata.num_channels()) {
+		put_sample(&(r_data.data_ptr[jx]));
 	}
 
 	// Copy miscellaneous information
@@ -909,49 +805,59 @@ Sample_Data::fixedpoint_is_backwards() {
 }
 
 
-float
-Sample_Data::get_sample_for_cosine_mixer(size_t chan, bool use_cosine_mode) {
-	sample_int_t final_data = get_data_value(chan, get_current_pos(chan));
-	mix_t magic_number = (get_data_value(chan, get_current_pos(chan)+1)-final_data);
+void
+Sample_Data::get_sample_for_cosine_mixer(float *dest, bool use_cosine_mode) {
 
-	// magic_number must be of a wider type than sample_int_t, or
-	// the calculations in this function will overflow, resulting
-	// in a buzzing noise in the output. 
+	const sample_int_t *current_frame = get_data_value(get_current_pos());
+	const sample_int_t *next_frame = get_data_value(get_current_pos()+1)
 
-	COMPILER_ASSERT(sizeof(magic_number) > sizeof(final_data));
+	for(size_t chan=0; chan<channels; chan++) {
+		sample_int_t final_data = current_frame[chan];
+		mix_t magic_number = next_frame[chan]-final_data;
 
-	if(use_cosine_mode) {
-		magic_number *= frac_cosine[fixedpoint_offset & FRACTIONAL_MASK];
-		magic_number >>= FIXEDPOINT_INT_PART_BITS;
-		final_data += magic_number;
+		// magic_number must be of a wider type than sample_int_t, or
+		// the calculations in this function will overflow, resulting
+		// in a buzzing noise in the output. 
+
+		COMPILER_ASSERT(sizeof(magic_number) > sizeof(final_data));
+
+		if(use_cosine_mode) {
+			magic_number *= frac_cosine[fixedpoint_offset & FRACTIONAL_MASK];
+			magic_number >>= FIXEDPOINT_INT_PART_BITS;
+			final_data += magic_number;
+		}
+		else {
+			magic_number *= frac_cosine_not_cosine_mode[fixedpoint_offset & FRACTIONAL_MASK];
+			magic_number >>= FIXEDPOINT_INT_PART_BITS;
+			final_data += magic_number;
+		}
+		dest[chan] = SAMPLE_INT_T_TO_FLOAT(final_data);
 	}
-	else {
-		magic_number *= frac_cosine_not_cosine_mode[fixedpoint_offset & FRACTIONAL_MASK];
-		magic_number >>= FIXEDPOINT_INT_PART_BITS;
-		final_data += magic_number;
-	}
-
-	return SAMPLE_INT_T_TO_FLOAT(final_data);
 }
 
 #define SPLINE_FRACSHIFT ((FIXEDPOINT_INT_PART_BITS-SPLINE_FRACBITS)-2)
 #define SPLINE_FRACMASK (((1L<<(FIXEDPOINT_INT_PART_BITS-SPLINE_FRACSHIFT))-1)&~3)
 
 
-float
-Sample_Data::do_cubic_mixer_voodoo(size_t chan) {
+void
+Sample_Data::do_cubic_mixer_voodoo(float *dest, size_t chan) {
 
-	size_t poshi = get_current_pos(chan);
-	size_t poslo = (get_current_pos(chan) << FIXEDPOINT_INT_PART_BITS) + fixedpoint_offset;
+	size_t poshi = get_current_pos();
+	size_t poslo_fixed = (get_current_pos() << FIXEDPOINT_INT_PART_BITS) + fixedpoint_offset;
+	const sample_int_t *prev_frame = get_data_value(poshi-1);
+	const sample_int_t *current_frame = get_data_value(poshi);
+	const sample_int_t *next_frame = get_data_value(poshi+1);
 
 
-	poslo >>= SPLINE_FRACSHIFT;
-	poslo &= SPLINE_FRACMASK;
+	poslo_fixed >>= SPLINE_FRACSHIFT;
+	poslo_fixed &= SPLINE_FRACMASK;
 
-	return SAMPLE_INT_T_TO_FLOAT((cubic_lut[poslo]*get_data_value(chan, poshi-1) +
-	       cubic_lut[poslo+1]*get_data_value(chan, poshi  ) +
-	       cubic_lut[poslo+3]*get_data_value(chan, poshi+2) +
-	       cubic_lut[poslo+2]*get_data_value(chan, poshi+1)) >> SPLINE_16SHIFT);
+	for (size_t chan=0; chan<channels; chan++) {
+		dest[chan] = SAMPLE_INT_T_TO_FLOAT((cubic_lut[poslo_fixed]*(prev_frame[chan]) +
+	       			cubic_lut[poslo_fixed+1]*current_frame[chan] +
+	       			cubic_lut[poslo_fixed+3]*current_frame[chan+channels*2] +
+	       			cubic_lut[poslo_fixed+2]*current_frame(chan+channels)) >> SPLINE_16SHIFT);
+	}
 
 }
 
