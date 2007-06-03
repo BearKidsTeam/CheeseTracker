@@ -34,6 +34,11 @@ Unofficial Release 0.9.13
 
 -Inlined the byte and word-at-a-time methods of the file-reading class.
 
+-Moved the ChangeLog to the top directory.
+
+-Removed some stray temp files that were distributed with previous
+ versions.
+
 Unofficial Release 0.9.12
 ------
 -Deleted the remnants of the undeveloped GTK+ interface.
