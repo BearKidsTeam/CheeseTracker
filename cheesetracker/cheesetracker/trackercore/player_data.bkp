@@ -1,0 +1,307 @@
+/***************************************************************************
+    This file is part of the CheeseTronic Music Tools
+    url                  : http://reduz.com.ar/cheesetronic
+    copyright            : (C) 2003 by Juan Linietsky
+    email                : coding@reduz.com.ar
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+/***************************************************************************
+                          player_data.h  -  description
+                             -------------------
+    begin                : Wed Jan 31 2001
+    copyright            : (C) 2001 by Juan Linietsky
+    email                : reduz@anime.com.ar
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+#ifndef PLAYER_DATA_H
+#define PLAYER_DATA_H
+
+#include "typedefs.h"
+#include "song.h"
+#include "common/os/mutex_lock.h"
+#include "common/components/audio/mixer_base.h"
+#include "common/components/audio/tables.h"
+#include "tracker_voice.h"
+#include <list>
+	using std::list;
+
+#include "channel_control.h"
+#include "voice_control.h"
+#include "freq_conversion.h"
+#include "range_defs.h"	
+
+/**Player Data
+  *@author Juan Linietsky
+  */
+
+/******************************
+ player_data.h
+ ------------------------
+
+The player and its data.
+I hope you dont get sick reading this
+********************************/
+
+//Default pan values
+
+
+
+class Player_Data : public SigC::Object {
+public:
+
+	struct VoiceStatusInfo {
+
+		struct SampleInfo {
+			Sample* ptr;
+			int pos; //sample pos
+			int index; //only for info!
+		} sample;
+
+		struct InstrumentLayerInfo {
+
+			Instrument::Layer* ptr;
+			int vol_env_index;
+			int pan_env_index;
+			int frq_env_index;
+		} instrument_layer;
+
+		struct VoiceInfo {
+
+			int pan;
+			int freq;
+		} voice;
+
+	};
+
+private:
+
+
+	Song *song;
+	Mixer_Base *mixer;
+
+
+	struct Control_Variables { // control variables (dynamic version) of initial variables
+
+		bool reached_end;
+
+		char play_mode;
+                bool filters;
+		int global_volume;
+		int speed;
+		int tempo;
+
+		int ticks_counter;
+
+		int pattern_delay_1;
+		int pattern_delay_2;
+
+		Channel_Control channel[PATTERN_WIDTH];
+
+		int max_voices;
+                int song_voices;
+
+		int voices_used; /* reference value */
+
+		bool force_no_nna;
+		bool external_vibrato;
+		
+		struct Position {
+
+			int current_order;
+			int current_pattern;
+			int current_row;
+			int force_next_order;
+			bool forbid_jump;
+		};
+
+
+		Position position;
+		Position previous_position;
+
+	};
+
+
+	typedef list<Voice_Control*> Voice_List;
+	Voice_List voice_list;
+
+	Control_Variables control;
+
+	/* VOICE SETUP */
+	
+	void setup_voices();
+
+	/* MIXER SETUP */
+	void handle_tick();
+	void update_mixer();
+	
+	/* NOTE / INSTRUMENT PROCESSING */
+
+	void process_new_note(int p_track,Uint8 p_note);
+	void process_new_instrument(int p_track,Uint8 p_instrument);
+	bool process_note_and_instrument(int p_track,int p_note,int p_instrument);
+
+	/* EFFECT PROCESSING */
+	void do_effect_S(int p_track);
+	void do_panbrello(int p_track);
+	void do_global_volume_slide(int p_track);
+        void do_tremolo(int p_track);
+        void do_retrig(int p_track);
+	void do_pan_slide(int p_track);
+        void do_channel_volume_slide(int p_track);
+        void do_volume_slide(int p_track,int inf);
+	void do_pitch_slide_down(int p_track,Uint8 inf);
+	void do_pitch_slide_up(int p_track,Uint8 inf);
+        void do_tremor(int p_track);
+        void do_vibrato(int p_track,bool fine);
+        void do_pitch_slide_to_note(int p_track);
+        void run_effects(int p_track);
+        void run_volume_column_effects(int p_track);
+        void pre_process_effects();
+        void do_arpegio(int p_track);
+	/* NNA */
+
+	void process_NNAs();
+
+
+	/* MISC UTILS */
+
+
+        int find_empty_voice();
+	void process_volume_column(int p_track,Uint8 p_volume);
+        void process_note(int p_track,Note p_note);
+
+        /* TABLES */
+//        static Uint8 auto_vibrato_table[128];
+        static Uint8 vibrato_table[32];
+        static Sint8 panbrello_table[256];
+	Mutex_Lock *variables_lock;
+	Mutex_Lock *info_lock;
+
+	void update_voice_control_priority(Voice_Control *p_voice);
+	void update_voice_control_data(Voice_Control *p_data);
+	void clear_voice_list();
+	void set_tick_size();
+
+	vector<VoiceStatusInfo> voice_status_info;
+	vector<VoiceStatusInfo> voice_status_info_copy;
+public:
+        //Play modes
+
+	enum {
+
+		PLAY_NOTHING =0,
+		PLAY_PATTERN =1,
+		PLAY_SONG =2
+	};
+
+
+	int get_current_tempo() { return control.tempo; };
+	int get_current_speed() { return control.speed; };
+
+        int get_voices_used() { return control.voices_used;};
+//	int get_voice_envelope_pos(int p_voice,Envelope *p_envelope);
+	int get_voice_amount_limit() { return control.max_voices; };
+	void set_voice_amount_limit(int p_limit);
+	void set_reserved_voices(int p_amount);
+	int get_reserved_voices_amount();
+
+//	int get_channel_voice(int p_channel);
+//	string get_voice_sample_name(int p_voice);
+//	string get_voice_instrument_name(int p_voice);
+//      int get_voice_sample_index(int p_voice);
+
+	void set_virtual_channels(int p_amount,bool p_lock =true);
+	int get_virtual_channels() { return control.max_voices; };
+
+
+	/* Reserved voices for direct access to the mixer device */
+	void reserved_voice_start_sample(int p_reserved_voice,Sample_Data *p_sample,int p_freq);
+	void reserved_voice_set_frequency(int p_reserved_voice,int p_freq);
+	void reserved_voice_set_pan(int p_reserved_voice,int p_pan);
+	void reserved_voice_set_volume(int p_reserved_voice,int p_volume);
+	void reserved_voice_stop(int p_reserved_voice);
+
+	/* Play Info/Position */
+        bool is_playing() { return (control.play_mode>0); };
+	int get_play_mode() {return (control.play_mode);};
+	int get_current_order() { return control.position.current_order; };
+	int get_current_row() { return control.position.current_row; };
+	int get_current_pattern() { return control.position.current_pattern; };
+
+        void goto_next_order();
+        void goto_previous_order();
+
+	void process_tick();
+
+	void link_to_song(Song *p_song);
+
+	void link_to_mixer(Mixer_Base *p_mixer);
+
+	Mixer_Base* get_mixer_ptr() {
+
+		return mixer;
+	}
+
+	void link_variables_lock(Mutex_Lock *p_variables_lock) {
+
+         	variables_lock=p_variables_lock;
+	}
+
+	void lock_player_variables();
+	void unlock_player_variables();
+
+	void link_info_lock(Mutex_Lock *p_info_lock) {
+
+         	info_lock=p_info_lock;
+	}
+
+	void reset();
+
+	void get_voice_status_info(vector<Player_Data::VoiceStatusInfo>& p_info);
+	//DANGEROUS!!! _LOCK_ variables_lock before calling from the gui thread
+	void erase_voices_using_sample(Sample *p_sample);
+
+	/* External player control - editor - */
+
+        void play_start_pattern(int p_pattern);
+	void play_start_song();
+	void play_start_song_from_order(int p_order);
+	void play_start_song_from_order_and_row(int p_order,int p_row);
+        void play_start(int p_pattern, int p_order, int p_row);
+
+        void play_stop();
+        void play_note(int p_channel,Note note,bool p_override_defaults=true);
+
+        bool reached_end_of_song();
+
+        void set_force_no_nna(bool p_force);
+        void set_force_external_vibratos(bool p_force);
+
+        void set_filters_enabled(bool p_enable);
+        bool are_filters_enabled() { return control.filters; }
+        Song *get_song() { return song; };
+
+
+
+	Player_Data();
+	~Player_Data();
+};
+
+#endif

@@ -1,0 +1,81 @@
+//
+// C++ Implementation: effect_amp
+//
+// Description: 
+//
+//
+// Author: Juan Linietsky <coding@reduz.com.ar>, (C) 2003
+//
+// Copyright: See COPYING file that comes with this distribution
+//
+//
+#include "effect_distort.h"
+
+
+#define FIXED_BITS 8
+#define FIXED_LENGTH (1<<FIXED_BITS)
+#define FIXED_MASK (FIXED_LENGTH-1)
+
+void Effect_Distort::reset() {
+
+
+}
+
+
+void Effect_Distort::process_buffer(sample_t* p_buffer,int p_length,bool p_stereo_samples,int p_buffer_freq) {
+
+	float multiplier;
+	multiplier=(float)percent * 100.0;
+	float limit;
+	limit = (100.0-(float)clip) / 100.0;
+
+	float low_limit=-limit;
+	float high_limit=limit;
+
+	if (p_stereo_samples)
+		p_length*=2;
+
+	float val;
+	while (p_length--) {
+
+		val = *p_buffer;
+
+		val*=multiplier;
+		if (val<low_limit)
+			val=low_limit;
+		if (val>high_limit)
+			val=high_limit;
+		*p_buffer++ = val;
+	}
+
+}
+
+
+string Effect_Distort::get_name() {
+
+	return "distort";
+}
+string Effect_Distort::get_display_name() {
+
+	return "Distort";
+}
+list<Property_Bridge*> Effect_Distort::get_properties() {
+
+	list<Property_Bridge*> pipio;
+	pipio.push_back(&prop_percent);
+	pipio.push_back(&prop_clip);
+	return pipio;
+}
+
+Effect_Distort::Effect_Distort() : prop_percent("amp%",&percent,0,32767,"amp"), prop_clip("Clip%",&clip,0,100,"clip") {
+
+	percent=100;
+	clip=0;
+}
+
+
+Effect_Distort::~Effect_Distort()
+{
+}
+
+

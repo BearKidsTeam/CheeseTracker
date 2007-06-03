@@ -1,0 +1,443 @@
+/***************************************************************************
+    This file is part of the CheeseTronic Music Tools
+    url                  : http://reduz.com.ar/cheesetronic
+    copyright            : (C) 2003 by Juan Linietsky
+    email                : coding@reduz.com.ar
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+//
+//
+// C++ Implementation: cpp
+//
+// Description:
+//
+//
+// Author: Juan Linietsky <coding@reduz.com.ar>, (C) 2003
+//
+// Copyright: See COPYING file that comes with this distribution
+//
+//
+#include "sample_edit.h"
+#include <qfiledialog.h>
+#include <qmessagebox.h>
+
+
+Sample Sample_Edit::sample_clipboard;
+
+void Sample_Edit::destructive_operation_begin_cbk() {
+
+	Sample *dst_sample=song->get_sample(selected_sample);
+	if (!dst_sample)
+		return;
+
+	rt_keyboard->sample_stop_all();
+        player->lock_player_variables();
+	player->erase_voices_using_sample(dst_sample);
+
+}
+
+void Sample_Edit::destructive_operation_end_cbk() {
+
+	Sample *dst_sample=song->get_sample(selected_sample);
+	if (!dst_sample)
+		return;
+
+        player->unlock_player_variables();
+}
+
+void Sample_Edit::load_sample() {
+
+
+
+	fd->set_binds(file_manager,rt_keyboard);
+
+	QString fn=QString::null;
+	if ( fd->exec() == QDialog::Accepted )
+		fn = fd->selectedFile();
+
+	if (fn.isEmpty())
+		return; //nothing
+
+	Sample *dst_sample=song->get_sample(selected_sample);
+	if (!dst_sample)
+		return;
+
+	rt_keyboard->sample_stop_all();
+        player->lock_player_variables();
+	player->erase_voices_using_sample(dst_sample);
+
+	file_manager->load_sample( fn.ascii() , selected_sample );
+
+        player->unlock_player_variables();
+
+	update_samples();
+	select_sample(selected_sample);
+
+}
+void Sample_Edit::save_sample() {
+
+	Sample *dst_sample=song->get_sample(selected_sample);
+	if (!dst_sample)
+		return;
+	if (!dst_sample->in_use)
+		return;
+
+	QString s = QFileDialog::getSaveFileName(
+			QString::null,
+			"Sample Formats (*.cs *.CS *.is *.IS *.wav *.WAV)",
+			this,
+			"Save"
+			"Choose a File Name" );
+
+	if (s==QString::null)
+		return; //nothing selected
+
+	FILE *f=fopen(s.ascii(),"rb");
+	if (f) { //file exists
+		fclose(f);
+		if ( QMessageBox::warning( this, "Question:","File exists! Overwrite?","Yes", "No") ) {
+			return ;
+		}
+	}
+
+        if ( file_manager->save_sample( s.ascii() , selected_sample ) ) {
+
+		QMessageBox::warning( this, "Oops!","Error saving sample!","Ok");
+		return ;
+	}
+
+	return ;
+
+}
+void Sample_Edit::set_voice_status_info(vector<Player_Data::VoiceStatusInfo> *p_voice_status_info) {
+
+	voice_status_info=p_voice_status_info;
+
+}
+
+void Sample_Edit::timer_callback() {
+
+	timer_count++;
+
+
+	if (!(timer_count%2)) {
+		viewer_pos_list.clear();
+
+		for (int i=0;i<voice_status_info->size();i++) {
+
+			if ( (*voice_status_info)[i].sample.ptr==song->get_sample(selected_sample) ) {
+
+				viewer_pos_list.push_back( (*voice_status_info)[i].sample.pos );
+			}
+		}
+
+		if (rt_keyboard->sample_get()==&song->get_sample(selected_sample)->data) {
+
+			viewer_pos_list.push_back( rt_keyboard->sample_pos_get() );
+		}
+		sample_editor->get_sample_viewer()->set_position_list(viewer_pos_list);
+		sample_editor->get_sample_viewer()->update_position_list_display();
+
+	}
+	
+	if (!(timer_count%4)) { //peaks and in use samples
+		
+		bool local_level[MAX_SAMPLES]; 
+		memset(local_level,0,sizeof(bool)*MAX_SAMPLES);
+		
+		for (int i=0;i<voice_status_info->size();i++) {
+
+			if ( (*voice_status_info)[i].sample.ptr==NULL)
+					continue;
+			int which=(*voice_status_info)[i].sample.index;
+			if (which<0 || which>=MAX_SAMPLES)
+					continue;
+			
+			local_level[which]=true;
+		}			
+		
+		for (int i=0;i<MAX_SAMPLES;i++) {
+		
+			if (play_level[i]==local_level[i])	
+				continue; //no change
+			
+			
+			play_level[i]=local_level[i];
+									
+			sample_items[i]->setText(2, ( local_level[i] ? "P":" "));			
+		}
+	}
+	
+}
+
+void Sample_Edit::select_sample(int p_which) {
+
+	Sample *s=song->get_sample(p_which);
+
+	if (!s) {
+
+		//printf("no sample? wtf?\n");
+		return;
+	}
+
+	sample_editor->set_sample_data(&s->data);
+	bridge_default_volume->set_bridge(&s->prop_def_volume);
+	bridge_global_volume->set_bridge(&s->prop_glb_volume);
+	bridge_use_default_pan->set_bridge(&s->prop_def_panning_on);
+	bridge_default_pan->set_bridge(&s->prop_def_panning);
+
+	bridge_vibrato_speed->set_bridge(&s->prop_vibrato_speed);
+	bridge_vibrato_depth->set_bridge(&s->prop_vibrato_depth);
+	bridge_vibrato_rate->set_bridge(&s->prop_vibrato_rate);
+
+	bridge_vibrato_type->set_bridge(&s->prop_vibrato_type);
+
+}
+
+void Sample_Edit::set_selected_sample(int p_which) {
+
+	if ((p_which<0) || (p_which>=sample_items.size()))
+		return;
+
+	sample_list->setSelected(sample_items[p_which],true);
+
+
+}
+
+void Sample_Edit::item_selected_cbk(QListViewItem *p_item) {
+
+	ListviewItem * item = dynamic_cast<ListviewItem *>(p_item);
+	if (item==NULL) {
+		//printf("Item is null? is RTTI enabled?\n");
+		return;
+	} else {
+
+		//printf("item selected is %i\n", item->get_id());
+		select_sample(item->get_id());
+		selected_sample=item->get_id();
+
+
+		emit selected_sample_signal(selected_sample);
+	}
+}
+
+void Sample_Edit::item_renamed_cbk( QListViewItem * p_item, int col ) {
+
+	ListviewItem * item = dynamic_cast<ListviewItem *>(p_item);
+	if (item==NULL) {
+		//printf("Item is null? is RTTI enabled?\n");
+		return;
+	} else {
+
+		string text=item->text(col).ascii();
+                if (text.length()>MAX_SAMPLE_NAME_LEN)
+			text=text.substr(0,MAX_SAMPLE_NAME_LEN);
+
+		item->setText(col,text.c_str());
+
+		song->get_sample(item->get_id())->name=text;
+/*		select_sample(item->get_id());
+		selected_sample=item->get_id();*/
+	}
+
+}
+
+void Sample_Edit::copy_sample() {
+
+
+	Sample *src_sample=song->get_sample(selected_sample);
+	if (!src_sample)
+		return;
+
+	sample_clipboard=*src_sample;
+        sample_clipboard.data.copy_sample_data(&src_sample->data);
+
+}
+
+void Sample_Edit::paste_sample() {
+
+	Sample *dst_sample=song->get_sample(selected_sample);
+	if (!dst_sample)
+		return;
+
+	rt_keyboard->sample_stop_all();
+        player->lock_player_variables();
+
+	player->erase_voices_using_sample(dst_sample);
+
+	*dst_sample=sample_clipboard;
+        dst_sample->data.copy_sample_data(&sample_clipboard.data);
+
+        player->unlock_player_variables();
+
+	update_samples();
+	select_sample(selected_sample);
+
+
+}
+void Sample_Edit::cut_sample() {
+
+	copy_sample();
+	delete_sample();
+
+}
+void Sample_Edit::delete_sample() {
+
+	Sample *dst_sample=song->get_sample(selected_sample);
+	if (!dst_sample)
+		return;
+
+	rt_keyboard->sample_stop_all();
+        player->lock_player_variables();
+	player->erase_voices_using_sample(dst_sample);
+
+
+	dst_sample->reset(true);
+
+        player->unlock_player_variables();
+
+	update_samples();
+	select_sample(selected_sample);
+}
+
+
+void Sample_Edit::set_song(Song *p_song) {
+
+	song=p_song;
+	update_samples();
+}
+
+void Sample_Edit::set_rt_keyboard(Player_Realtime_Keyboard *p_rt_keyboard) {
+
+	rt_keyboard=p_rt_keyboard;
+}
+
+
+void Sample_Edit::update_selected_sample() {
+
+	select_sample(selected_sample);
+}
+
+void Sample_Edit::update_samples() {
+
+	for (int i=0;i<sample_items.size();i++) {
+
+		sample_items[i]->setText(3,song->get_sample(i)->name.c_str());
+		sample_items[i]->setText(1,song->get_sample(i)->in_use?"*":"");
+	}
+}
+
+
+void Sample_Edit::sample_freq_changed() {
+
+	rt_keyboard->sample_adjust_latest_key();
+}
+
+
+Sample_Edit::Sample_Edit(QWidget *p_parent) : QHBox(p_parent)  {
+
+	sample_list_group = new QGroupBox ( 1, Qt::Vertical,"Sample List",this);
+
+	sample_props_vbox = new QVBox(this);
+
+	selected_sample=0;
+	/* listview */
+	sample_list = new QListView(sample_list_group);
+	sample_list->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
+	sample_list->setDefaultRenameAction(QListView::Accept);
+
+	sample_list->addColumn("#",20);
+	sample_list->addColumn("A",20);
+	sample_list->addColumn("P",20);
+	sample_list->addColumn("Name");
+	sample_list->setAllColumnsShowFocus(true);
+	QObject::connect(sample_list, SIGNAL(selectionChanged ( QListViewItem * )),this, SLOT(item_selected_cbk ( QListViewItem * )) );
+	QObject::connect(sample_list, SIGNAL(itemRenamed ( QListViewItem *,int )),this, SLOT(item_renamed_cbk ( QListViewItem *,int )) );
+
+	for (int i=1;i<100;i++) {
+
+		ListviewItem * sample_item = new ListviewItem(sample_list);
+		char text[3];
+		text[2]=0;
+		text[0]='0'+i/10;
+		text[1]='0'+i%10;
+		sample_item->setText(0,text);
+		sample_item->setText(2,"_");
+		sample_items.push_back(sample_item);
+		sample_item->set_id(i-1);
+		sample_item->setRenameEnabled(3,true);
+	}
+
+        /* properties */
+	sample_data_group = new QGroupBox(1, Qt::Vertical,"Sample Data",sample_props_vbox);
+	sample_data_group->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
+
+	sample_editor = new Sample_Editor(sample_data_group);
+
+	sample_editor->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
+
+	sample_vars_hbox = new QHBox(sample_editor->get_tabs());
+	sample_vars_hbox->setMargin(5);
+
+	sample_vars_hbox->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Maximum));
+	sample_editor->get_tabs()->insertTab(sample_vars_hbox,"Volume/Vibrato",0);
+
+	sample_volpan_group = new QGroupBox(1, Qt::Horizontal,"Volume/Pan",sample_vars_hbox);
+	sample_vibrato_group = new QGroupBox(1, Qt::Horizontal,"Vibrato",sample_vars_hbox);
+
+
+
+	//bridge_edit = new Q_Property_Bridge_Int(sample_volpan_group);
+	//bridge_bool = new Q_Property_Bridge_Bool(sample_volpan_group);
+	bridge_default_volume =  new Q_Property_Bridge_Int(sample_volpan_group);
+	bridge_global_volume =  new Q_Property_Bridge_Int(sample_volpan_group);
+	bridge_use_default_pan  =  new Q_Property_Bridge_Bool(sample_volpan_group);
+	bridge_default_pan  =  new Q_Property_Bridge_Int(sample_volpan_group);
+
+	bridge_vibrato_speed  =  new Q_Property_Bridge_Int(sample_vibrato_group);
+	bridge_vibrato_depth  =  new Q_Property_Bridge_Int(sample_vibrato_group);
+	bridge_vibrato_rate  =  new Q_Property_Bridge_Int(sample_vibrato_group);
+
+	bridge_vibrato_type  =  new Q_Property_Bridge_Options(sample_vibrato_group);
+
+//	sample_volpan_group->addWidget(bridge_edit);
+
+	QObject::connect(sample_editor,SIGNAL(destructive_operation_begin()),this,SLOT(destructive_operation_begin_cbk()));
+	QObject::connect(sample_editor,SIGNAL(destructive_operation_end()),this,SLOT(destructive_operation_end_cbk()));
+
+	setStretchFactor(sample_list_group,1);
+	setStretchFactor(sample_props_vbox,2);
+	timer_count=0;
+
+	viewer_pos_list.reserve(2000); //doubt nearly as much will happen :)
+
+	sample_editor->add_edit_effect(&edit_effects.sel_to_loop);
+	sample_editor->add_edit_effect(&edit_effects.fade_in);
+	sample_editor->add_edit_effect(&edit_effects.fade_out);
+	sample_editor->add_edit_effect(&edit_effects.reverse);
+	sample_editor->add_edit_effect(&edit_effects.center);
+	sample_editor->add_edit_effect(&edit_effects.normalize);
+	sample_editor->add_edit_effect(&edit_effects.pre_cut);
+	sample_editor->add_edit_effect(&edit_effects.post_cut);
+	sample_editor->add_edit_effect(&edit_effects.tunner);
+	sample_editor->add_edit_effect(&edit_effects.toggle_sign);
+	sample_editor->add_edit_effect(&edit_effects.toggle_depth);
+
+	QObject::connect(sample_editor,SIGNAL(sample_freq_changed()),this,SLOT(sample_freq_changed()));
+	fd = new Sample_Player_FDialog;
+	fd->setFilter("Sample Files (*.cs *.CS *.is *.IS *.wav *.WAV)");
+
+	memset(play_level,0,sizeof(bool)*MAX_SAMPLES);
+	
+}
+
+Sample_Edit::~Sample_Edit() {
+}

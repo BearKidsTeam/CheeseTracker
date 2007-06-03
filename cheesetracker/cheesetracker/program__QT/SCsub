@@ -1,0 +1,52 @@
+#-*-python-*-
+
+import os
+import string
+import sys
+
+Import('env_cheese')
+env2 = env_cheese.Copy()
+
+cheese_libs_qt = [	'#/cheesetracker/interface__QT/libinterface_qt.a',
+	      ];
+
+cheese_libs = [
+		'#/cheesetracker/interface_binds/lib_interface_binds.a',
+		'#/cheesetracker/loaders/lib_loaders.a',
+		'#/cheesetracker/savers/lib_savers.a',
+		'#/cheesetracker/trackercore/lib_trackercore.a',
+	      ];
+
+
+libs = cheese_libs_qt;
+libs += cheese_libs;
+
+libs += ['#common/libinterface__qt.a','#common/libcommon.a'];
+
+# qt
+env2.Append(LINKFLAGS=env2.detect.qt_link_flags);
+env2.Append(LIBS=env2.detect.qt_libs);
+env2.Append(CXXFLAGS = env2.detect.qt_flags);
+
+# libsigc++
+env2.Append(LINKFLAGS=env2.detect.sigc_link_flags);
+env2.Append(LIBS=env2.detect.sigc_libs);
+env2.Append(CXXFLAGS = env2.detect.sigc_flags);
+
+# libdl
+env2.Append(CXXFLAGS=env2.detect.dl_flags);
+env2.Append(LIBS=env2.detect.dl_libs);
+env2.Append(LINKFLAGS=env2.detect.dl_link_flags);
+
+# JACK
+if (env2.detect.has_jack):
+	env2.Append(LIBS=env2.detect.jack_libs);
+	env2.Append(LINKFLAGS=env2.detect.jack_link_flags);
+
+if (env2.detect.has_alsa):
+	env2.Append(LIBS=env2.detect.alsa_libs);
+	env2.Append(LINKFLAGS=env2.detect.alsa_link_flags);
+
+
+dst_object = env2.Program('cheesetracker_qt', ['cheesetracker_qt.cpp'] + libs);
+env2.bin_targets += [dst_object];

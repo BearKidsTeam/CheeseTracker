@@ -1,0 +1,9 @@
+
+Import('env');
+env2=env.Copy();
+
+env2.Append(CXXFLAGS=env2.dl_flags);
+env2.Append(LIBS=env2.dl_libs);
+env2.Append(LINKFLAGS=env2.dl_link_flags);
+
+env2.make_targets(env.common_objects)

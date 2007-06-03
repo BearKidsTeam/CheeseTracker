@@ -1,0 +1,8 @@
+
+Import('env');
+env2=env.Copy();
+Export('env');
+if (env2.optimize_resampler_hack):
+	env2.Append(CXXFLAGS=['-O3','-ffast-math']);
+
+env2.make_targets(env.common_objects)

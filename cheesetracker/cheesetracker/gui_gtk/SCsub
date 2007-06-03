@@ -1,0 +1,15 @@
+
+Import('env');
+env2=env.Copy();
+env2.Append(CXXFLAGS = env.gtkmm_flags['flags']);
+Export('env');
+
+
+file_list=[\
+'interface.cpp',\
+'sample_edit.cpp',\
+'instrument_edit.cpp',\
+'tracker_instance.cpp',\
+]
+
+env2.Library('lib_gui_gtk.a', file_list);

@@ -1,0 +1,9 @@
+
+Import('env');
+Export('env');
+
+
+SConscript('effects/SCsub');
+SConscript('edit_effects/SCsub');
+SConscript('synths/SCsub');
+SConscript('resamplers/SCsub');
