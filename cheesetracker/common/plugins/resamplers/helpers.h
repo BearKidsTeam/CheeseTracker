@@ -40,7 +40,6 @@
 #define HELPER_INITIALIZE \
 										\
 		/*Precision template */						\
-		Uint8 fractional_size=mixdata->fractional_size;			\
 		sample_t *dest_buffer=mixdata->dst_buff;			\
 		/* Data handler */						\
 		float final_float[HARD_CODED_MIXER_CHANNELS];			\
@@ -70,7 +69,6 @@
 		float ramp_l_base=(float)(send_l-send_l_prev)/(float)mixdata->samples_to_mix; \
 		float ramp_r_base=(float)(send_r-send_r_prev)/(float)mixdata->samples_to_mix; \
 		float ramp_l=ramp_l_base;                          \
-		float ramp_r=ramp_r_base;                          \
 		send_l=send_l_prev;				\
 		send_r=send_r_prev;				\
 		int sample_increment_threshold=5;			\
@@ -84,7 +82,7 @@
        // positions away from the end of the sample, with the cursor
        // incrementing away from the end (backwards).
 
-#define CHECK_END_OF_SAMPLE_AT_MIX_BEGIN  (mixdata->sample->fixedpoint_is_backwards() && mixdata->sample->get_current_pos(0) < mixdata->sample->get_size(0) - sample_increment_threshold)
+#define CHECK_END_OF_SAMPLE_AT_MIX_BEGIN  (mixdata->sample->fixedpoint_is_backwards() && mixdata->sample->get_current_pos() < mixdata->sample->get_size() - sample_increment_threshold)
 
 
 	// CHECK_END_OF_SAMPLE_AT_MIX_END checks if the current
@@ -95,7 +93,7 @@
 // NOTE: The multiplication below is an overloaded operator that requires an integer on the right side. The left side
 // of the * is of type MixData::Fraction. The operatior returns type size_t.
 
-#define CHECK_END_OF_SAMPLE_AT_MIX_END (!mixdata->sample->fixedpoint_is_backwards() && mixdata->sample->get_current_pos(0) < (mixdata->increment_fraction * samples_to_mix)+ sample_increment_threshold)
+#define CHECK_END_OF_SAMPLE_AT_MIX_END (!mixdata->sample->fixedpoint_is_backwards() && mixdata->sample->get_current_pos() < (mixdata->increment_fraction * samples_to_mix)+ sample_increment_threshold)
 
 // FIXME: This is just stupid.
 
@@ -374,7 +372,7 @@ HELPER_PERFORM_MIXDOWN
 		mixdata->filter.hist_a2=hist_a2;                                                   \
 		mixdata->filter.hist_b1=hist_b1;        						\
 		mixdata->filter.hist_b2=hist_b2;                                                   \
-		mixdata->sample_offset=mixdata->sample->get_current_pos(0);
+		mixdata->sample_offset=mixdata->sample->get_current_pos();
 
 
 

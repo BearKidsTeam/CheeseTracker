@@ -218,7 +218,7 @@ static inline int near2power(int m_val) {
 }
 
 
-#define BOUND(bvar,bmin,bmax) (bvar>bmax)?bmax:(bvar<bmin)?bmin:bvar
+#define BOUND(bvar,bmin,bmax) ((bvar>bmax)?bmax:(bvar<bmin)?bmin:bvar)
 #define NUM_2_THIRD_CHAR(num) ('0'+((num)/100) % 10)
 #define NUM_2_SECOND_CHAR(num) ('0'+((num)/10) % 10)
 #define NUM_2_FIRST_CHAR(num) ('0'+(num) % 10)

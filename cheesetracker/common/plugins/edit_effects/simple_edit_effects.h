@@ -36,11 +36,11 @@ class Edit_Effect_Reverse : public Edit_Effect {
 public:
 
 	/* On Select info.. */
-	virtual void selected_notify(Sample_Data *p_data,int p_begin,int p_end) {}
+	virtual void selected_notify(Sample_Data *p_data,size_t p_begin,size_t p_end) {}
 	virtual list<Property_Bridge*> get_property_list() { list<Property_Bridge*> empty; return empty; }
 
 	/* Processing */
-	virtual void process(Sample_Data *p_data,int p_begin,int p_end);
+	virtual void process(Sample_Data *p_data,size_t p_begin,size_t p_end);
 
 	/* Info */
 	virtual bool is_destructive() { return false; }
@@ -54,11 +54,11 @@ class Edit_Effect_Center : public Edit_Effect {
 public:
 
 	/* On Select info.. */
-	virtual void selected_notify(Sample_Data *p_data,int p_begin,int p_end) {}
+	virtual void selected_notify(Sample_Data *p_data,size_t p_begin,size_t p_end) {}
 	virtual list<Property_Bridge*> get_property_list() { list<Property_Bridge*> empty; return empty; }
 
 	/* Processing */
-	virtual void process(Sample_Data *p_data,int p_begin,int p_end);
+	virtual void process(Sample_Data *p_data,size_t p_begin,size_t p_end);
 
 
 	/* Info */
@@ -71,11 +71,11 @@ class Edit_Effect_Toggle_Depth : public Edit_Effect {
 public:
 
 	/* On Select info.. */
-	virtual void selected_notify(Sample_Data *p_data,int p_begin,int p_end) {}
+	virtual void selected_notify(Sample_Data *p_data,size_t p_begin,size_t p_end) {}
 	virtual list<Property_Bridge*> get_property_list() { list<Property_Bridge*> empty; return empty; }
 
 	/* Processing */
-	virtual void process(Sample_Data *p_data,int p_begin,int p_end);
+	virtual void process(Sample_Data *p_data,size_t p_begin,size_t p_end);
 
 
 	/* Info */
@@ -88,11 +88,11 @@ class Edit_Effect_Toggle_Sign : public Edit_Effect {
 public:
 
 	/* On Select info.. */
-	virtual void selected_notify(Sample_Data *p_data,int p_begin,int p_end) {}
+	virtual void selected_notify(Sample_Data *p_data,size_t p_begin,size_t p_end) {}
 	virtual list<Property_Bridge*> get_property_list() { list<Property_Bridge*> empty; return empty; }
 
 	/* Processing */
-	virtual void process(Sample_Data *p_data,int p_begin,int p_end);
+	virtual void process(Sample_Data *p_data,size_t p_begin,size_t p_end);
 
 
 	/* Info */
@@ -106,11 +106,11 @@ class Edit_Effect_SelToLoop : public Edit_Effect {
 public:
 
 	/* On Select info.. */
-	virtual void selected_notify(Sample_Data *p_data,int p_begin,int p_end) {}
+	virtual void selected_notify(Sample_Data *p_data,size_t p_begin,size_t p_end) {}
 	virtual list<Property_Bridge*> get_property_list() { list<Property_Bridge*> empty; return empty; }
 
 	/* Processing */
-	virtual void process(Sample_Data *p_data,int p_begin,int p_end);
+	virtual void process(Sample_Data *p_data,size_t p_begin,size_t p_end);
 
 	/* Info */
 	virtual bool is_destructive() { return false; }
@@ -124,11 +124,11 @@ class Edit_Effect_FadeIn : public Edit_Effect {
 public:
 
 	/* On Select info.. */
-	virtual void selected_notify(Sample_Data *p_data,int p_begin,int p_end) {}
+	virtual void selected_notify(Sample_Data *p_data,size_t p_begin,size_t p_end) {}
 	virtual list<Property_Bridge*> get_property_list() { list<Property_Bridge*> empty; return empty; }
 
 	/* Processing */
-	virtual void process(Sample_Data *p_data,int p_begin,int p_end);
+	virtual void process(Sample_Data *p_data,size_t p_begin,size_t p_end);
 
 	/* Info */
 	virtual bool is_destructive() { return false; }
@@ -142,11 +142,11 @@ class Edit_Effect_FadeOut : public Edit_Effect {
 public:
 
 	/* On Select info.. */
-	virtual void selected_notify(Sample_Data *p_data,int p_begin,int p_end) {}
+	virtual void selected_notify(Sample_Data *p_data,size_t p_begin,size_t p_end) {}
 	virtual list<Property_Bridge*> get_property_list() { list<Property_Bridge*> empty; return empty; }
 
 	/* Processing */
-	virtual void process(Sample_Data *p_data,int p_begin,int p_end);
+	virtual void process(Sample_Data *p_data,size_t p_begin,size_t p_end);
 
 	/* Info */
 	virtual bool is_destructive() { return false; }
@@ -158,16 +158,16 @@ public:
 
 class Edit_Effect_Tunner : public Edit_Effect {
 
-	int cycles;
+	size_t cycles;
 	Int_Property_Bridge cycle_prop;
 public:
 
 	/* On Select info.. */
-	virtual void selected_notify(Sample_Data *p_data,int p_begin,int p_end) { cycles=4; }
+	virtual void selected_notify(Sample_Data *p_data,size_t p_begin,size_t p_end) { cycles=4; }
 	virtual list<Property_Bridge*> get_property_list();
 
 	/* Processing */
-	virtual void process(Sample_Data *p_data,int p_begin,int p_end);
+	virtual void process(Sample_Data *p_data,size_t p_begin,size_t p_end);
 
 	/* Info */
 	virtual bool is_destructive() { return false; }
@@ -186,12 +186,12 @@ class Edit_Effect_Normalize : public Edit_Effect {
 	Int_Property_Bridge amp_prop;
 public:
 
-	virtual void selected_notify(Sample_Data *p_data,int p_begin,int p_end);
+	virtual void selected_notify(Sample_Data *p_data,size_t p_begin,size_t p_end);
 	virtual list<Property_Bridge*> get_property_list();
 
 
 	/* Processing */
-	virtual void process(Sample_Data *p_data,int p_begin,int p_end);
+	virtual void process(Sample_Data *p_data,size_t p_begin,size_t p_end);
 
 	/* Info */
 	virtual bool is_destructive() { return false; }
@@ -205,11 +205,11 @@ class Edit_Effect_PostLoop_Cut : public Edit_Effect {
 public:
 
 	/* On Select info.. */
-	virtual void selected_notify(Sample_Data *p_data,int p_begin,int p_end) {}
+	virtual void selected_notify(Sample_Data *p_data,size_t p_begin,size_t p_end) {}
 	virtual list<Property_Bridge*> get_property_list() { list<Property_Bridge*> empty; return empty; }
 
 	/* Processing */
-	virtual void process(Sample_Data *p_data,int p_begin,int p_end);
+	virtual void process(Sample_Data *p_data,size_t p_begin,size_t p_end);
 
 	/* Info */
 	virtual bool is_destructive() { return true; }
@@ -223,11 +223,11 @@ class Edit_Effect_PreLoop_Cut : public Edit_Effect {
 public:
 
 	/* On Select info.. */
-	virtual void selected_notify(Sample_Data *p_data,int p_begin,int p_end) {}
+	virtual void selected_notify(Sample_Data *p_data,size_t p_begin,size_t p_end) {}
 	virtual list<Property_Bridge*> get_property_list() { list<Property_Bridge*> empty; return empty; }
 
 	/* Processing */
-	virtual void process(Sample_Data *p_data,int p_begin,int p_end);
+	virtual void process(Sample_Data *p_data,size_t p_begin,size_t p_end);
 
 	/* Info */
 	virtual bool is_destructive() { return true; }

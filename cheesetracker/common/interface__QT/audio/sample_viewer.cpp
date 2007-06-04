@@ -25,6 +25,7 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
+#include "ns_autoptr.h"
 #include "sample_viewer.h"
 #include <qpainter.h>
 
@@ -285,7 +286,7 @@ void Sample_Viewer::initialize_sample_cache() {
 }
 
 
-void Sample_Viewer::update_sample_cache(int p_range_begin,int p_range_end) {
+void Sample_Viewer::update_sample_cache(size_t p_range_begin,size_t p_range_end) {
 
 	if (sample_cache.size()==0)
 		return;
@@ -308,11 +309,15 @@ void Sample_Viewer::update_sample_cache(int p_range_begin,int p_range_end) {
 		float min_peak=2.0f;
 		for (int j=0;j<factor;j++) {
 
-			float sample=sample_data->get_sample(i*factor+j);
-			if (sample<min_peak)
-				min_peak=sample;
-			if (sample>max_peak)
-				max_peak=sample;
+			float *sample = new float[sample_data->num_channels()];
+			ns_autoptr<float> ns_sample;
+			ns_sample.arr_new(sample);
+
+			sample_data->get_sample(i*factor+j, sample);
+			if (sample[0]<min_peak)
+				min_peak=sample[0];
+			if (sample[0]>max_peak)
+				max_peak=sample[0];
 		}
 
 		sample_cache[0].max_peak_data[i]=max_peak;
@@ -416,10 +421,21 @@ void Sample_Viewer::screen_to_sample(int p_int, float *p_max_peak,float *p_min_p
 		}
 
 	} else {
-		float sample_current=sample_data->get_sample((int)sample_idx);
-		float sample_next=sample_data->get_sample((int)sample_idx+1);
-		float fract=sample_idx-(int)sample_idx;
-		float sample_final=INTERP(sample_current,sample_next,fract);
+		float *sample_current;
+		float *sample_next;
+		ns_autoptr<float> ns_sample_current;
+		ns_autoptr<float> ns_sample_next;
+
+		sample_current = new float[sample_data->num_channels()];
+		ns_sample_current.arr_new(sample_current);
+
+		sample_next = new float[sample_data->num_channels()];
+		ns_sample_next.arr_new(sample_next);
+
+		sample_data->get_sample((size_t)sample_idx, sample_current);
+		sample_data->get_sample((size_t)sample_idx+1, sample_next);
+		float fract=sample_idx-(size_t)sample_idx;
+		float sample_final=INTERP(sample_current[0],sample_next[0],fract);
 
 		*p_max_peak=sample_final;
 		*p_min_peak=sample_final;

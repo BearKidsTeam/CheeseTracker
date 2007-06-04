@@ -28,25 +28,22 @@
 
 #include <algorithm>
 #include "sample_editor_clipboard.h"
+#include "ns_autoptr.h"
 
 void Sample_Editor_Clipboard::copy_cbk() {
 
 	if (!selection->is_active())
 		return;
-	if (!sdata || !sdata->get_size(0))
+	if (!sdata || !sdata->get_size())
 		return;
 
-	clipboard.alloc_channels(sdata->num_channels());
+	clipboard.set_num_channels(sdata->num_channels());
+	clipboard.set_size(selection->get_end() - selection->get_begin());
+	clipboard.seek(0);
+	sdata->seek(selection->get_begin());
 
-	for(size_t chan=0; chan<sdata->num_channels(); chan++) {
-		clipboard.set_size(chan,
-		                   selection->get_end() - selection->get_begin());
-		clipboard.seek(chan, 0);
-		sdata->seek(chan, selection->get_begin());
-		for (size_t ix=0;ix<clipboard.get_size();ix++) {
-			clipboard.put_sample(chan,
-			                         sdata->get_int_sample(chan));
-		}
+	for (size_t ix=0;ix<clipboard.get_size();ix++) {
+		clipboard.put_sample(sdata->get_int_sample());
 	}
 
 }
@@ -55,8 +52,11 @@ void Sample_Editor_Clipboard::cut_cbk() {
 
 	if (!selection->is_active())
 		return;
-	if (!sdata || !sdata->get_size(0))
+	if (!sdata || !sdata->get_size())
 		return;
+
+	// A clipboard cut is really just a Copy followed by deletion.
+	// So we use the copy_cbk() function first...
 
 	copy_cbk();
 
@@ -96,36 +96,38 @@ void Sample_Editor_Clipboard::cut_cbk() {
 
 	destructive_operation_begin();
 
-	for(size_t chan=0; chan<sdata->num_channels(); chan++) {
-		// Get the part of the sample after the selection and put
-		// it in sdata...
+	size_t tmp_size = sdata->get_size() - selection->get_end();
 
-		size_t tmp_size = sdata->get_size(chan) - selection->get_end();
-		sample_int_t *tmp_data=NULL; 
-		if(tmp_size) {
-			tmp_data = new sample_int_t[tmp_size];
-			sdata->seek(chan, selection->get_end());
-			sdata->get_sample_array(chan, tmp_data, tmp_size);
-		}
+	// Get the part of the sample after the selection and put
+	// it in tmp_data...
 
-		// Go to the beginning of the selection and overwrite it with
-		// the trailing data.
-
-		sdata->seek(chan, selection->get_begin());
-		if(tmp_data)
-			sdata->put_sample_array(chan, tmp_data, tmp_size);
-
-		// Drop any extra data.
-		sdata->truncate(chan);
-
-		delete[] tmp_data;
+	sample_int_t *tmp_data=NULL; 
+	if(tmp_size) {
+		tmp_data = new sample_int_t[tmp_size*sdata->num_channels()];
+		sdata->seek(selection->get_end());
+		sdata->get_sample_array(tmp_data, tmp_size);
 	}
+
+	// Go to the beginning of the selection and overwrite it with
+	// the trailing data.
+
+	sdata->seek(selection->get_begin());
+	if(tmp_data)
+		sdata->put_sample_array(tmp_data, tmp_size);
+
+	// Drop any extra data.
+	sdata->truncate();
+
+	delete[] tmp_data;
 
 	selection->clear();
 	destructive_operation_end();
 
 
 }
+
+// Paste the contents of the clipboard after the end of the
+// selection.
 
 void Sample_Editor_Clipboard::paste_cbk() {
 
@@ -134,78 +136,86 @@ void Sample_Editor_Clipboard::paste_cbk() {
 	if (!sdata)
 		return;
 
-	if (!clipboard.get_size(0))
+	if (!clipboard.get_size())
 		return;
 
 	destructive_operation_begin();
 
-	if(!sdata->get_size(0)) {
-		sdata->alloc_channels(clipboard.num_channels());
+	if(!sdata->get_size()) {
+		sdata->set_num_channels(clipboard.num_channels());
 	}
 
-	size_t max_channels =
-		std::min<size_t>(sdata->num_channels(),
-		                 clipboard.num_channels());
+	// Back up the data after the selection. It will be reinserted after
+	// the pasted clipboard data.
 
-	// Paste the contents of the clipboard after the end of the
-	// selection.
+	sdata->seek(selection->get_end());
+	size_t backup_size;
+	sample_int_t *backup_data;
+	ns_autoptr<sample_int_t> ns_backup_data;
 
-	for(size_t chan=0; chan<max_channels; chan++) {
+	backup_size = sdata->get_size() -
+		         sdata->get_current_pos();
 
-		// tmp_data holds the data from the end of the selection
-		// to the end of the sample.
+	backup_data = new sample_int_t[sdata->num_channels() * backup_size];
+	ns_backup_data.arr_new(backup_data);
+	sdata->get_sample_array(backup_data, backup_size);
 
-		sdata->seek(chan, selection->get_end());
-		size_t tmp_size;
-		tmp_size = sdata->get_size(chan) -
-		           sdata->get_current_pos(chan);
-		sample_int_t *tmp_data = NULL;
+	// Return to the end of the sample.
 
-		if(tmp_size) {
-			tmp_data = new sample_int_t[tmp_size];
-		}
+	sdata->seek(selection->get_end());
 
-		// Go to the end of the selection.
+	// Extend the sample by the size of the clipboard.
 
-		sdata->seek(chan, selection->get_end());
+	sdata->set_size(sdata->get_size()+clipboard.get_size());
 
-		// Back up the data after the selection, unless the selection
-		// ends at the end of the sample.
+	// Go to the beginning of the clipboard.
+	clipboard.seek(0);
 
-		if(tmp_data) {
-			sdata->get_sample_array(chan, tmp_data, tmp_size);
-			sdata->seek(chan, selection->get_end());
-		}
 
-		// Extend the sample by the size of the clipboard.
+	// Put the clipboard data into the sample buffer.
+	//
+	// If the clipboard and the sample have the same number of
+	// channels, then a direct copy is possible. 
+	//
+	// However, if the sample has a different number of channels than
+	// the clipboard, then extra channels in the sample must be zero-padded,
+	// while extra channels in the clipboard must be dropped. This requires
+	// the use of an extra buffer, {sdata_buf}, which is allocated first
+	// so that it only has to be allocated and deallocated once.
 
-		sdata->set_size(chan, sdata->get_size(chan)+
-		                      clipboard.get_size(chan));
+	ns_autoptr<sample_int_t> ns_sdata_buf;
+	sample_int_t *sdata_buf = new sample_int_t[sdata->num_channels()];
+	ns_sdata_buf.arr_new(sdata_buf);
 
-		// Go to the beginning of the clipboard.
-
-		clipboard.seek(chan,0);
-		for(size_t ix=0; ix<clipboard.get_size(chan); ix++) {
-			// Store the data.
-			sdata->put_sample(chan,
-			                      clipboard.get_int_sample(chan));
-		}
-		if(tmp_data) {
-			sdata->put_sample_array(chan, tmp_data, tmp_size); 
-			delete[] tmp_data;
+	for(size_t ix=0; ix<clipboard.get_size(); ix++) {
+		if(clipboard.num_channels() == sdata->num_channels()) {
+			sdata->put_sample(clipboard.get_int_sample());
+		} else {
+			const sample_int_t *clipboard_buf = clipboard.get_int_sample();
+			for(size_t chan=0; chan<sdata->num_channels(); chan++) {
+				if(chan > clipboard.num_channels())
+					sdata_buf[chan] = 0;
+				else
+					sdata_buf[chan] = clipboard_buf[chan];
+			}
+			sdata->put_sample(sdata_buf);
 		}
 	}
+
+	// Restore the backup data.
+
+	sdata->put_sample_array(backup_data, backup_size);
 
 
 	if  (sdata->get_loop_end()>=selection->get_end()) {
 
-		sdata->set_loop_end( sdata->get_loop_end() + clipboard.get_size(0) );
+		sdata->set_loop_end( sdata->get_loop_end() + clipboard.get_size() );
 
 	}
 
 	if  (sdata->get_loop_begin()>=selection->get_end()) {
 
-		sdata->set_loop_begin( sdata->get_loop_begin() + clipboard.get_size(0) );
+		sdata->set_loop_begin( sdata->get_loop_begin() + clipboard.get_size() );
 
 	}
 
@@ -214,13 +224,7 @@ void Sample_Editor_Clipboard::paste_cbk() {
 }
 
 void Sample_Editor_Clipboard::clear_clipboard() {
-
-	for(size_t chan=0; chan<clipboard.num_channels(); chan++) {
-		clipboard.seek(chan, 0);
-		clipboard.truncate(chan);
-	}
-
-	clipboard.alloc_channels(0);
+	clipboard.set_size(0);
 }
 
 
@@ -242,6 +246,4 @@ Sample_Editor_Clipboard::Sample_Editor_Clipboard(QWidget *p_parent) : QHBox(p_pa
 }
 
 Sample_Editor_Clipboard::~Sample_Editor_Clipboard() {
-
-
 }

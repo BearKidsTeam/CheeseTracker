@@ -43,11 +43,11 @@ public:
 
 
 	/* On Select info.. */
-	virtual void selected_notify(Sample_Data *p_data,int p_begin,int p_end)=0;
+	virtual void selected_notify(Sample_Data *p_data,size_t p_begin,size_t p_end)=0;
 	virtual list<Property_Bridge*> get_property_list()=0;
 
 	/* Processing */
-	virtual void process(Sample_Data *p_data,int p_begin,int p_end)=0;
+	virtual void process(Sample_Data *p_data,size_t p_begin,size_t p_end)=0;
 
 
 	/* Info */

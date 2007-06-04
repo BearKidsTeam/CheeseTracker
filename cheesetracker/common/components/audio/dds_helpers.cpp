@@ -1,7 +1,16 @@
 //
 // C++ Implementation: dds_helpers
 //
-// Description:
+// Description: A class that has some mysterious relationship with
+//              DDS.h. Its apparent purpose is to prevent us from
+//              being able to figure out how sample data is being
+//              interpreted in the saver_ct and loader_ct modules,
+//              to make it more difficult to make those modules support
+//              wide, multi-channel samples. 
+//
+//
+//              Fortunately, those two modules are the only ones
+//              that use this class.
 //
 //
 // Author: Juan Linietsky <coding@reduz.com.ar>, (C) 2003
@@ -170,7 +179,7 @@ void DDS_Helpers::set_sample_data(DDS* p_dds,Sample_Data *p_sample) {
 	if (is16)
 		datasize/=2;
 
-	p_sample->alloc_channels(1);
+	p_sample->set_num_channels(1);
 
 	if (is16) {
 
@@ -186,13 +195,14 @@ void DDS_Helpers::set_sample_data(DDS* p_dds,Sample_Data *p_sample) {
 			new_data16[i]<<=8;
 			new_data16[i]|=data[i*2+1];
 		}
-		p_sample->put_sample_array(0, new_data16, datasize);
+		p_sample->put_sample_array(new_data16, datasize);
 		free(new_data);
 
 	} else {
 
 		for(size_t ix=0; ix<datasize; ix++) {
-			p_sample->put_sample(0, CONVERT_FROM_TYPE(Uint8, data[ix]));
+			sample_int_t buffer = CONVERT_FROM_TYPE(Uint8, data[ix]);
+			p_sample->put_sample(&buffer);
 		}
 	}
 
@@ -430,9 +440,9 @@ void DDS_Helpers::get_sample_data(Sample_Data *p_sample,DDS* p_dds) {
 		// we can drop all channels except channel 0.
 		//
 
-		p_sample->seek(0,0);
+		p_sample->seek(0);
 		for (size_t i=0;i<p_sample->get_size();i++) {
-			Uint16 raw_twoscomp_data = CONVERT_TO_TYPE(Uint16, p_sample->get_int_sample(0));
+			Uint16 raw_twoscomp_data = CONVERT_TO_TYPE(Uint16, *p_sample->get_int_sample());
 
 			data[i*2]=raw_twoscomp_data >> BITS_PER_BYTE;
 			data[i*2+1]=raw_twoscomp_data & 0xFF;
@@ -441,7 +451,7 @@ void DDS_Helpers::get_sample_data(Sample_Data *p_sample,DDS* p_dds) {
 	} else {
 
 		for(size_t ix=0; ix < p_sample->get_size(); ix++) {
-			data[ix]=CONVERT_TO_TYPE(Uint8, p_sample->get_int_sample(0));
+			data[ix]=CONVERT_TO_TYPE(Uint8, *p_sample->get_int_sample());
 		}
 	}
 

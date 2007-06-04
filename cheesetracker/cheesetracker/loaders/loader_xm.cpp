@@ -115,6 +115,7 @@ Loader::Error Loader_XM::load(const char *p_filename,bool p_load_patterns) {
 
           	Uint32 aux,rows;
 
+		aux=reader.get_dword(); //length
            	aux=reader.get_byte(); //packing type
            	rows=aux=reader.get_word(); //rows!
 

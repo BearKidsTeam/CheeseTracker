@@ -65,7 +65,7 @@ protected:
 	int backing_store_width,backing_store_height;
 
 	void initialize_sample_cache();
-	void update_sample_cache(int p_range_begin,int p_range_end);
+	void update_sample_cache(size_t p_range_begin,size_t p_range_end);
 
 	int screen_pos_to_sample_pos(int p_pos);
 

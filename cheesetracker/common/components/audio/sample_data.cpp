@@ -203,11 +203,9 @@ void Sample_Data::set_sample(size_t p_idx, const float *p_val) {
 
 	if ((p_idx>=size)) return;
 
-	if (p_val>1.0) p_val=1.0;
-	if (p_val<(-1.0)) p_val=(-1.0);
 
 	for(size_t chan=0; chan<channels; chan++) {
-		data_ptr[p_index*channels+chan] = FLOAT_TO_SAMPLE_INT_T(p_val[chan]);
+		data_ptr[p_idx*channels+chan] = FLOAT_TO_SAMPLE_INT_T(BOUND(p_val[chan], -1.0, 1.0));
 	}
 }
 
@@ -258,11 +256,10 @@ const sample_int_t *Sample_Data::get_data_value(size_t p_pos) {
 	}
 	assert(is_16bits);
 
-        if (is_16bits) {
-
 	return &data_ptr[p_pos*channels];
 
 }
+
 void Sample_Data::put_data_value(size_t p_pos, const sample_int_t *p_val) {
 	ASSERT_NOTFIXEDPOINT("put_data_value");
 	assert(is_16bits);
@@ -449,7 +446,7 @@ Sample_Data::put_sample(const sample_int_t *smp) {
 	ASSERT_NOTFIXEDPOINT("put_sample");
 	assert(is_16bits);
 
-	if(eof_reached(chan)) 
+	if(eof_reached()) 
 		sd_realloc(size+1);
 
 	for(size_t chan=0; chan<num_channels(); chan++)
@@ -498,11 +495,10 @@ Sample_Data::get_current_pos() const {
 
 size_t
 Sample_Data::get_sample_array(sample_int_t *dest, size_t len) {
-	size_t ix;
 	assert(is_16bits);
 
         if(get_current_pos()+len > get_size()) {
-                len -= (get_current_pos(chan)+len)-get_size(chan);
+                len -= (get_current_pos()+len)-get_size();
                 if(len == 0)
                         return 0;
         }
@@ -522,10 +518,8 @@ Sample_Data::put_sample_array(const sample_int_t *src, size_t len) {
 	ASSERT_NOTFIXEDPOINT("put_sample_array");
 	assert(is_16bits);
 
-        size_t ix;
-
         if(len > size-current_pos) {
-                sd_realloc(chan, len-get_size(chan)-get_current_pos(chan));
+                sd_realloc(len-get_size()-get_current_pos());
         }
 
 	memcpy((void*)(data_ptr+current_pos*channels), src,
@@ -570,13 +564,14 @@ Sample_Data::truncate() {
 // notes	- Handles end-of-sample differently in
 //                fixedpoint_mode than in normal mode.
 //
-//                In normal mode, the last sample is
+//                In normal mode, 0.0 is 
 //                returned continuously after eof_reached(),
 
 void Sample_Data::get_f_sample(float *dest) {
 	assert(is_16bits);
-	if(eof_reached(chan)) {
-		return 0.0f;
+	if(eof_reached()) {
+		for(size_t chan=0; chan<channels; chan++)
+			dest[chan] = 0.0f;
 	}
 
 	for(size_t chan=0; chan<channels; chan++) {
@@ -588,7 +583,6 @@ void Sample_Data::get_f_sample(float *dest) {
 		if(current_pos>size)
 			current_pos=size;
 	}
-	return retval;
 }
 
 // put_f_sample - Add a floating-point sample to the specified channel.
@@ -597,18 +591,15 @@ void Sample_Data::get_f_sample(float *dest) {
 //
 // see also     - set_size
 
-void Sample_Data::put_f_sample(const float p_val) {
+void Sample_Data::put_f_sample(const float *p_val) {
 	ASSERT_NOTFIXEDPOINT("put_f_sample");
 	assert(is_16bits);
 
-	if(eof_reached(chan))
-		sd_realloc(chan, size+1);
+	if(eof_reached())
+		sd_realloc(size+1);
 
 	for(size_t chan=0; chan<channels; chan++) {
-		if (p_val[chan]>1.0) p_val[chan]=1.0;
-		if (p_val[chan]<(-1.0)) p_val[chan]=(-1.0);
-
-		data_ptr[CURRENT_FRAME] = FLOAT_TO_SAMPLE_INT_T(p_val);
+		data_ptr[CURRENT_FRAME] = FLOAT_TO_SAMPLE_INT_T(BOUND(p_val[chan], -1.0, 1.0));
 	}
 
 	current_pos++;
@@ -650,14 +641,38 @@ Sample_Data::num_channels() const {
 
 // set_num_channels - Set the number of channels for this sample.
 // 
-//                  - Interleaves existing data with zeroes.
+//                  - Interleaves existing data with zeroes if increasing the
+//                    number of channels.
+//
+//                  - Disinterleaves existing data in the event of a decrease
+//                    in the number of channels;
+//
+// note             - This function involves reallocation and copying of data buffers.
+//                    Avoid using this function in performance-critical loops.
 //
 // see also	  - set_size
 
 void
 Sample_Data::set_num_channels(size_t num) {
 	ASSERT_NOTFIXEDPOINT("set_num_channels");
-	// Not implemented.
+	sample_int_t *new_data;
+
+	new_data = new sample_int_t[num*get_size()];
+
+	for(size_t ix=0; ix<get_size(); ix++) {
+		for(size_t chan=0; chan<num; chan++) {
+			if(chan > channels) {
+				new_data[ix*num+chan] = 0;
+			} else {
+				new_data[ix*num+chan] = data_ptr[ix*num+chan];
+			}
+		}
+	}
+
+	delete[] data_ptr;
+	data_ptr = new_data;
+	channels=num;
+
 	return;
 }
 
@@ -669,8 +684,7 @@ Sample_Data::is_empty() {
 const Sample_Data &
 Sample_Data::operator=(const Sample_Data &r_data) {
 	ASSERT_NOTFIXEDPOINT("operator=");
-	size_t chan_ix;
-	alloc_channels(r_data.num_channels());
+	set_num_channels(r_data.num_channels());
 	assert(r_data.is_16bit());
 
 	// Copy sample buffer
@@ -679,8 +693,8 @@ Sample_Data::operator=(const Sample_Data &r_data) {
 
 	seek(0);
 	set_size(r_data.get_size());
-	for(size_t jx=0; jx<r_data.get_size(chan_ix); jx+=rdata.num_channels()) {
-		put_sample(&(r_data.data_ptr[jx]));
+	for(size_t jx=0; jx<r_data.get_size(); jx++) {
+		put_sample(&(r_data.data_ptr[jx*r_data.num_channels()]));
 	}
 
 	// Copy miscellaneous information
@@ -800,7 +814,7 @@ void
 Sample_Data::get_sample_for_cosine_mixer(float *dest, bool use_cosine_mode) {
 
 	const sample_int_t *current_frame = get_data_value(get_current_pos());
-	const sample_int_t *next_frame = get_data_value(get_current_pos()+1)
+	const sample_int_t *next_frame = get_data_value(get_current_pos()+1);
 
 	for(size_t chan=0; chan<channels; chan++) {
 		sample_int_t final_data = current_frame[chan];
@@ -831,7 +845,7 @@ Sample_Data::get_sample_for_cosine_mixer(float *dest, bool use_cosine_mode) {
 
 
 void
-Sample_Data::do_cubic_mixer_voodoo(float *dest, size_t chan) {
+Sample_Data::do_cubic_mixer_voodoo(float *dest) {
 
 	size_t poshi = get_current_pos();
 	size_t poslo_fixed = (get_current_pos() << FIXEDPOINT_INT_PART_BITS) + fixedpoint_offset;
@@ -847,7 +861,7 @@ Sample_Data::do_cubic_mixer_voodoo(float *dest, size_t chan) {
 		dest[chan] = SAMPLE_INT_T_TO_FLOAT((cubic_lut[poslo_fixed]*(prev_frame[chan]) +
 	       			cubic_lut[poslo_fixed+1]*current_frame[chan] +
 	       			cubic_lut[poslo_fixed+3]*current_frame[chan+channels*2] +
-	       			cubic_lut[poslo_fixed+2]*current_frame(chan+channels)) >> SPLINE_16SHIFT);
+	       			cubic_lut[poslo_fixed+2]*current_frame[chan+channels]) >> SPLINE_16SHIFT);
 	}
 
 }
