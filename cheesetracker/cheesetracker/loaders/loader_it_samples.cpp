@@ -129,7 +129,6 @@ Loader::Error Loader_IT::load_sample_data(IT_Sample *p_sample) {
 
 				if ( status ) {
 
-					free(auxdest);
 					return FILE_ERROR;
 				}
 
