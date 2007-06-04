@@ -103,9 +103,9 @@ class Tracker_Voice : public Voice
 
 	Resampler_Instance resampler;
 
-	int channel_index;
+	size_t channel_index;
 	int current_prio;
-	int mixfreq;
+	size_t mixfreq;
 	float preamp;
 
 	Sint64 idxsize,idxlpos,idxlend; // index size/begin/end for fast loop/pos check

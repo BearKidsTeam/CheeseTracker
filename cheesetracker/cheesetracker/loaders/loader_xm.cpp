@@ -37,9 +37,7 @@
 
 #define ABORT_LOAD  { reader.close(); \
 	for (size_t x=0;x<samples.size();x++) {\
-		for (size_t ix=0; ix<samples[x].data.num_channels(); ix++) 	\
-			samples[x].data.set_size(ix, 0);		\
-		samples[x].data.alloc_channels(0);			\
+		samples[x].data.set_size(0);				\
 	}								\
  	samples.clear(); \
   	instruments.clear(); \
@@ -533,7 +531,7 @@ Loader::Error Loader_XM::load_instrument_internal(Instrument *p_instr,bool p_xi,
 
 
 		/*SAMPLE!!*/
-		int sample_size;
+		size_t sample_size;
 		bool sample_is_16bits;
 
 		for (int j=0;j<sampnum;j++) {
@@ -592,15 +590,18 @@ Loader::Error Loader_XM::load_instrument_internal(Instrument *p_instr,bool p_xi,
 
 			Sample *sample=&samples[sample_index[j]];
 
-			sample->data.alloc_channels(1);
-			sample->data.set_size(0, sample_size);
-			sample->data.seek(0, 0);
+			sample->data.set_num_channels(1);
+			sample->data.set_size(sample_size);
+			sample->data.seek(0);
+
+			sample_int_t buffer;
 
 			for(size_t ix=0; ix<sample_size; ix++) {
 				if(sample_is_16bits)
-					sample->data.put_sample(0, CONVERT_FROM_TYPE(Sint16, reader.get_word()));
+					buffer=CONVERT_FROM_TYPE(Sint16, reader.get_word());
 				else
-					sample->data.put_sample(0, CONVERT_FROM_TYPE(Sint8, reader.get_byte()));
+					buffer=CONVERT_FROM_TYPE(Sint8, reader.get_byte());
+				sample->data.put_sample(&buffer);
 			}
 
 		}

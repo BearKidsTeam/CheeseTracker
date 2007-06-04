@@ -15,6 +15,7 @@
  ***************************************************************************/
 
 #include "loader_wav.h"
+#include "ns_autoptr.h"
 
 #include <iostream>
 
@@ -135,12 +136,9 @@ static int load_chunk( char chunk_id[4],File_Reader& file_read,
 
       // Allocate the channels.
 
-      SD->alloc_channels(Dest.format.channels);
-      for(size_t chan=0; chan<Dest.format.channels; chan++) {
-          SD->set_size(chan, Dest.data.length/Dest.format.channels/Dest.format.bytes_per_sample);
-	  SD->seek(chan,0);
-      }
-
+      SD->set_num_channels(Dest.format.channels);
+      SD->set_size(Dest.data.length/Dest.format.channels/Dest.format.bytes_per_sample);
+      SD->seek(0);
 
       size_t jx_start=0;
       if(Dest.format.bytes_per_sample > sizeof(sample_int_t)) {
@@ -152,74 +150,81 @@ static int load_chunk( char chunk_id[4],File_Reader& file_read,
       // are of type sample_int_t.
       //
 
-      for(size_t ix=0; ix<SD->get_size(0); ix++)
-      for(size_t chan=0; chan < Dest.format.channels; chan++)
-      {
+      sample_int_t *buffer;
+      ns_autoptr<sample_int_t> ns_buffer;
+      buffer = new sample_int_t[Dest.format.channels];
+      ns_buffer.arr_new(buffer);	// Ensure buffer's deletion at end of scope
 
-          // FIXME: Lots of two's complement assumptions here.
-	  // Absolutely necessary to be able to load signed samples
-	  // of any size into a buffer designed to hold samples
-	  // of only one size. Also required if we're gonna be
-	  // able to put 8-bit unsigned data into the same buffer.
-	  //
-	  // One good solution would be to define sample_int_t as
-	  // unsigned. This would currently break lots of code
-	  // that depends on this data type being signed. It would
-	  // be easy, portable bitwork to get the signed, two's
-	  // complement data of a WAV file to fit properly in an
-	  // unsigned register. In fact, the code already does the
-	  // reverse operation when handling 8-bit data.
+      for(size_t ix=0; ix<SD->get_size(); ix++) {
+	      for(size_t chan=0; chan < Dest.format.channels; chan++)
+	      {
 
-	  // Zero-initialize before ORing in the data. {tmp}
-	  // represents one channel of a sample. Each byte from
-	  // the WAV will be ORed and bit-shifted into the appropriate
-	  // location in {tmp}, so we do not have to consider the
-	  // byte-order in which {tmp} is stored.
+		  // FIXME: Lots of two's complement assumptions here.
+		  // Absolutely necessary to be able to load signed samples
+		  // of any size into a buffer designed to hold samples
+		  // of only one size. Also required if we're gonna be
+		  // able to put 8-bit unsigned data into the same buffer.
+		  //
+		  // One good solution would be to define sample_int_t as
+		  // unsigned. This would currently break lots of code
+		  // that depends on this data type being signed. It would
+		  // be easy, portable bitwork to get the signed, two's
+		  // complement data of a WAV file to fit properly in an
+		  // unsigned register. In fact, the code already does the
+		  // reverse operation when handling 8-bit data.
 
-	  sample_int_t tmp = 0;
+		  // Zero-initialize before ORing in the data. {tmp}
+		  // represents one channel of a sample. Each byte from
+		  // the WAV will be ORed and bit-shifted into the appropriate
+		  // location in {tmp}, so we do not have to consider the
+		  // byte-order in which {tmp} is stored.
+
+		  sample_int_t tmp = 0;
 
 
-          // Sun Apr  8 05:07:02 EDT 2007
-	  // Gracefully degrade samples of higher quality than 
-	  // the number of bits in sample_int_t by dropping the
-	  // less significant bytes. 
+		  // Sun Apr  8 05:07:02 EDT 2007
+		  // Gracefully degrade samples of higher quality than 
+		  // the number of bits in sample_int_t by dropping the
+		  // less significant bytes. 
 
-          // In prior versions of CheeseTracker, attempting to
-	  // load WAV samples with sample sizes that weren't exactly
-	  // 1 or 2 bytes caused an error.
+		  // In prior versions of CheeseTracker, attempting to
+		  // load WAV samples with sample sizes that weren't exactly
+		  // 1 or 2 bytes caused an error.
 
-          size_t jx;
-	  for(jx=0; jx<jx_start; jx++) {
-	  	file_read.get_byte();
-	  }
+		  size_t jx;
+		  for(jx=0; jx<jx_start; jx++) {
+			file_read.get_byte();
+		  }
 
-          // The cast to sample_int_t is necessary because otherwise the bit-shift is
-	  // performed in a 32-bit register on some systems. It was once believed that
-	  // sample_int_t might one day be a 64-bit number, but it has since been
-	  // discovered that the resampler code (in sample_data.cpp) requires that
-	  // there be a type mix_t that is wider than sample_int_t. 
+		  // The cast to sample_int_t is necessary because otherwise the bit-shift is
+		  // performed in a 32-bit register on some systems. It was once believed that
+		  // sample_int_t might one day be a 64-bit number, but it has since been
+		  // discovered that the resampler code (in sample_data.cpp) requires that
+		  // there be a type mix_t that is wider than sample_int_t. 
 
-          for(jx=jx_start; jx < Dest.format.bytes_per_sample; jx++) {
-	     tmp |= (sample_int_t)file_read.get_byte() << jx*BITS_PER_BYTE;
-	  }
-	  // Bit-shift smaller samples into the top of the register.
-	  if(Dest.format.bytes_per_sample < sizeof(sample_int_t) ) {
-	     tmp <<= (((sizeof(sample_int_t)-Dest.format.bytes_per_sample)-1)*BITS_PER_BYTE);
-	  }
-	  // 8-bit hack: the WAV standard requires that, while
-	  // all other sample sizes be interpreted as signed,
-	  // 8-bit (1 byte) samples are considered UNsigned.
-	  // Since we're using a signed buffer and shifting small
-	  // samples into the top of that buffer, we have to do
-	  // something to correct the 8-bit data. XORing the top
-	  // bit with 1 will make the sample values that were
-	  // originally the smallest still be the smallest in a larger
-	  // register.
+		  for(jx=jx_start; jx < Dest.format.bytes_per_sample; jx++) {
+		     tmp |= (sample_int_t)file_read.get_byte() << jx*BITS_PER_BYTE;
+		  }
+		  // Bit-shift smaller samples into the top of the register.
+		  if(Dest.format.bytes_per_sample < sizeof(sample_int_t) ) {
+		     tmp <<= (((sizeof(sample_int_t)-Dest.format.bytes_per_sample)-1)*BITS_PER_BYTE);
+		  }
+		  // 8-bit hack: the WAV standard requires that, while
+		  // all other sample sizes be interpreted as signed,
+		  // 8-bit (1 byte) samples are considered UNsigned.
+		  // Since we're using a signed buffer and shifting small
+		  // samples into the top of that buffer, we have to do
+		  // something to correct the 8-bit data. XORing the top
+		  // bit with 1 will make the sample values that were
+		  // originally the smallest still be the smallest in a larger
+		  // register.
 
-	  if(Dest.format.bytes_per_sample == 1) {
-	     tmp ^= (sample_int_t) 1 << ((sizeof(sample_int_t)*BITS_PER_BYTE)-1);
-	  }
-	  SD->put_sample(chan, tmp);
+		  if(Dest.format.bytes_per_sample == 1) {
+		     tmp ^= (sample_int_t) 1 << ((sizeof(sample_int_t)*BITS_PER_BYTE)-1);
+		  }
+	          buffer[chan] = tmp;
+	      }
+	  SD->put_sample(buffer);
       }
 
       Dest.has_data = 1;

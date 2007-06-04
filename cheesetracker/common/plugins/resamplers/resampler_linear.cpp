@@ -52,7 +52,7 @@ static void mix_linear(Resampler::Mix_Data *mixdata) {
 			// final_data=final_data+((data_ptr[real_index+1]-final_data)*Sint32(segment_offset&fractional_mask) >> fractional_size);
 
 			HELPER_MIX_ONE_SAMPLE({ 
-				temp_float = mixdata->sample->get_sample_for_linear_mixer(CURRENT_CHANNEL);
+				mixdata->sample->get_sample_for_linear_mixer(temp_float);
 			})
 
 		}

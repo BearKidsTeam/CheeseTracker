@@ -132,10 +132,18 @@ def check_libdl(libdata):
 			return 0;
 	return 1;
 
+# On some systems (namely, those systems running G++ 4.1.2 and newer
+# compiler versions), <stdint.h> gets silently included when other C++
+# headers are included. As a result, defining __STDC_LIMIT_MACROS just
+# before our inclusion of <stdint.h> does not give us the limit macros,
+# because <stdint.h> is already included.
+
 def check_stdc_limit_macros(libdata):
 	print "Checking if the macro __STDC_LIMIT_MACROS must be"
 	print "  defined on the command line...",
 	res=check_cpp_compile(
+		"#include <iostream>\n"		+
+		"#define __STDC_LIMIT_MACROS\n"	+
 		"#include <stdint.h>\n"		+
 		"int main() {\n"		+
 		"	return INT16_MAX;\n"	+

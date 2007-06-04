@@ -32,8 +32,8 @@ int Loader_RAW::load_sample_func(const char *p_filename, Sample_Data *SD) {
 
 	size_t size = file_read.get_size();
 	Uint8 *data = new Uint8[size];
-	SD->alloc_channels(1);
-	SD->set_size(0, size);
+	SD->set_num_channels(1);
+	SD->set_size(size);
 
 	if(data == NULL)
 	{
@@ -48,9 +48,11 @@ int Loader_RAW::load_sample_func(const char *p_filename, Sample_Data *SD) {
 
 	// Copy the data into the Sample_Data structure.
 
-	SD->seek(0,0);
+	SD->seek(0);
+	sample_int_t buffer;
 	for(size_t ix=0; ix<size; ix++) {
-		SD->put_sample(0, CONVERT_FROM_TYPE(Sint8, data[ix]));
+		buffer=CONVERT_FROM_TYPE(Sint8, data[ix]);
+		SD->put_sample(&buffer);
 	}
 
 	delete[] data;

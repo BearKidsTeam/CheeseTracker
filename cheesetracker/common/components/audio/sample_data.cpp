@@ -235,24 +235,17 @@ void Sample_Data::set_loop_end(int p_idx) {
 
 void Sample_Data::change_sign() {
 	ASSERT_NOTFIXEDPOINT("change_sign");
+	assert(is_16bits);
 
 	if (data_ptr==NULL) return;
 
 	size_t ix;
 
 	for (ix=0;ix<size;ix++) {
-
-
-		if (is_16bits) {
-			data_ptr[ix] ^= (sample_int_t)1 << (sizeof(sample_int_t)*BITS_PER_BYTE-1);
-
-		} else {
-			// FIXME: This assumes certain behavior in the
-			// event of an integer overflow.
-
-      			Sint8 *sample_8bits_ptr=(Sint8*)data_ptr;
-	                sample_8bits_ptr[ix]+=128;
+		for(size_t chan=0; chan<channels; chan++) {
+			data_ptr[ix*channels+chan] ^= (sample_int_t)1 << (sizeof(sample_int_t)*BITS_PER_BYTE-1);
 		}
+
 	}
 }
 
@@ -579,10 +572,8 @@ Sample_Data::truncate() {
 //
 //                In normal mode, the last sample is
 //                returned continuously after eof_reached(),
-//                while in fixedpoint_mode, an exception is
-//                thrown.
 
-float Sample_Data::get_f_sample(float *dest) {
+void Sample_Data::get_f_sample(float *dest) {
 	assert(is_16bits);
 	if(eof_reached(chan)) {
 		return 0.0f;
@@ -861,11 +852,12 @@ Sample_Data::do_cubic_mixer_voodoo(float *dest, size_t chan) {
 
 }
 
-float
-Sample_Data::get_sample_for_linear_mixer(size_t chan) {
-	sample_int_t final_data = get_int_sample(chan);
-	size_t pos = get_current_pos(chan);
+void
+Sample_Data::get_sample_for_linear_mixer(float *dest) {
+	size_t pos = get_current_pos();
 
+	const sample_int_t *current_frame = get_int_sample();
+	const sample_int_t *next_frame = get_data_value(pos+1);
 	// Tue May 29 04:41:45 EDT 2007
 	// BUG: The "mix_t" below is essential to obtaining a correct return value.
 	// The multiplication deliberately generates an overflow and then makes up for
@@ -873,8 +865,11 @@ Sample_Data::get_sample_for_linear_mixer(size_t chan) {
 	// cannot use the largest available integer type as sample_int_t: There simply
 	// _must_ be a larger integer type to catch the overflow.
 
-	return SAMPLE_INT_T_TO_FLOAT(
-		final_data+((get_data_value(chan, pos+1)-final_data)*mix_t(fixedpoint_offset&FRACTIONAL_MASK) >>
-			FIXEDPOINT_INT_PART_BITS)
-	); 
+	for(size_t chan=0; chan<channels; chan++) {
+		sample_int_t final_data = current_frame[chan];
+		dest[chan] = SAMPLE_INT_T_TO_FLOAT(
+			final_data+((next_frame[chan]-final_data)*mix_t(fixedpoint_offset&FRACTIONAL_MASK) >>
+				FIXEDPOINT_INT_PART_BITS)
+		); 
+	}
 }

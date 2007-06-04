@@ -16,6 +16,7 @@
 
 #include <algorithm>
 #include "tracker_voice.h"
+#include "ns_autoptr.h"
 
 
 #define VOICE_VOLUME_ADJUST 0.008f
@@ -127,7 +128,7 @@ void Tracker_Voice::mix(size_t p_amount,sample_t* p_where) {
 		info.first_mix=false;
 	}
 
-	idxsize = info.sample_data_ptr->get_size(0);
+	idxsize = info.sample_data_ptr->get_size();
 	idxlend = info.sample_data_ptr->get_loop_end();
 	idxlpos = info.sample_data_ptr->get_loop_begin();
 
@@ -239,8 +240,7 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer) {
 
 		info.sample_data_ptr->use_fixedpoint(false);
 
-		for(size_t chan = 0; chan<info.sample_data_ptr->num_channels(); chan++)
-			info.sample_data_ptr->seek(chan, info.current_index);
+		info.sample_data_ptr->seek(info.current_index);
 
 		info.sample_data_ptr->use_fixedpoint(true);
 
@@ -348,7 +348,7 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer) {
 
 		resampler.mix();
 
-                info.current_index=info.sample_data_ptr->get_current_pos(0);
+                info.current_index=info.sample_data_ptr->get_current_pos();
 		todo-=done;
 
 		mixing_buffer_index += done*2;
@@ -380,14 +380,17 @@ void Tracker_Voice::setup_sample(Sample_Data *p_sample_data,size_t p_offset) {
 		}
 	}
 
+	ns_autoptr<float> ns_buffer;
+	float *buffer = new float[p_sample_data->num_channels()];
+	ns_buffer.arr_new(buffer);
+	
+	p_sample_data->get_sample(p_offset, buffer);
 
-	if (fabs(p_sample_data->get_sample(p_offset))>0.1) { //this will click!
-
-		info.sample_needs_ramp_up=true;
-
-	} else {
-
-		info.sample_needs_ramp_up=false;
+	info.sample_needs_ramp_up=false;
+	for(size_t chan=0; chan<p_sample_data->num_channels(); chan++) {
+		if (fabs(buffer[chan])>0.1) { //this will click!
+			info.sample_needs_ramp_up=true;
+		} 
 	}
 
 	info.sample_data_ptr=p_sample_data;

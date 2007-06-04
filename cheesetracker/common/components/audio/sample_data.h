@@ -151,20 +151,10 @@ public:
 	// They present the sample data as if it was a
 	// file. There is a current position, and getting
 	// or putting data advances this position.
-
-	// Putting data past the end of the "file" causes
-	// the sample to become longer. 
-
-	// Using get_sample() after the end of the sample
-	// has been reached results in an exception being
-	// thrown.
-
-	// Using get_sample_array() too close to the end of
-	// a sample causes a short number of samples to
-	// be retrieved. The actual number of samples
-	// that were stored in the output buffer is the
-	// return value.
-	//
+	
+	// The use_fixedpoint() function overrides this
+	// behavior, causing the position stay put unless
+	// fixedpoint_move_cursor() is explicitly called.
 
 	size_t num_channels() const;
 	void set_num_channels(size_t num);
@@ -180,38 +170,38 @@ public:
 	// data that contain one sample_int_t for each
 	// channel.
 
-        inline const sample_int_t *get_int_sample();
-        inline void put_sample(const sample_int_t *smp);
+        const sample_int_t *get_int_sample();
+        void put_sample(const sample_int_t *smp);
 
-	inline void get_f_sample(float *dest);
-	inline void put_f_sample(const float *p_val);
+	void get_f_sample(float *dest);
+	void put_f_sample(const float *p_val);
 
-	inline const sample_int_t *get_data_value(size_t p_pos);
-	inline void put_data_value(size_t p_pos, const sample_int_t *p_val);
+	const sample_int_t *get_data_value(size_t p_pos);
+	void put_data_value(size_t p_pos, const sample_int_t *p_val);
 
-        inline size_t get_sample_array(sample_int_t *dest, size_t len);
-        inline void put_sample_array(const sample_int_t *src, size_t len);
+        size_t get_sample_array(sample_int_t *dest, size_t len);
+        void put_sample_array(const sample_int_t *src, size_t len);
 
-	inline void get_sample(size_t p_index, float *dest)  const;
-	inline void set_sample(size_t p_idx, const float *p_val);
+	void get_sample(size_t p_index, float *dest)  const;
+	void set_sample(size_t p_idx, const float *p_val);
 
-	inline void set_size(size_t new_size);
+	void set_size(size_t new_size);
 	inline size_t get_size()  const;
 
-        inline void seek(size_t new_pos);
-	inline void truncate();
-        inline bool eof_reached();
-	inline bool is_empty();
+        void seek(size_t new_pos);
+	void truncate();
+        bool eof_reached();
+	bool is_empty();
 
-	inline void get_sample_for_cosine_mixer(float *dest, bool use_cosine_mode);
-	inline void do_cubic_mixer_voodoo(float *dest);
-	inline void get_sample_for_linear_mixer(float *dest);
+	void get_sample_for_cosine_mixer(float *dest, bool use_cosine_mode);
+	void do_cubic_mixer_voodoo(float *dest);
+	void get_sample_for_linear_mixer(float *dest);
 
 	void use_fixedpoint(bool yes_or_no);
 	void fixedpoint_aboutface();
 	void fixedpoint_set_resample_rate(size_t current_freq, size_t mix_freq, bool backwards=false);
 	bool fixedpoint_is_backwards();
-	inline void fixedpoint_move_cursor();
+	void fixedpoint_move_cursor();
 
 	const Sample_Data& operator=(const Sample_Data &r_data);
 

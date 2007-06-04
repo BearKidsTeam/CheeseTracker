@@ -64,9 +64,10 @@ int Saver_Raw::save_sample(const char *p_filename,int p_sample_index) {
 	// Samples that don't match this data type will
 	// be silently converted.
 
-	smp->data.seek(0,0);
-	for(size_t ix=0; ix<smp->data.get_size(0); ix++) {
-		writer.store_byte(smp->data.get_int_sample(0) >> BITS_PER_BYTE * (sizeof(sample_int_t)-1));
+	smp->data.seek(0);
+	for(size_t ix=0; ix<smp->data.get_size(); ix++) {
+		const sample_int_t *buffer = smp->data.get_int_sample();
+		writer.store_byte(CONVERT_TO_TYPE(Sint8, smp->data.get_int_sample()[0]));
 	}
 	
 	writer.close();

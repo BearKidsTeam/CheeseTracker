@@ -46,7 +46,7 @@ static void mix_cosine(Resampler::Mix_Data *mixdata,Sint32 *p_table, bool cosine
 		// to keep confined to the Sample_Data implementation.
 
 		HELPER_MIX_ONE_SAMPLE( {
-			temp_float = mixdata->sample->get_sample_for_cosine_mixer(CURRENT_CHANNEL, cosine_mode);
+			mixdata->sample->get_sample_for_cosine_mixer(temp_float, cosine_mode);
 		})
 	}
 

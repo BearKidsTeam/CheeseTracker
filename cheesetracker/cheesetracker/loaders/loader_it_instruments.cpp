@@ -311,7 +311,8 @@ Loader::Error Loader_IT::load_instrument(const char *p_filename,int p_dest_index
 			transfer_sample_to_song(sample[i],new_slot);
 
 		} else {
-			sample[i]->data.alloc_channels(0);
+			// Clear the sample
+			sample[i]->data.set_size(0);
 		}
 
 		sample[i]->real_sample_index=new_slot;

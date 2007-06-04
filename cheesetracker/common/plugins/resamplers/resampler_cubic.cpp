@@ -62,7 +62,7 @@ static void mix_linear(Resampler::Mix_Data *mixdata) {
 		while(samples_to_mix--) {
 
 			HELPER_MIX_ONE_SAMPLE({
-				temp_float=mixdata->sample->do_cubic_mixer_voodoo(CURRENT_CHANNEL); 
+				mixdata->sample->do_cubic_mixer_voodoo(temp_float); 
 			})
 		}
 

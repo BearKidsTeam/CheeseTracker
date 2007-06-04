@@ -63,7 +63,7 @@ int Saver_Wav::save_sample(const char *p_filename,int p_sample_index) {
 
 
 
-   int DataLen = smp->data.get_size(0) * sizeof(sample_int_t) * smp->data.num_channels();
+   int DataLen = smp->data.get_size() * sizeof(sample_int_t) * smp->data.num_channels();
 
    int SampleRate = smp->data.get_c5_freq();
 
@@ -90,12 +90,13 @@ int Saver_Wav::save_sample(const char *p_filename,int p_sample_index) {
 
 
 
-	for(size_t chan=0; chan < smp->data.num_channels(); chan++)
-		smp->data.seek(chan,0);
+	smp->data.seek(0);
 
-	while(!smp->data.eof_reached(0)) {
+	while(!smp->data.eof_reached()) {
+		const sample_int_t *buffer = smp->data.get_int_sample();
+
 		for(size_t chan=0; chan < smp->data.num_channels(); chan++) {
-			writer.store_sample(smp->data.get_int_sample(chan));
+			writer.store_sample(buffer[chan]);
 		}
    	}
 

@@ -34,7 +34,7 @@
  ***************************************************************************/
 #include "loader_it.h"
 #include "player_data.h"
-
+#include "ns_autoptr.h"
 
 
 
@@ -56,7 +56,7 @@ Loader::Error Loader_IT::load_sample_info(IT_Sample *p_sample) {
        	file_read.get_byte_array((Uint8*)p_sample->sampname,26);
        	p_sample->convert=file_read.get_byte();	/* sample conversion flag */
        	p_sample->panning=file_read.get_byte();
-	int sample_size=file_read.get_dword();
+	size_t sample_size=file_read.get_dword();
        	p_sample->data.set_loop_begin( file_read.get_dword() );
 	p_sample->data.set_loop_end( file_read.get_dword() );
 	p_sample->c5spd=file_read.get_dword();
@@ -73,7 +73,7 @@ Loader::Error Loader_IT::load_sample_info(IT_Sample *p_sample) {
 //	p_sample->data.sustain_loop_on=(p_sample->flag >> 5) & 1;
 //	p_sample->data.sustain_pingpong_loop=(p_sample->flag >> 7) & 1;
 
-	p_sample->data.set_size(0, sample_size);
+	p_sample->data.set_size(sample_size);
 
 	p_sample->data.set_c5_freq(p_sample->c5spd);
 	//p_sample->data.import_frequency(p_sample->c5spd);
@@ -96,20 +96,21 @@ Loader::Error Loader_IT::load_sample_data(IT_Sample *p_sample) {
 		file_read.seek(p_sample->sampoffset);
 
 		if(aux_sample_properties & IT_SAMPLE_COMPRESSED) {
-				size_t size = p_sample->data.get_size(0);
+				size_t size = p_sample->data.get_size();
 				int multiplier=1;
 				if(aux_sample_properties & IT_SAMPLE_16BITS)
 					size *= 2;
 				if(aux_sample_properties & IT_SAMPLE_STEREO) {
 					size *= 2;
 					multiplier=2;
-					p_sample->data.alloc_channels(2);
-					p_sample->data.set_size(1, p_sample->data.get_size(0));
+					p_sample->data.set_num_channels(2);
 				} else {
-					p_sample->data.alloc_channels(1);
+					p_sample->data.set_num_channels(1);
 				}
 
-				void *auxdest=malloc(size);
+				char *auxdest=new char[size];
+				ns_autoptr<char> ns_auxdest;
+				ns_auxdest.arr_new(auxdest);
 				int status=0;
 
 				// FIXME: Are these decompressors nearly identical?
@@ -135,8 +136,7 @@ Loader::Error Loader_IT::load_sample_data(IT_Sample *p_sample) {
 
 				if(aux_sample_properties & IT_SAMPLE_STEREO) {
 					size_t jx;
-					p_sample->data.seek(0,0);
-					p_sample->data.seek(1,0);
+					p_sample->data.seek(0);
 
 					// What's this? It's called, "Proper handling of stereo."
 					// Added Sun Apr 8 02:53:35 EDT 2007 by <godless@users.sf.net>
@@ -145,19 +145,19 @@ Loader::Error Loader_IT::load_sample_data(IT_Sample *p_sample) {
 					// the size of the auxdest buffer because auxdest is twice as big, being
 					// composed of pairs of samples instead of just individuals.
 					//
-					// Internally, of course, each channel has its own position indicator
-					// that increments with each put_sample(). The EOF indicator for the
-					// first channel is used to terminate the loop.
 
-					for(jx=0; !p_sample->data.eof_reached(0); jx+=2) {
-						if(aux_sample_properties & IT_SAMPLE_16BITS) {
-							p_sample->data.put_sample(0, CONVERT_FROM_TYPE(Sint16, ((Sint16*)auxdest)[jx]));
-							p_sample->data.put_sample(1, CONVERT_FROM_TYPE(Sint16, (((Sint16*)auxdest)[jx+1])));
+					sample_int_t buffer[2];
+
+					for(jx=0; !p_sample->data.eof_reached(); jx+=2) {
+						for(size_t chan=0; chan < p_sample->data.num_channels(); chan++) {
+							if(aux_sample_properties & IT_SAMPLE_16BITS) {
+								buffer[chan] = CONVERT_FROM_TYPE(Sint16, ((Sint16*)auxdest)[jx+chan]);
+							} 
+							else {
+								buffer[chan] = CONVERT_FROM_TYPE(Sint8, ((Sint8*)auxdest)[jx+chan]);
+							}
 						}
-						else {
-							p_sample->data.put_sample(0, CONVERT_FROM_TYPE(Sint8, ((Sint8*)auxdest)[jx]));
-							p_sample->data.put_sample(1, CONVERT_FROM_TYPE(Sint8, ((Sint8*)auxdest)[jx+1]));
-						}
+						p_sample->data.put_sample(buffer);
 					}
 					// The convert flag simply specifies if the sample is signed.
 					// Other bits were proposed, but never implemented in Impulse
@@ -168,54 +168,56 @@ Loader::Error Loader_IT::load_sample_data(IT_Sample *p_sample) {
 				}
 				else { // COMPRESSED MONO
 
-					p_sample->data.seek(0,0);
+					sample_int_t buffer;
+					p_sample->data.seek(0);
 
-					for(size_t ix=0; !p_sample->data.eof_reached(0); ix++) {
+					for(size_t ix=0; !p_sample->data.eof_reached(); ix++) {
 						if(p_sample->flag & IT_SAMPLE_16BITS) 
-							p_sample->data.put_sample(0, CONVERT_FROM_TYPE(Uint16, ((Uint16*)auxdest)[ix]));
+							buffer=CONVERT_FROM_TYPE(Uint16, ((Uint16*)auxdest)[ix]);
 						else
-							p_sample->data.put_sample(0, CONVERT_FROM_TYPE(Uint8, ((Uint8*)auxdest)[ix]));
+							buffer=CONVERT_FROM_TYPE(Uint8, ((Uint8*)auxdest)[ix]);
+						p_sample->data.put_sample(&buffer);
 					}
 				}
-				free(auxdest);
 			} else { // NOT COMPRESSED
 				// IT is a dead format: It will never change to the point where more than
 				// two channels will need to be supported. Compare this with the WAV
 				// loader, where a proper channel loop is used because WAV format can
 				// specify more than two channels.
 
-				size_t size = p_sample->data.get_size(0);
+				size_t size = p_sample->data.get_size();
 
 				if(p_sample->flag & IT_SAMPLE_STEREO) {
-					p_sample->data.alloc_channels(2);
-					p_sample->data.seek(0,0);
-					p_sample->data.seek(1,0);
-					p_sample->data.set_size(0,size/2);
-					p_sample->data.set_size(1,size/2);
+					p_sample->data.set_num_channels(2);
+					p_sample->data.seek(0);
+					p_sample->data.set_size(size/2);
 
-					while(!p_sample->data.eof_reached(0)) {
-						if(p_sample->flag & IT_SAMPLE_16BITS) {
-							p_sample->data.put_sample(0, CONVERT_FROM_TYPE(Sint16, file_read.get_word()));
-							p_sample->data.put_sample(1, CONVERT_FROM_TYPE(Sint16, file_read.get_word()));
+					while(!p_sample->data.eof_reached()) {
+						sample_int_t buffer[2];
+						for(size_t chan=0; chan<2; chan++) {
+							if(p_sample->flag & IT_SAMPLE_16BITS) {
+								buffer[chan] = CONVERT_FROM_TYPE(Sint16, file_read.get_word());
+							}
+							else {
+								buffer[chan] = CONVERT_FROM_TYPE(Sint8, file_read.get_byte());
+							}
 						}
-						else {
-							p_sample->data.put_sample(0, CONVERT_FROM_TYPE(Sint8, file_read.get_byte()));
-							p_sample->data.put_sample(1, CONVERT_FROM_TYPE(Sint8, file_read.get_byte()));
-						}
+						p_sample->data.put_sample(buffer);
 
 					}
 				} else { // MONO
-					p_sample->data.alloc_channels(1);
-					p_sample->data.seek(0,0);
-					p_sample->data.set_size(0, size);
+					sample_int_t buffer;
+					p_sample->data.set_num_channels(1);
+					p_sample->data.seek(0);
+					p_sample->data.set_size(size);
 
-					while(!p_sample->data.eof_reached(0)) {
+					while(!p_sample->data.eof_reached()) {
 						if(p_sample->flag & IT_SAMPLE_16BITS) 
-							p_sample->data.put_sample(0, CONVERT_FROM_TYPE(Sint16, file_read.get_word()));
+							buffer=CONVERT_FROM_TYPE(Sint16, file_read.get_word());
 						else
-							p_sample->data.put_sample(0, CONVERT_FROM_TYPE(Sint8, file_read.get_byte()));
+							buffer=CONVERT_FROM_TYPE(Sint8, file_read.get_byte());
+						p_sample->data.put_sample(&buffer);
 					}
-
 				}
 
 			}

@@ -196,7 +196,7 @@ void Saver_IT::write_sample_internal(int p_sample_index,bool p_write_data) {
 	Uint8 defpan=song->get_sample(p_sample_index)->def_panning;
 	defpan|=song->get_sample(p_sample_index)->def_panning_on?128:0;
 	writer.store_byte(defpan);
-	writer.store_dword(song->get_sample(p_sample_index)->data.get_size(0));
+	writer.store_dword(song->get_sample(p_sample_index)->data.get_size());
 	writer.store_dword(song->get_sample(p_sample_index)->data.get_loop_begin());
 	writer.store_dword(song->get_sample(p_sample_index)->data.get_loop_end());
 	writer.store_dword(song->get_sample(p_sample_index)->data.get_c5_freq());
@@ -219,14 +219,16 @@ void Saver_IT::write_sample_internal(int p_sample_index,bool p_write_data) {
 		if (song->get_sample(p_sample_index)->in_use) {
 
 			Sample *smp = song->get_sample(p_sample_index);
-			for(size_t ix=0; ix< smp->data.get_size(0); ix++) {
+			for(size_t ix=0; ix< smp->data.get_size(); ix++) {
+				const sample_int_t *buffer = smp->data.get_int_sample();
+
 				for(size_t chan=0;
 				    chan < std::min<size_t>(2, smp->data.num_channels());
 				    chan++) {
 					if(smp->data.is_16bit())
-						writer.store_word(CONVERT_TO_TYPE(Sint16, smp->data.get_int_sample(chan)));
+						writer.store_word(CONVERT_TO_TYPE(Sint16, buffer[chan]));
 					else
-						writer.store_byte(CONVERT_TO_TYPE(Sint8, smp->data.get_int_sample(chan)));
+						writer.store_byte(CONVERT_TO_TYPE(Sint8, buffer[chan]));
 				}
 			}
 		}
@@ -780,14 +782,15 @@ int Saver_IT::save_instrument(const char *p_filename,int p_instrument_index) {
 
 		Sample *smp = song->get_sample(samples_used[i]);
 
-		for(size_t ix=0; ix< smp->data.get_size(0); ix++) {
+		for(size_t ix=0; ix< smp->data.get_size(); ix++) {
+			const sample_int_t *buffer = smp->data.get_int_sample();
 			for(size_t chan=0;
 			    chan< std::min<size_t>(2, smp->data.num_channels());
 			    chan++) {
 				if(smp->data.is_16bit())
-					writer.store_word(CONVERT_TO_TYPE(Sint16, smp->data.get_int_sample(chan)));
+					writer.store_word(CONVERT_TO_TYPE(Sint16, buffer[chan]));
 				else
-					writer.store_byte(CONVERT_TO_TYPE(Sint8, smp->data.get_int_sample(chan)));
+					writer.store_byte(CONVERT_TO_TYPE(Sint8, buffer[chan]));
 			}
 		}
 

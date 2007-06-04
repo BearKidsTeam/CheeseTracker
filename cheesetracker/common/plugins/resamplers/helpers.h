@@ -17,6 +17,7 @@
 #define HELPERS_H
 
 #include <cstdio>
+#include "ns_autoptr.h"
 #include "../../../cheesetracker/trackercore/range_defs.h"
 
 #define HARD_CODED_MIXER_CHANNELS 2
@@ -336,17 +337,19 @@ for(size_t chan=0; chan<std::max<size_t>(channels, HARD_CODED_MIXER_CHANNELS); c
 #define HELPER_MIX_ONE_SAMPLE(PREPROCESS_ROUTINE)		\
 for(size_t chan=0; chan<HARD_CODED_MIXER_CHANNELS; chan++)								\
 	final_float[chan] = 0.0;											\
+	ns_autoptr<float> ns_temp_float;										\
+	float *temp_float = new float[channels];									\
+	ns_temp_float.arr_new(temp_float);										\
+	PREPROCESS_ROUTINE												\
 for(size_t chan=0; chan<std::max<size_t>(HARD_CODED_MIXER_CHANNELS, channels); chan++) {				\
 	bool this_side_of_centre = (chan % HARD_CODED_MIXER_CHANNELS) ? !right_of_centre : right_of_centre;		\
 															\
-	float temp_float = 0.0;												\
-	PREPROCESS_ROUTINE												\
 	/* Panning towards one side makes the other side quieter. */							\
 	/* But the side being panned toward does not get louder. */							\
 	if(!this_side_of_centre) {											\
-		temp_float -= temp_float * from_centre;									\
+		temp_float[CURRENT_CHANNEL] -= temp_float[CURRENT_CHANNEL] * from_centre;				\
 	}														\
-	final_float[chan % HARD_CODED_MIXER_CHANNELS] += temp_float;							\
+	final_float[chan % HARD_CODED_MIXER_CHANNELS] += temp_float[CURRENT_CHANNEL];					\
 }															\
 	/* Renormalize */												\
 if(channels > HARD_CODED_MIXER_CHANNELS) {										\
@@ -360,7 +363,7 @@ HELPER_PERFORM_MIXDOWN
 
 
 #define HELPER_MIX_ONE_RAW_SAMPLE					\
-	HELPER_MIX_ONE_SAMPLE({temp_float = mixdata->sample->get_f_sample(CURRENT_CHANNEL);				\
+	HELPER_MIX_ONE_SAMPLE({mixdata->sample->get_f_sample(temp_float);				\
 				})				\
 
 

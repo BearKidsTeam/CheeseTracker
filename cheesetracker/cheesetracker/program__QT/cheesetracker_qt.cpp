@@ -529,9 +529,9 @@ int main( int argc, char **argv )
 		}
 		return result;
 	} catch (Error E) {
-		cerr << E.what() << endl;
+		cerr << E.what() << std::endl;
 	} catch (exception E) {
-		cerr << E.what() << endl;
+		cerr << E.what() << std::endl;
 	}
 	return -1;
 

@@ -85,10 +85,8 @@ void Sample::reset(bool try_to_free_data) {
 	data.set_c5_freq(44100);
 	if (in_use) {
 
-		for(size_t chan=0; chan<data.num_channels(); chan++) {
-			data.set_size(chan, 0);
-		}
-		data.alloc_channels(0);
+		data.set_size(0);
+		data.set_num_channels(0);
 	} 
 	
 	in_use=false;

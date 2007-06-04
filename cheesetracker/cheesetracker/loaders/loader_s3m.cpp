@@ -106,7 +106,7 @@ int Loader_S3M::load_sample(S3M_Sample *p_sample) {
 		p_sample->filename[12]=0;
                 p_sample->memsegh=file_read.get_byte();
                 p_sample->memsegl=file_read.get_word();
-                int sample_size=file_read.get_dword();
+                size_t sample_size=file_read.get_dword();
                 p_sample->data.set_loop_begin(file_read.get_dword());
                 p_sample->data.set_loop_end(file_read.get_dword()-1);
 
@@ -135,17 +135,19 @@ int Loader_S3M::load_sample(S3M_Sample *p_sample) {
 
 		real_sample_size=sample_size<<BITBOOL(p_sample->flags&4);
 
-		p_sample->data.alloc_channels(1);
+		p_sample->data.set_num_channels(1);
 		size_t divisor = data_is_16bits ? 2 : 1;
 
-		p_sample->data.set_size(0, real_sample_size/divisor);
-		p_sample->data.seek(0, 0);
+		p_sample->data.set_size(real_sample_size/divisor);
+		p_sample->data.seek(0);
 
 		for(size_t ix=0; ix<real_sample_size/divisor; ix++) {
+			sample_int_t buffer;
 			if(data_is_16bits)
-				p_sample->data.put_sample(0, CONVERT_FROM_TYPE(Sint16, file_read.get_word()));
+				buffer=CONVERT_FROM_TYPE(Sint16, file_read.get_word());
 			else
-				p_sample->data.put_sample(0, CONVERT_FROM_TYPE(Sint8, file_read.get_byte()));
+				buffer=CONVERT_FROM_TYPE(Sint8, file_read.get_byte());
+			p_sample->data.put_sample(&buffer);
 		}
 
                 p_sample->data.change_sign(); // <- signed/unsigned conversion
