@@ -153,6 +153,7 @@ def check_stdc_limit_macros(libdata):
 		libdata.need_limit_macros_define=1;
 		return 1;
 	print "Nope.\n";
+	libdata.need_limit_macros_define=0;
 	return 0;
 
 def check_madvise(libdata):

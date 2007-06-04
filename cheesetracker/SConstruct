@@ -36,7 +36,9 @@ def process_moc_list(moc_list):
 
 ########################
 
-env = Environment(CPPPATH = ['#/common','#.','#/common/defines']);
+## SCONS is stupid for ignoring the environment.
+
+env = Environment(CPPPATH = ['#/common','#.','#/common/defines'], ENV=os.environ);
 
 opts = Options(['custom.py'])
 opts.Add('optimize', 'Optimize.', 1)
@@ -75,6 +77,7 @@ env.Append(CXXFLAGS="-trigraphs");
 
 #detect OSS
 
+env.Append(CXXFLAGS=['-D__STDC_LIMIT_MACROS']);
 env.Append(CXXFLAGS=['-DPOSIX_ENABLED']);
 env.Append(CXXFLAGS=['-DBITS_PER_BYTE='+
                      str(env.detect.bits_per_byte)]);
