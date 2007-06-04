@@ -54,8 +54,6 @@ Sample::Sample() :
 	in_use=false;
 	reset(false);
 }
-Sample::~Sample(){
-}
 
 void Sample::reset(bool try_to_free_data) {
 

@@ -93,7 +93,6 @@ struct Sample {
 	Int_Property_Bridge prop_vibrato_rate;
 
 	Sample();
-	~Sample();
 };
 
 #endif

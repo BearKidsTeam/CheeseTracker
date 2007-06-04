@@ -541,6 +541,8 @@ Loader::Error Loader_XM::load_instrument_internal(Instrument *p_instr,bool p_xi,
 
 			char auxb;
 			Sample sample;
+			sample.data.set_num_channels(1);
+			sample.data.seek(0);
 			sample_size=reader.get_dword();
 			sample.data.set_loop_begin( reader.get_dword() );
 
@@ -561,6 +563,8 @@ Loader::Error Loader_XM::load_instrument_internal(Instrument *p_instr,bool p_xi,
 				sample.data.set_loop_end( sample.data.get_loop_end()/2 );
 			}
 			
+			sample.data.set_size(sample_size);
+
 			sample.data.set_loop_end( sample.data.get_loop_end() + sample.data.get_loop_begin() );
 
 			sample.def_panning_on=true;
@@ -591,18 +595,21 @@ Loader::Error Loader_XM::load_instrument_internal(Instrument *p_instr,bool p_xi,
 
 			Sample *sample=&samples[sample_index[j]];
 
-			sample->data.set_num_channels(1);
-			sample->data.set_size(sample_size);
-			sample->data.seek(0);
 
-			sample_int_t buffer;
+			sample_int_t sampleval;
+			sample_int_t old=0;
+			sample_int_t newsample;
 
 			for(size_t ix=0; ix<sample_size; ix++) {
 				if(sample_is_16bits)
-					buffer=CONVERT_FROM_TYPE(Sint16, reader.get_word());
+					sampleval=CONVERT_FROM_TYPE(Sint16, reader.get_word());
 				else
-					buffer=CONVERT_FROM_TYPE(Sint8, reader.get_byte());
-				sample->data.put_sample(&buffer);
+					sampleval=CONVERT_FROM_TYPE(Sint8, reader.get_byte());
+				
+				newsample=sampleval+old;
+				old=newsample;
+				
+				sample->data.put_sample(&newsample);
 			}
 
 		}
@@ -740,34 +747,6 @@ Loader::Error Loader_XM::load_instrument(const char *p_filename,int p_dest_index
   		return FILE_FORMAT_NOT_RECOGNIZED;
 	}
 
-        reader.get_byte_array((Uint8*)buffer,0x15);
-        buffer[8]=0;
-        if ((string)buffer!="Extended") {
-
-		reader.close();
-  		return FILE_FORMAT_NOT_RECOGNIZED;
-        }
-
-        reader.get_byte_array((Uint8*)buffer,0x16);
-        buffer[0x16]=0;
-        instr.name=buffer;
-        aux=reader.get_byte();
-        if(aux!=0x1a) {
-
-		reader.close();
-  		return FILE_FORMAT_NOT_RECOGNIZED;
-	}
-
-        reader.get_byte_array((Uint8*)buffer,0x14); //somethingaboutthename
-        aux=reader.get_word(); //version or blahblah
- 	
-
-  	if (load_instrument_internal(&instr,true,0,0)) {
-
-		reader.close();
-  		return FILE_FORMAT_NOT_RECOGNIZED;
-	}
-
 	reader.close(); //ook, we got it..
 
 	for (i=0;i<(int)samples.size();i++) {
@@ -778,7 +757,13 @@ Loader::Error Loader_XM::load_instrument(const char *p_filename,int p_dest_index
 			*song->get_sample(new_slot)=samples[i];
    			slot_replace.push_back(new_slot);
 
-		} 
+		} else if (!samples[i].data.is_empty()) {
+
+			//there's no room aviable for our sample (IT sux, eh? ;)
+			samples[i].data.set_size(0);
+   			slot_replace.push_back(EMPTY_FIELD);
+
+		}
 	}
 
 	for (i=0;i<Note::NOTES;i++) {

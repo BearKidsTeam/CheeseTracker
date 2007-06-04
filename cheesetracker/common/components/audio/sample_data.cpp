@@ -180,7 +180,7 @@ Sample_Data::Sample_Data(){
 
 Sample_Data::~Sample_Data(){
 	if(data_ptr)
-		free(data_ptr);
+		delete[] data_ptr;
 }
 
 
