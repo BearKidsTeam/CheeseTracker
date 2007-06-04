@@ -52,6 +52,7 @@
 #include "interface__QT/icons/file_disk_close.xpm"
 
 #include "interface_binds/interface_help_text.h"
+#include "trackercore/Error.h"
 
 #include "icons/cheese_48x48.xpm"
 //#include "icons/cheese_16x16.xpm"
@@ -157,10 +158,16 @@ MDI_Sub_Window::MDI_Sub_Window( QWidget* parent, const char* name, int wflags ) 
 
 void MDI_Sub_Window::open_song(string p_name) {
 
-	Loader::Error  res=interface->open_song(p_name);
-	if (res) {
+	try {
+		Loader::Error  res=interface->open_song(p_name);
+		if (res) {
 
-		QMessageBox::critical( this, "Error Loading Song",Loader::error_string[res],"Ok :(");
+			QMessageBox::critical( this, "Error Loading Song",Loader::error_string[res],"Ok :(");
+			close();
+		}
+	}
+	catch (Error E) {
+		QMessageBox::critical(this, "Error Loading Song", E.what(), "Ok :(");
 		close();
 	}
 

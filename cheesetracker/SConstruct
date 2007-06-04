@@ -77,7 +77,6 @@ env.Append(CXXFLAGS="-trigraphs");
 
 #detect OSS
 
-env.Append(CXXFLAGS=['-D__STDC_LIMIT_MACROS']);
 env.Append(CXXFLAGS=['-DPOSIX_ENABLED']);
 env.Append(CXXFLAGS=['-DBITS_PER_BYTE='+
                      str(env.detect.bits_per_byte)]);

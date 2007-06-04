@@ -534,13 +534,13 @@ Loader::Error Loader_XM::load_instrument_internal(Instrument *p_instr,bool p_xi,
 		/*SAMPLE!!*/
 		size_t sample_size;
 		bool sample_is_16bits;
+		Sample sample;
 
 		for (int j=0;j<sampnum;j++) {
 
 			if (j>16) ABORT_LOAD;
 
 			char auxb;
-			Sample sample;
 			sample.data.set_num_channels(1);
 			sample.data.seek(0);
 			sample_size=reader.get_dword();
