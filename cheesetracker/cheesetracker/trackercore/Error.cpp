@@ -37,6 +37,7 @@ size_t
 count_digits(int num)
 {
 	size_t counter = 0;
+	if(num == 0) return 1;
 
 	if(num < 0)
 	{

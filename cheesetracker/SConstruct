@@ -41,7 +41,7 @@ def process_moc_list(moc_list):
 env = Environment(CPPPATH = ['#/common','#.','#/common/defines'], ENV=os.environ);
 
 opts = Options(['custom.py'])
-opts.Add('optimize', 'Optimize.', 1)
+opts.Add('optimize', 'Optimize.', 0)
 opts.Add('debug', 'Add debug symbols.', 0)
 opts.Add('prefix', 'The installation prefix', '/usr/local/')
 

@@ -122,221 +122,343 @@ void display_help() {
 	printf("\t--schedfifo runs at schedfifo priority (suid root needed)\n");
 }
 
-// #define UNIT_TEST
+#define UNIT_TEST
 #ifdef UNIT_TEST
+#include <cstring>
+#include <cassert>
 #include "common/components/audio/sample_data.h"
 #include "Error.h"
 
 void test_sample_data()
 {
-	sample_int_t in_buffer[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-	sample_int_t out_buffer[20];
+	sample_int_t in_buffer[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
+	                             14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+                                     26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37,
+                                     38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48 };
+	sample_int_t out_buffer[24];
 	Sample_Data test;
-	size_t ix;
-	const size_t chan=0;
+	size_t channels=0;
 
 	Error E;
+	size_t ix;
 	size_t status;
+	bool exception_thrown=false;
 
-	test.set_size(chan, sizeof(out_buffer)/sizeof(sample_int_t));
-	status = test.get_sample_array(chan, out_buffer,
-			     sizeof(out_buffer)/sizeof(sample_int_t));
-	if(status != sizeof(out_buffer)/sizeof(sample_int_t)) {
-		E.set_error_pfx("get_sample_array");
-		E.eprintf("Set size to %i but read %i samples",
-			 sizeof(out_buffer)/sizeof(sample_int_t),
-			 status);
-		throw E;
-	}
-	for(ix=0; ix<sizeof(out_buffer)/sizeof(sample_int_t); ix++) {
-		if(out_buffer[ix]) {
+	// Try it out with 1 to 4 channels
+
+	for(channels=1; channels<=4; channels++) {
+		// Initialize the local buffer.
+		printf("Testing with %d channels...\n", channels);
+
+
+		// Go to the beginning for each test except the first.
+		// We expect Sample_Data to initialize the position pointer
+		// to zero.
+
+		if(channels > 1) {
+			test.seek(0);
+			test.truncate();
+		}
+
+		memset(out_buffer, 0xFF, sizeof(out_buffer));
+		
+		// Set the sample size to the length of out_buffer.
+		// We expect that the sample will be zero-initialized.
+		test.set_size(sizeof(out_buffer)/sizeof(sample_int_t)/channels);
+
+		status = test.get_size();
+
+		test.set_num_channels(channels);
+		if(test.num_channels() != channels) {
+			E.set_error_pfx("set_num_channels");
+			E.eprintf("%s: %i: Tried to set up %i channels, but got %i channels instead",
+			          __FILE__, __LINE__, channels, test.num_channels());
+			throw E;
+		}
+
+		if(status != test.get_size()) {
+			E.set_error_pfx("set_num_channels");
+			E.eprintf("%s: %i: Changing number of channels resized sample from %i to %i!",
+			          status, test.get_size());
+			throw E;
+		}
+
+		// Read the contents of the sample into the local out_buffer.
+		//
+		status = test.get_sample_array(out_buffer,
+				    		test.get_size());
+
+		// Ensure that get_sample_array reports the correct
+		// number of samples.
+		if(status != sizeof(out_buffer)/sizeof(sample_int_t)/channels) {
 			E.set_error_pfx("get_sample_array");
-			E.eprintf("Output buffer uninitialized at index %i: Contains %i",
-				  ix, out_buffer[ix]);
+			E.eprintf("Set size to %i but read %i samples",
+				 sizeof(out_buffer)/sizeof(sample_int_t)/channels,
+				 status);
 			throw E;
 		}
-	}
 
-	test.set_size(chan, 10);
-	if((status = test.get_current_pos(chan)) != 10) {
-		E.set_error_pfx("set_size/get_current_pos");
-		E.eprintf("Set size to 10 after a write of 20. "
-			  "Sample position: %i Size: %i",
-			  status, test.get_size(chan));
-		throw E;
-	}
+		// Make sure that out_buffer was filled with zeros by
+		// get_sample_array.
+		for(ix=0; ix<sizeof(out_buffer)/sizeof(sample_int_t)/channels; ix++) {
+			if(out_buffer[ix]) {
+				E.set_error_pfx("get_sample_array");
+				E.eprintf("Output buffer uninitialized at index %i: Contains %i",
+					  ix, out_buffer[ix]);
+				throw E;
+			}
+		}
 
-	if(!test.eof_reached(chan)) {
-		E.set_error_pfx("eof_reached");
-		E.eprintf("eof_reached() is false but shouldn't be.");
-		throw E;
-	}
-
-	test.seek(chan,0);
-	status = test.get_current_pos(chan);
-	if(status) {
-		E.set_error_pfx("seek");
-		E.eprintf("Sought 0 but ended up at %i", status);
-		throw E;
-	}
-
-	test.seek(chan, 10);
-	status=test.get_current_pos(chan);
-	if(status != 10) {
-		E.set_error_pfx("seek");
-		E.eprintf("%s: %i: Sought 10 but ended up at %i",
-			  __FILE__, __LINE__, status);
-		throw E;
-	}
-	test.seek(chan,0);
-
-	status = test.get_sample_array(chan, out_buffer,
-				sizeof(out_buffer)/sizeof(sample_int_t));
-	if(status != 10) {
-		E.set_error_pfx("get_sample_array");
-		E.eprintf("Set size to 10 but read %i samples", status);
-		throw E;
-	}
-
-	test.seek(chan,0);
-	test.truncate(chan);
-
-	status=test.get_size(chan);
-	if(status) {
-		E.set_error_pfx("truncate");
-		E.eprintf("%s: %i: Truncate at position 0 resulted in "
-			  "size of %i", __FILE__, __LINE__, status);
-		throw E;
-	}
-
-	if(!test.eof_reached(chan)) {
-		E.set_error_pfx("eof_reached");
-		E.eprintf("%s: %i: No EOF in zero-length buffer",
-			  __FILE__, __LINE__);
-		throw E;
-	}
-
-	test.set_size(chan, 0);
-	test.put_sample_array(chan, in_buffer, 10);
-	status = test.get_size(chan);
-	if(status != 10) {
-		E.set_error_pfx("put_sample_array");
-		E.eprintf("%s: %i: put_sample_array failed to resize sample "
-			  "to 10 samples (size=%i)", __FILE__, __LINE__,
-			  status);
-		throw E;
-	}
-
-	test.seek(chan,0);
-	test.get_sample_array(chan, out_buffer, 10);
-	for(ix=0; ix<10; ix++) {
-		if(out_buffer[ix] != ix) {
-			E.set_error_pfx("put_sample_array/get_sample_array");
-			E.eprintf("%s: %i: Expected value %i but "
-				  "got %i instead", __FILE__, __LINE__,
-				  ix, out_buffer[ix]);
+		test.set_size(10);
+		if((status = test.get_current_pos()) != 10) {
+			E.set_error_pfx("set_size/get_current_pos");
+			E.eprintf("Set size to 10 after initial size. "
+				  "Sample position: %i Size: %i",
+				  status, test.get_size());
 			throw E;
 		}
-	}
 
-	test.seek(chan, 0);
-	for(ix=0; ix<10; ix++) {
-		sample_int_t tmp;
-		tmp = test.get_int_sample(chan);
-		if(tmp != ix) {
-			E.set_error_pfx("put_sample_array/get_int_sample");
-			E.eprintf("%s: %i: Expected %i but got %i",
-				  __FILE__, __LINE__, ix, tmp);
-			
+		if(!test.eof_reached()) {
+			E.set_error_pfx("eof_reached");
+			E.eprintf("%s: %i: eof_reached() is false but shouldn't be.", __FILE__, __LINE__);
 			throw E;
 		}
-	}
 
-	test.set_size(chan, 20) ;
-	for(ix=0; ix<10; ix++) {
-		sample_int_t tmp;
-		tmp = test.get_sample(chan);
-		if(tmp) {
-			E.set_error_pfx("set_size");
-			E.eprintf("%s: %i: Buffer uninitialized at index %i: "
-			          "Contains %i", __FILE__, __LINE__, ix+10, tmp);
+		// Make sure that seek() works.
+
+		test.seek(0);
+		status = test.get_current_pos();
+		if(status) {
+			E.set_error_pfx("seek");
+			E.eprintf("Sought 0 but ended up at %i", status);
 			throw E;
 		}
-	}
 
-	test.seek(chan, 0);
-	for(ix=0; ix<60; ix++) {
-		test.put_sample(chan, ix);
-	}
-	test.seek(chan, 0);
-	status = test.get_size(chan);
-	if(status != 60) {
-		E.set_error_pfx("put_sample");
-		E.eprintf("%s: %i: put_sample failed to resize sample "
-			  "to 60 samples (size=%i)", __FILE__, __LINE__,
-			  status);
-		throw E;
-	}
-
-	for(ix=0; ix<60; ix++) {
-		sample_int_t tmp;
-		tmp=test.get_int_sample(chan);
-		if(tmp != ix) {
-			E.set_error_pfx("get_sample");
-			E.eprintf("%s: %i: Expected %i got %i",
-				  __FILE__, __LINE__, ix, tmp);
+		test.seek(10);
+		status=test.get_current_pos();
+		if(status != 10) {
+			E.set_error_pfx("seek");
+			E.eprintf("%s: %i: Sought 10 but ended up at %i",
+				  __FILE__, __LINE__, status);
 			throw E;
 		}
-	}
+		test.seek(0);
 
-	test.seek(chan, 30);
-	test.truncate(chan); 
-	status = test.get_size(chan);
-	if(status != 30) {
-		E.set_error_pfx("truncate");
-		E.eprintf("%s: %i: Tried to truncate to 30 samples "
-			  "but ended up with %i samples", __FILE__,
-			  __LINE__, status);
-		throw E;
-	}
-
-	test.seek(chan, 0);
-	for(ix=0; ix<30; ix++) {
-		sample_int_t tmp;
-		tmp=test.get_int_sample(chan);
-		if(tmp != ix) {
-			E.set_error_pfx("get_int_sample (after truncate)");
-			E.eprintf("%s: %i: Expected %i got %i",
-				  __FILE__, __LINE__, ix, tmp);
-			throw E;
-		}
-	}
-
-	test.seek(chan, 15);
-	test.put_sample_array(chan, in_buffer, 10);
-	test.seek(chan, 0);
-	test.get_sample_array(chan, out_buffer, 20);
-
-	for(ix=0; ix<15; ix++) {
-		if(out_buffer[ix] != ix) {
+		// Ensure that an attempt to fill out_buffer only results
+		// in 10 samples, since that's the size we're using.
+		status = test.get_sample_array(out_buffer, sizeof(out_buffer)/sizeof(sample_int_t)/channels);
+		if(status != 10) {
 			E.set_error_pfx("get_sample_array");
-			E.eprintf("%s: %i: Expected %i got %i",
-				  __FILE__, __LINE__, ix, 
-				  out_buffer[ix]);
+			E.eprintf("Set size to 10 but read %i samples", status);
 			throw E;
 		}
-	}
 
-	for(ix=15; ix<20; ix++) {
-		if(out_buffer[ix] != ix-15) {
+		// Test if truncate() can create zero-length samples.
+
+		test.seek(0);
+		test.truncate();
+
+		status=test.get_size();
+		if(status) {
+			E.set_error_pfx("truncate");
+			E.eprintf("%s: %i: Truncate at position 0 resulted in "
+				  "size of %i", __FILE__, __LINE__, status);
+			throw E;
+		}
+
+		if(!test.eof_reached()) {
+			E.set_error_pfx("eof_reached");
+			E.eprintf("%s: %i: No EOF in zero-length buffer",
+				  __FILE__, __LINE__);
+			throw E;
+		}
+
+		// Test if get_int_sample throws an exception.
+
+		exception_thrown=false;
+		try {
+			test.get_int_sample();
+		} catch(Sample_EOF_Error S) {
+			exception_thrown=true;
+		}
+
+		if(!exception_thrown) {
 			E.set_error_pfx("get_int_sample");
-			E.eprintf("%i: Expected %i got %i",
-				  __LINE__, ix-15,
-				 out_buffer[ix]);
+			E.eprintf("%s:%i: No exception while reading zero-length sample", __FILE__, __LINE__);
 			throw E;
 		}
-	}
 
+		// Make sure get_sample_array() returns zero
+
+		status = test.get_sample_array(out_buffer, 1);
+
+		if(status) {
+			E.set_error_pfx("get_sample_array");
+			E.eprintf("%s: %i: Got %i samples from an empty buffer", __FILE__, __LINE__, status);
+			throw E;
+		}
+
+		// Test if put_sample_array extends a zero-length sample.
+
+		test.set_size(0);
+		test.put_sample_array(in_buffer, 10);
+		status = test.get_size();
+		if(status != 10) {
+			E.set_error_pfx("put_sample_array");
+			E.eprintf("%s: %i: put_sample_array failed to resize sample "
+				  "to 10 samples (size=%i)", __FILE__, __LINE__,
+				  status);
+			throw E;
+		}
+
+		// Make sure that the contents of the sample are an exact copy
+		// of the data that we put in.
+
+		test.seek(0);
+		test.get_sample_array(out_buffer, 10);
+		for(ix=0; ix<10*channels; ix++) {
+			if(out_buffer[ix] != in_buffer[ix]) {
+				E.set_error_pfx("put_sample_array/get_sample_array");
+				E.eprintf("%s: %i: Expected value %i but "
+					  "got %i instead", __FILE__, __LINE__,
+					  ix, out_buffer[ix]);
+				throw E;
+			}
+		}
+
+		// Make sure that get_int_sample() agrees with
+		// get_sample_array.
+
+		test.seek(0);
+		for(ix=0; ix<10; ix++) {
+			const sample_int_t *tmp;
+			tmp = test.get_int_sample();
+			for(size_t jx=0; jx<channels; jx++) {
+				if(tmp[jx] != in_buffer[ix*channels+jx]) {
+					E.set_error_pfx("put_sample_array/get_int_sample");
+					E.eprintf("%s: %i: Expected %i but got %i",
+						  __FILE__, __LINE__, in_buffer[ix*channels+jx], tmp[jx]);
+					
+					throw E;
+				}
+			}
+		}
+
+		// Make sure that the extended part of an extended sample
+		// is zero-initialized.
+		test.set_size(20) ;
+		assert(channels < 9);
+		sample_int_t zeroes[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+		for(ix=0; ix<10; ix++) {
+			const sample_int_t *tmp;
+			tmp = test.get_int_sample();
+			if(memcmp(tmp, zeroes, sizeof(sample_int_t)*channels)) {
+				E.set_error_pfx("set_size");
+				E.eprintf("%s: %i: Buffer uninitialized at index %i: "
+					  "Contains %i", __FILE__, __LINE__, ix+10, tmp);
+				throw E;
+			}
+		}
+
+		// Test put_sample and get_int_sample.
+
+		test.seek(0);
+		sample_int_t *temp_buffer = new sample_int_t[channels];
+		for(ix=0; ix<60; ix++) {
+			for(size_t jx=0; jx<channels; jx++) {
+				temp_buffer[jx] = ix+jx;
+			}
+			test.put_sample(temp_buffer);
+		}
+		delete[] temp_buffer;
+		test.seek(0);
+
+		// Make sure we didn't have to tell Sample_Data to resize
+		// the sample.
+
+		status = test.get_size();
+
+		if(status != 60) {
+			E.set_error_pfx("put_sample");
+			E.eprintf("%s: %i: put_sample failed to resize sample "
+				  "to 60 samples (size=%i)", __FILE__, __LINE__,
+				  status);
+			throw E;
+		}
+
+		// Make sure get_int_sample gets the expected results.
+
+		for(ix=0; ix<60; ix++) {
+			const sample_int_t *tmp;
+			tmp=test.get_int_sample();
+			for(size_t jx=0; jx<channels; jx++) {
+				if(tmp[jx] != (sample_int_t)(ix+jx)) {
+					E.set_error_pfx("get_sample");
+					E.eprintf("%s: %i: Expected %i got %i",
+						  __FILE__, __LINE__, ix+jx, tmp[jx]);
+					throw E;
+				}
+			}
+		}
+
+		// Ensure that truncate can resize a sample.
+
+		test.seek(30);
+		test.truncate(); 
+		status = test.get_size();
+		if(status != 30) {
+			E.set_error_pfx("truncate");
+			E.eprintf("%s: %i: Tried to truncate to 30 samples "
+				  "but ended up with %i samples", __FILE__,
+				  __LINE__, status);
+			throw E;
+		}
+
+		// Ensure that truncating a sample doesn't corrupt it.
+
+		test.seek(0);
+		for(ix=0; ix<30; ix++) {
+			const sample_int_t *tmp;
+			tmp=test.get_int_sample();
+			for(size_t jx=0; jx<channels; jx++) {
+				if(tmp[jx] != ix+jx) {
+					E.set_error_pfx("get_sample");
+					E.eprintf("%s: %i: Expected %i got %i",
+						  __FILE__, __LINE__, ix+jx, tmp);
+					throw E;
+				}
+			}
+
+
+		}
+
+		test.seek(15);
+		test.put_sample_array(in_buffer, 10);
+		test.seek(0);
+		test.get_sample_array(out_buffer, 20);
+
+		for(ix=0; ix<15; ix++) {
+
+			for(size_t jx=0; jx<channels; jx++) {
+				if(out_buffer[ix*channels+jx] != ix+jx) {
+					E.set_error_pfx("get_sample_array");
+					E.eprintf("%s: %i: Expected %i got %i",
+						  __FILE__, __LINE__, ix+jx, out_buffer[ix*channels+jx]);
+					throw E;
+				}
+			}
+		}
+
+		for(ix=15*channels; ix<15*channels+5; ix++) {
+			if(out_buffer[ix] != ix-15) {
+				E.set_error_pfx("get_int_sample");
+				E.eprintf("%i: Expected %i got %i",
+					  __LINE__, ix-15,
+					 out_buffer[ix]);
+				throw E;
+			}
+		}
+	}
 }
 
 int main( int argc, char **argv )
