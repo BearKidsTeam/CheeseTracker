@@ -412,7 +412,7 @@ Sample_Data::sd_realloc(size_t new_size) {
 	if(new_size > size) {
 		// Initialize any newly-allocated data with zero.
 
-		memset((void*)(new_data+size), 0, (new_size-size)*multiplier);
+		memset((void*)(new_data+(size*channels)), 0, (new_size-size)*multiplier);
 	}
 
 	delete[] data_ptr;
