@@ -178,7 +178,7 @@ Sample_Data::Sample_Data(){
  	size=0;
 }
 
-Sample_Data::Sample_Data(Sample_Data &rhs) {
+Sample_Data::Sample_Data(const Sample_Data &rhs) {
 	// Just use operator=.
 	*this = rhs;
 }
