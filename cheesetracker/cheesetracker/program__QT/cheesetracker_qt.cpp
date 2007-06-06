@@ -580,6 +580,25 @@ void test_sample_data()
 		}
 
 	}
+
+	// Check if samples can be copied and deleted without causing memory errors.
+	//
+
+	Sample_Data *samples = new Sample_Data[4];
+
+	for(ix=0; ix<4; ix++) {
+		samples[ix] = test;
+	}
+
+	delete[] samples;
+
+	{
+		Sample_Data values[4];
+		for(ix=0; ix<4; ix++)
+		{
+			values[ix].set_size(300);
+		}
+	}
 }
 
 int main( int argc, char **argv )
