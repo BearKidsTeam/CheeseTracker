@@ -122,11 +122,12 @@ void display_help() {
 	printf("\t--schedfifo runs at schedfifo priority (suid root needed)\n");
 }
 
-// #define UNIT_TEST
+#define UNIT_TEST
 #ifdef UNIT_TEST
 #include <cstring>
 #include <cassert>
 #include <algorithm>
+#include <vector>
 #include "common/components/audio/sample_data.h"
 #include "Error.h"
 using std::max;
@@ -597,6 +598,21 @@ void test_sample_data()
 		for(ix=0; ix<4; ix++)
 		{
 			values[ix].set_size(300);
+		}
+	}
+
+	// Check if the same sample can be copied multiple times into a vector.
+	//
+
+	Sample_Data smpl_to_vector;
+
+	{
+		vector<Sample_Data> v_samples;
+
+		for(ix=0; ix<10; ix++) {
+			smpl_to_vector.set_num_channels(channels);
+			smpl_to_vector.set_size(ix*channels);
+			v_samples.push_back(smpl_to_vector);
 		}
 	}
 }

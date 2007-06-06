@@ -244,6 +244,7 @@ public:
 	//int export_frequency();
 
 	Sample_Data();
+	Sample_Data(Sample_Data &rhs);
 	~Sample_Data();
 };
 

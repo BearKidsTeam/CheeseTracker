@@ -178,6 +178,11 @@ Sample_Data::Sample_Data(){
  	size=0;
 }
 
+Sample_Data::Sample_Data(Sample_Data &rhs) {
+	// Just use operator=.
+	*this = rhs;
+}
+
 Sample_Data::~Sample_Data(){
 	if(data_ptr)
 		delete[] data_ptr;
