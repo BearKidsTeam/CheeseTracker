@@ -661,10 +661,10 @@ Sample_Data::set_num_channels(size_t num) {
 
 	for(size_t ix=0; ix<get_size(); ix++) {
 		for(size_t chan=0; chan<num; chan++) {
-			if(chan > channels) {
+			if(chan >= channels) {
 				new_data[ix*num+chan] = 0;
 			} else {
-				new_data[ix*num+chan] = data_ptr[ix*num+chan];
+				new_data[ix*num+chan] = data_ptr[ix*channels+chan];
 			}
 		}
 	}

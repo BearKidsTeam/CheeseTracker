@@ -122,20 +122,25 @@ void display_help() {
 	printf("\t--schedfifo runs at schedfifo priority (suid root needed)\n");
 }
 
-#define UNIT_TEST
+// #define UNIT_TEST
 #ifdef UNIT_TEST
 #include <cstring>
 #include <cassert>
+#include <algorithm>
 #include "common/components/audio/sample_data.h"
 #include "Error.h"
+using std::max;
+using std::min;
+
+#define APPROX(x,y) (max(x,y)-min(x,y) < 0.0001)
 
 void test_sample_data()
 {
-	sample_int_t in_buffer[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
-	                             14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
-                                     26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37,
-                                     38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48 };
-	sample_int_t out_buffer[24];
+	const sample_int_t in_buffer[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
+	                                   14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+                                           26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37,
+                                           38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48 };
+	sample_int_t out_buffer[96];
 	Sample_Data test;
 	size_t channels=0;
 
@@ -421,7 +426,7 @@ void test_sample_data()
 			const sample_int_t *tmp;
 			tmp=test.get_int_sample();
 			for(size_t jx=0; jx<channels; jx++) {
-				if(tmp[jx] != ix+jx) {
+				if(tmp[jx] != (sample_int_t)(ix+jx)) {
 					E.set_error_pfx("get_sample");
 					E.eprintf("%s: %i: Expected %i got %i",
 						  __FILE__, __LINE__, ix+jx, tmp);
@@ -432,15 +437,21 @@ void test_sample_data()
 
 		}
 
+		// Check to see if we can write to the middle of a sample...
+
 		test.seek(15);
 		test.put_sample_array(in_buffer, 10);
+
+		// Read back the results. We start at position 0 to
+		// make sure that the write took place where it was expected.
+
 		test.seek(0);
 		test.get_sample_array(out_buffer, 20);
 
 		for(ix=0; ix<15; ix++) {
 
 			for(size_t jx=0; jx<channels; jx++) {
-				if(out_buffer[ix*channels+jx] != ix+jx) {
+				if(out_buffer[ix*channels+jx] != (sample_int_t)(ix+jx)) {
 					E.set_error_pfx("get_sample_array");
 					E.eprintf("%s: %i: Expected %i got %i",
 						  __FILE__, __LINE__, ix+jx, out_buffer[ix*channels+jx]);
@@ -450,14 +461,124 @@ void test_sample_data()
 		}
 
 		for(ix=15*channels; ix<15*channels+5; ix++) {
-			if(out_buffer[ix] != ix-15) {
-				E.set_error_pfx("get_int_sample");
+			if(out_buffer[ix] != (sample_int_t)(ix-15*channels)) {
+				E.set_error_pfx("get_sample_array");
 				E.eprintf("%i: Expected %i got %i",
 					  __LINE__, ix-15,
 					 out_buffer[ix]);
 				throw E;
 			}
 		}
+
+		// Test that Linietsky's get_data_value functions work too.
+
+		for(ix=0; ix<15; ix++) {
+
+			const sample_int_t *buffer = test.get_data_value(ix);
+			for(size_t jx=0; jx<channels; jx++) {
+				if(buffer[jx] != (sample_int_t)(ix+jx)) {
+					E.set_error_pfx("get_data_value");
+					E.eprintf("%s: %i: Expected %i got %i",
+						  __FILE__, __LINE__, ix+jx, buffer[jx]);
+					throw E;
+				}
+			}
+		}
+		
+
+		// Test that the data is preserved when set_num_channels() is used.
+		//
+
+		test.set_num_channels(channels+1);
+		test.seek(0);
+		for(ix=0; ix<15; ix++) {
+			const sample_int_t *temp = test.get_int_sample();
+			for(size_t jx=0; jx<channels; jx++) {
+				if(temp[jx] != (sample_int_t)(ix+jx)) {
+					E.set_error_pfx("set_num_channels");
+					E.eprintf("%s:%i: Expected %i got %i",
+						  __FILE__, __LINE__, ix+jx, temp[jx]);
+					throw E;
+				}
+			}
+			if(temp[channels] != 0) {
+				E.set_error_pfx("set_num_channels");
+				E.eprintf("%s:%i: Expected 0 got %i", __FILE__, __LINE__, temp[channels]);
+				throw E;
+			}
+		}
+
+		test.set_num_channels(channels);
+		test.seek(0);
+		for(ix=0; ix<15; ix++) {
+			const sample_int_t *temp = test.get_int_sample();
+			for(size_t jx=0; jx<channels; jx++) {
+				if(temp[jx] != (sample_int_t)(ix+jx)) {
+					E.set_error_pfx("set_num_channels");
+					E.eprintf("%s:%i: Expected %i got %i",
+						  __FILE__, __LINE__, ix+jx, temp[jx]);
+					throw E;
+				}
+			}
+		}
+
+		// Check if the get/put_f_sample functions work.
+		//
+
+		test.seek(0);
+		for(float fx=0.0; fx < 0.5; fx += 0.1)
+		{
+			float *buffer = new float[channels];
+			for(size_t jx=0; jx<channels; jx++) {
+				float fjx = jx;
+
+				buffer[jx] = fx + 1.0/fjx;
+			}
+			test.put_f_sample(buffer);
+			delete[] buffer;
+		}
+
+		// Read-back results.
+		//
+
+		test.seek(0);
+		for(float fx=0.0; fx < 0.5; fx += 0.1)
+		{
+			float *buffer = new float[channels];
+			test.get_f_sample(buffer);
+			for(size_t jx=0; jx<channels; jx++) {
+				float fjx = jx;
+				float expected = BOUND((fx + 1.0/fjx), -1.0, 1.0);
+
+				if(!APPROX(buffer[jx], expected)) {
+					E.set_error_pfx("get_f_sample");
+					E.eprintf("%s:%i: Expected %f got %f", __FILE__, __LINE__, expected, buffer[jx]);
+					throw E;
+				}
+			}
+			delete[] buffer;
+		}
+
+		// Verify that results are identical using Linietsky's functions.
+		//
+
+		for(float fx=0.0, ix=0; fx < 0.5; fx += 0.1, ix++)
+		{
+			float *buffer = new float[channels];
+			test.get_sample(ix, buffer);
+			for(size_t jx=0; jx<channels; jx++) {
+				float fjx = jx;
+				float expected = BOUND((fx + 1.0/fjx), -1.0, 1.0);
+
+				if(!APPROX(buffer[jx], expected)) {
+					E.set_error_pfx("get_sample");
+					E.eprintf("%s:%i: Expected %f got %f", __FILE__, __LINE__, expected, buffer[jx]);
+					throw E;
+				}
+			}
+			delete[] buffer;
+		}
+
 	}
 }
 
