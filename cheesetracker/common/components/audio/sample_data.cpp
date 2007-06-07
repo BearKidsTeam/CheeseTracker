@@ -142,7 +142,13 @@ void Sample_Data::set_c5_freq(int p_c5_freq) {
 	c5_freq=p_c5_freq;
 }
 
-Sample_Data::Sample_Data(){
+Sample_Data::Sample_Data() {
+	reset();
+}
+
+void
+Sample_Data::reset()
+{
 
 	loop_on=false;
 	sustain_loop_on=false;
@@ -179,6 +185,7 @@ Sample_Data::Sample_Data(){
 }
 
 Sample_Data::Sample_Data(const Sample_Data &rhs) {
+	reset();
 	// Just use operator=.
 	*this = rhs;
 }
@@ -662,6 +669,10 @@ Sample_Data::set_num_channels(size_t num) {
 	ASSERT_NOTFIXEDPOINT("set_num_channels");
 	sample_int_t *new_data;
 
+	if(size == 0) {
+		channels=num;
+	}
+
 	new_data = new sample_int_t[num*get_size()];
 
 	for(size_t ix=0; ix<get_size(); ix++) {
@@ -854,10 +865,9 @@ Sample_Data::do_cubic_mixer_voodoo(float *dest) {
 
 	size_t poshi = get_current_pos();
 	size_t poslo_fixed = (get_current_pos() << FIXEDPOINT_INT_PART_BITS) + fixedpoint_offset;
-	const sample_int_t *prev_frame = get_data_value(poshi-1);
+	const sample_int_t *blank_frame;
+	const sample_int_t *prev_frame = get_data_value(poshi ? poshi-1 : 0);
 	const sample_int_t *current_frame = get_data_value(poshi);
-	const sample_int_t *next_frame = get_data_value(poshi+1);
-
 
 	poslo_fixed >>= SPLINE_FRACSHIFT;
 	poslo_fixed &= SPLINE_FRACMASK;

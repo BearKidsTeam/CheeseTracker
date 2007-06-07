@@ -243,6 +243,7 @@ public:
         //void import_frequency(int p_freq);
 	//int export_frequency();
 
+	void reset();
 	Sample_Data();
 	Sample_Data(const Sample_Data &rhs);
 	~Sample_Data();
