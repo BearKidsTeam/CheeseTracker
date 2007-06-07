@@ -101,6 +101,7 @@ Editor::Editor(){
 
 	song_follow=false;
 	row_offset=0;
+	column_offset=0;
 }
 
 void Editor::set_instrument_mask_value(int p_value) {
