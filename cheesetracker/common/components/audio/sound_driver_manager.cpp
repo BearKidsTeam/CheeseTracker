@@ -30,7 +30,10 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <new> // bad_alloc
+#include "Error.h"
 #include "sound_driver_manager.h"
+#include "message_box.h"
 
 Sound_Driver_Manager * Sound_Driver_Manager::singleton_instance=NULL;
 int *debug_int = NULL;
@@ -168,7 +171,6 @@ bool Sound_Driver_Manager::poll_active_driver() {
 
 	bool result = true;
         Sound_Driver::Status driver_status=Sound_Driver::IDLE;
-	Sound_Driver *current_driver = driver_list[active_driver_index];
 
 	if (driver_list[active_driver_index]->accepts_blocking()) {
 		if (variables_lock) variables_lock->grab(); //commenting this out, since the mutex takes the whole thing
@@ -379,12 +381,18 @@ void Sound_Driver_Manager::internal_driver_init() {
 
 	if (active_driver_index<0) return;
 
-	driver_list[active_driver_index]->request_mix_frequency(tmp_mix_frequency);
-	driver_list[active_driver_index]->request_mix_stereo(tmp_mix_stereo);
-	driver_list[active_driver_index]->request_mix_16bits(tmp_mix_16bits);
-	driver_list[active_driver_index]->request_buffer_size(tmp_mix_buffsize);
-	driver_list[active_driver_index]->init();
-	sampling_rate_changed_signal.emit( driver_list[active_driver_index]->get_mix_frequency() );
+	try {
+		driver_list[active_driver_index]->request_mix_frequency(tmp_mix_frequency);
+		driver_list[active_driver_index]->request_mix_stereo(tmp_mix_stereo);
+		driver_list[active_driver_index]->request_mix_16bits(tmp_mix_16bits);
+		driver_list[active_driver_index]->request_buffer_size(tmp_mix_buffsize);
+		driver_list[active_driver_index]->init();
+		sampling_rate_changed_signal.emit( driver_list[active_driver_index]->get_mix_frequency() );
+	} catch (Error E) {
+		message_box("Error", E.what(), "OK");
+	} catch (std::bad_alloc B) {
+		message_box("SENILE.SYS loaded", "Out of memory", "¡Chinga!");
+	} 
 }
 int Sound_Driver_Manager::get_mix_frequency() {
 	if (active_driver_index<0)

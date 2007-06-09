@@ -32,6 +32,8 @@
 
 #ifdef OSS_ENABLED
 
+#include <cerrno>
+#include "Error.h"
 #include "sound_driver_oss.h"
 #include "math.h"
 #include "components/audio/sample_conversion.h"
@@ -72,14 +74,19 @@ int Sound_Driver_OSS::init() {
 
 	if (mix_frequency==-1) {
 
-		ERROR("DEVICE DRIVER OSS NOT CONFIGURED");
-		return FUNCTION_FAILURE;
+		Error E;
+		E.set_error_pfx("Sound_Driver_OSS");
+		E.set_error("Invalid Sampling Rate");
+		throw E;
 
 	}
 
 	if ( (sound_fd=open(device_file.c_str(),O_WRONLY))<0 ) {
 
-		return SOUND_DRIVER_ERROR_OPENING_DEVICE;
+		Error E;
+		E.report_errno(errno);
+		E.set_error_pfx(device_file.c_str());
+		throw E;
 	}
 
 
@@ -94,17 +101,26 @@ int Sound_Driver_OSS::init() {
 	fragment_size=(numfrags<<16)|fragsize;
 
 	if( ioctl(sound_fd,SNDCTL_DSP_SETFRAGMENT,&fragment_size)<0 ) {
+		Error E;
 
+		E.report_errno(errno);
 		finish();
-		return SOUND_DRIVER_ERROR_CONFIGURING_DEVICE;
+		E.set_error_pfx("SNDCTL_DSP_SETFRAGMENT");
+		throw E;
+		// return SOUND_DRIVER_ERROR_CONFIGURING_DEVICE;
 	}
 
 
 /* Ask device for supported formats */
 	if(ioctl(sound_fd,SNDCTL_DSP_GETFMTS,&supported_formats)<0) {
+		Error E;
+		E.report_errno(errno);
 
 		finish();
-		return SOUND_DRIVER_ERROR_CONFIGURING_DEVICE;
+		
+		E.set_error_pfx("SNDCTL_DSP_GETFMTS");
+		throw E;
+		// return SOUND_DRIVER_ERROR_CONFIGURING_DEVICE;
 	}
 
 	orig_precision=play_precision=(mix_16bits)?AFMT_S16_NE:AFMT_U8;
@@ -117,32 +133,43 @@ int Sound_Driver_OSS::init() {
 
 		if(play_precision==AFMT_S16_NE &&(supported_formats&AFMT_U8)) {
 
-			ERROR("AUDIO DOESNT SUPPORT EITHER 16bits or 8bits!");
+			Error E;
+			E.set_error_pfx("Sound_Driver_OSS::init");
+			E.eprintf("%s supports neither 8 nor 16 bits", device_file.c_str());
 			finish();
-			return FUNCTION_FAILURE;
+			throw E;
 		}
 	}
 
 	if ( (ioctl(sound_fd,SNDCTL_DSP_SETFMT,&play_precision)<0 ) && ( orig_precision!=play_precision )) {
 
+		Error E;
+		E.report_errno(errno);
+		E.set_error_pfx("SNDCTL_DSP_SETFMT");
 		finish();
-		return SOUND_DRIVER_ERROR_CONFIGURING_DEVICE;
+		throw E;
 	}
 
 	orig_stereo=play_stereo=(mix_stereo)?2:1;
 
 	if ( ioctl(sound_fd,SNDCTL_DSP_CHANNELS,&play_stereo)<0 ) {
 
+		Error E;
+		E.report_errno(errno);
+		E.set_error_pfx("SNDCTL_DSP_CHANNELS");
 		finish();
-		return SOUND_DRIVER_ERROR_CONFIGURING_DEVICE;
+		throw E;
 	}
 
 	play_rate=mix_frequency;
 
 	if ( (ioctl(sound_fd,SNDCTL_DSP_SPEED,&play_rate)<0) ) {
 
+		Error E;
+		E.report_errno(errno);
+		E.set_error_pfx("SNDCTL_DSP_SPEED");
 		finish();
-		return SOUND_DRIVER_ERROR_CONFIGURING_DEVICE;
+		throw E;
 	}
 
 
@@ -153,13 +180,12 @@ int Sound_Driver_OSS::init() {
 	}
 
 
-
 	audiobuffer=(Sint8*)calloc(1,buffinf.fragsize);
 
 	if ( audiobuffer==NULL ) {
 
 		finish();
-		return SOUND_DRIVER_ERROR_CONFIGURING_DEVICE;
+		throw std::bad_alloc();
 	}
 
 
@@ -254,7 +280,6 @@ Sound_Driver::Status Sound_Driver_OSS::process() {
 	if ((!get_mixer_list() || !get_mixer_list()->size()))
 		return IDLE;
 
-	int done;
 	audio_buf_info buffinf;
 
         if (!blocking_mode) { //nonblocking mode (used for polling by hand) sems to work

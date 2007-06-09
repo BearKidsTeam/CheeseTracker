@@ -34,6 +34,7 @@
 #include <cassert>
 #include <new>
 #include <cmath>
+#include "ns_autoptr.h"
 #include "sample_data.h"
 
 #define CURRENT_FRAME current_pos*channels+chan
@@ -44,8 +45,8 @@
 #define ASSERT_NOTFIXEDPOINT(function) {			\
 	if(fixedpoint_mode) {					\
 		Sample_Readonly_Error E;			\
-		E.set_error_pfx(function);			\
-		E.set_error("Sample is in fixed-point mode");	\
+		E.set_error_pfx(__FILE__);			\
+		E.eprintf("%s:%i Sample is in fixed-point mode", function, __LINE__);	\
 		throw E;					\
 	}							\
 }
@@ -825,12 +826,37 @@ Sample_Data::fixedpoint_is_backwards() {
 	return fixedpoint_backwards;
 }
 
+void
+blank_f_sample(float *dest, size_t channels) {
+	for(size_t chan=0; chan<channels; chan++) {
+		dest[chan]=0.0;
+	}
+}
 
 void
 Sample_Data::get_sample_for_cosine_mixer(float *dest, bool use_cosine_mode) {
-
+	if(eof_reached()) {
+		blank_f_sample(dest, channels);
+		return;
+	}
 	const sample_int_t *current_frame = get_data_value(get_current_pos());
-	const sample_int_t *next_frame = get_data_value(get_current_pos()+1);
+	const sample_int_t *next_frame;
+	ns_autoptr<sample_int_t> ns_temp;
+
+	// The next_frame may be past the end of the sample.
+
+	if(get_current_pos()+1 >= get_size()) {
+		// 'temp' is needed because 'next_frame' is const.
+		sample_int_t *temp = new sample_int_t[channels];
+		ns_temp.arr_new(temp);
+		next_frame = temp;
+
+		for(size_t chan=0; chan<channels; chan++) {
+			temp[chan]=0;
+		}
+	} else {
+		next_frame = get_data_value(get_current_pos()+1);
+	}
 
 	for(size_t chan=0; chan<channels; chan++) {
 		sample_int_t final_data = current_frame[chan];
@@ -862,10 +888,13 @@ Sample_Data::get_sample_for_cosine_mixer(float *dest, bool use_cosine_mode) {
 
 void
 Sample_Data::do_cubic_mixer_voodoo(float *dest) {
+	if(eof_reached()) {
+		blank_f_sample(dest, channels);
+		return;
+	}
 
 	size_t poshi = get_current_pos();
 	size_t poslo_fixed = (get_current_pos() << FIXEDPOINT_INT_PART_BITS) + fixedpoint_offset;
-	const sample_int_t *blank_frame;
 	const sample_int_t *prev_frame = get_data_value(poshi ? poshi-1 : 0);
 	const sample_int_t *current_frame = get_data_value(poshi);
 
@@ -883,8 +912,13 @@ Sample_Data::do_cubic_mixer_voodoo(float *dest) {
 
 void
 Sample_Data::get_sample_for_linear_mixer(float *dest) {
-	size_t pos = get_current_pos();
 
+	if(eof_reached()) {
+		blank_f_sample(dest, channels);
+		return;
+	}
+
+	size_t pos = get_current_pos();
 	const sample_int_t *current_frame = get_int_sample();
 	const sample_int_t *next_frame = get_data_value(pos+1);
 	// Tue May 29 04:41:45 EDT 2007
@@ -902,3 +936,4 @@ Sample_Data::get_sample_for_linear_mixer(float *dest) {
 		); 
 	}
 }
+
