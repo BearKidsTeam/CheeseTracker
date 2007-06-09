@@ -15,6 +15,7 @@
  ***************************************************************************/
 
 #include <algorithm>
+#include <cassert>
 #include "tracker_voice.h"
 #include "ns_autoptr.h"
 
@@ -145,7 +146,7 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer) {
 
 
 	size_t end,done;
-	sample_t *mixing_buffer_index;
+	sample_t *mixing_buffer_index; 
 
 	mixing_buffer_index=p_buffer;
 

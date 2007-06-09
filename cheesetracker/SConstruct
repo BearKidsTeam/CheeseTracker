@@ -74,9 +74,11 @@ print "detected " + env.detect.moc_bin;
 env.Append(CXXFLAGS=env.detect.sigc_flags);
 env.Append(CXXFLAGS=env.detect.dl_flags);
 env.Append(CXXFLAGS="-trigraphs");
+env.Append(CXXFLAGS="-Wpointer-arith");
 
 #detect OSS
 
+env.Append(CXXFLAGS=['-D_GLIBCXX_DEBUG']);
 env.Append(CXXFLAGS=['-DPOSIX_ENABLED']);
 env.Append(CXXFLAGS=['-DBITS_PER_BYTE='+
                      str(env.detect.bits_per_byte)]);

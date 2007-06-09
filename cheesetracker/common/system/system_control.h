@@ -22,6 +22,7 @@ class System_Control : public SigC::Object {
 	System *system;
 	
 
+	pthread_t player_thread;
 	void audio_process_callback();
 
 	static bool audio_thread_quit_requested;

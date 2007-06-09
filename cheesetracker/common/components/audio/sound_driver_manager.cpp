@@ -33,7 +33,7 @@
 #include "sound_driver_manager.h"
 
 Sound_Driver_Manager * Sound_Driver_Manager::singleton_instance=NULL;
-
+int *debug_int = NULL;
 
 Sound_Driver_Manager * Sound_Driver_Manager::get_singleton_instance() {
 
@@ -168,6 +168,7 @@ bool Sound_Driver_Manager::poll_active_driver() {
 
 	bool result = true;
         Sound_Driver::Status driver_status=Sound_Driver::IDLE;
+	Sound_Driver *current_driver = driver_list[active_driver_index];
 
 	if (driver_list[active_driver_index]->accepts_blocking()) {
 		if (variables_lock) variables_lock->grab(); //commenting this out, since the mutex takes the whole thing

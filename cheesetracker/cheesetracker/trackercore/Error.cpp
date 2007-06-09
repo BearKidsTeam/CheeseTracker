@@ -1,3 +1,5 @@
+#include <iostream>
+#include <cstdlib>
 #include <cstdio>
 #include <stdarg.h>
 #include "Error.h"
@@ -54,6 +56,13 @@ count_digits(int num)
 	return counter;
 }
 
+}
+
+void
+Error::fatal_error()
+{
+	std::cerr << what() << std::endl;
+	abort();
 }
 
 void

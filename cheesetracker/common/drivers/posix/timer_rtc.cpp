@@ -30,6 +30,7 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "Error.h"
 #include "timer_rtc.h"
 
 #ifdef LINUX_ENABLED
@@ -67,13 +68,18 @@ void Timer_RTC::callback() {
 }
 void* Timer_RTC::thread_callback(void* data) {
 
-	Timer_RTC *dangit;
+	try {
 
-	(void*)dangit=data;
+		Timer_RTC *dangit;
 
-	dangit->callback();
+		(void*)dangit=data;
 
-	return NULL;
+		dangit->callback();
+
+		return NULL;
+	} catch (Error E) {
+		E.fatal_error();
+	}
 }
 
 void Timer_RTC::start() {
@@ -138,6 +144,7 @@ void Timer_RTC::stop() {
 
 	timer_continue=false;
 	timer_active=false;
+	pthread_join(thread_handler);
 
 }
 

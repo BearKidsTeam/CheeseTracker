@@ -433,7 +433,12 @@ void Sample_Viewer::screen_to_sample(int p_int, float *p_max_peak,float *p_min_p
 		ns_sample_next.arr_new(sample_next);
 
 		sample_data->get_sample((size_t)sample_idx, sample_current);
-		sample_data->get_sample((size_t)sample_idx+1, sample_next);
+
+		try {
+			sample_data->get_sample((size_t)sample_idx+1, sample_next);
+		} catch (Out_Of_Bounds OOB) {
+			sample_next[0] = 0.0;
+		}
 		float fract=sample_idx-(size_t)sample_idx;
 		float sample_final=INTERP(sample_current[0],sample_next[0],fract);
 

@@ -61,15 +61,15 @@ PropertyManager::PropertyPath* PropertyManager::get_path(string p_path) {
 	return NULL;
 };
 
-int PropertyManager::save_bridge(BridgeConverter::BufferControl& p_buffer, Bridge& p_bridge) {};
-int PropertyManager::load_bridge(BridgeConverter::BufferControl& p_buffer) {};
+int PropertyManager::save_bridge(BridgeConverter::BufferControl& p_buffer, Bridge& p_bridge) { return 0; };
+int PropertyManager::load_bridge(BridgeConverter::BufferControl& p_buffer) { return 0; };
 
-int PropertyManager::save_path(BridgeConverter::BufferControl& p_buffer, string p_path) {};
-int PropertyManager::save_path(BridgeConverter::BufferControl& p_buffer, PropertyPath& p_path) {};
+int PropertyManager::save_path(BridgeConverter::BufferControl& p_buffer, string p_path) { return 0; };
+int PropertyManager::save_path(BridgeConverter::BufferControl& p_buffer, PropertyPath& p_path) { return 0; };
 
-int PropertyManager::save_all(BridgeConverter::BufferControl& p_buffer) {};
+int PropertyManager::save_all(BridgeConverter::BufferControl& p_buffer) { return 0; };
 
-int PropertyManager::load_patch(BridgeConverter::BufferControl& p_buffer) {};
+int PropertyManager::load_patch(BridgeConverter::BufferControl& p_buffer) { return 0; };
 
 
 PropertyManager::PropertyManager() {

@@ -104,7 +104,7 @@ void PropertyServerMaster::handle_message_internal(mcmd_t* p_msg) {
 			};
 			clients[i].id = p_msg->reply_mtype;
 			clients[i].pending_ping = 0;
-			printf("************** registering client %i\n", clients[i].id);
+			printf("************** registering client %ld\n", clients[i].id);
 		}; break;
 		case MCMD_UNREGISTER: {
 

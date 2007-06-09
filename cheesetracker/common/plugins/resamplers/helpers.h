@@ -34,8 +34,6 @@
   I am forced to go with a macro scheme to share the common parts of te resampling process.
 */
 
-// FIXME: data_ptr below is a direct pointer into a Sample_Data structure!
-
 //need local variables in the stack, as the stack will be cached in a single cache line.
 #define HELPER_INITIALIZE \
 										\
@@ -249,48 +247,6 @@
                         \
 		}
 
-
-// Wed Apr 25 03:50:02 EDT 2007
-
-// Uhm, yeah. If you would, um, not use this one, um, yeah, um, that would be great!
-//
-// The idea behind this is to have a panning algorithm where if the panning is set
-// all the way to one side, the two channels of a two-channel sample will be both
-// mixed together. But, with two nested for-loops, this thing would run in exponential
-// time as the number of channels increases. 
-//
-// It would still be useful, perhaps, for mixing a limited number of channels on a
-// multiprocessor computer, if the main loop of the mixer (that is, the loop that
-// begins with the stupid HELPER_BEGIN_LOOP macro) splits into threads.
-//
-// It might get deleted, however.
-
-#define HELPER_MIX_ONE_RAW_SAMPLE_VERY_VERY_VERY_SLOWLY \
-for(size_t chan=0; chan<HARD_CODED_MIXER_CHANNELS; chan++)								\
-	final_float[chan] = 0.0;											\
-for(size_t chan=0; chan<std::max<size_t>(channels, HARD_CODED_MIXER_CHANNELS); chan++) {				\
-	for(size_t final_chan=0; final_chan < HARD_CODED_MIXER_CHANNELS; final_chan++) {				\
-		float temp_float;											\
-															\
-		bool this_side_of_centre = final_chan ? !right_of_centre : right_of_centre;				\
-															\
-		temp_float = mixdata->sample->get_f_sample(chan % channels);						\
-		if(chan  % HARD_CODED_MIXER_CHANNELS == final_chan) {							\
-				if(!this_side_of_centre) {								\
-					final_float[final_chan] += temp_float * (1.0 - from_centre);			\
-				} else {										\
-					final_float[final_chan] += temp_float;						\
-				}											\
-		} else {												\
-				if(this_side_of_centre) {								\
-					final_float[final_chan] += temp_float * from_centre;				\
-				}											\
-		}													\
-	}														\
-}															\
-	HELPER_PERFORM_VOLUME_RAMP				\
-        HELPER_PERFORM_FILTERING				\
-	HELPER_PERFORM_MIXDOWN
 
 // This macro is only valid in the scope of the PREPROCESS_ROUTINE argument
 // to be given to HELPER_MIX_ONE_SAMPLE.

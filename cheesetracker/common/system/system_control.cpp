@@ -9,6 +9,7 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
+#include "Error.h"
 #include "system_control.h"
 #include <unistd.h>
 
@@ -47,7 +48,6 @@ bool System_Control::init_audio_thread() {
 
 	printf("init_audio_thread:%d: Called, but from where???\n", __LINE__);
 
-	pthread_t player_thread;
 	pthread_attr_t thread_attr;
 	
 	pthread_attr_init(&thread_attr);
@@ -77,17 +77,21 @@ void  System_Control::audio_thread_callback_internal() {
 
 void * System_Control::audio_thread_callback(void *p_instance) {
 
-	System_Control * instance = (System_Control*) p_instance;
-	instance->audio_thread_callback_internal();
-	
-	return NULL;
+	try {
+		System_Control * instance = (System_Control*) p_instance;
+		instance->audio_thread_callback_internal();
+		
+		return NULL;
+	} catch (Error E) {
+		E.fatal_error();
+	}
 }
 
 
 void System_Control::stop_audio_thread() {
 
 	audio_thread_quit_requested=true;
-	sleep(1);
+	pthread_join(player_thread, NULL);
 }
 
 

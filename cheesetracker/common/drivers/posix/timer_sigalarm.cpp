@@ -30,6 +30,7 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "Error.h"
 #include "timer_sigalarm.h"
 
 #ifdef POSIX_ENABLED
@@ -65,13 +66,17 @@ void Timer_SigAlarm::callback() {
 }
 void* Timer_SigAlarm::thread_callback(void* data) {
 
-	Timer_SigAlarm *dangit;
+	try {
+		Timer_SigAlarm *dangit;
 
-	dangit=(Timer_SigAlarm*)data;
+		dangit=(Timer_SigAlarm*)data;
 
-	dangit->callback();
+		dangit->callback();
 
-	return NULL;
+		return NULL;
+	} catch (Error E) {
+		E.fatal_error();
+	}
 }
 
 void Timer_SigAlarm::start() {
@@ -102,6 +107,9 @@ void Timer_SigAlarm::stop() {
 
 	timer_continue=false;
 	timer_active=false;
+	for(size_t ix=0; ix<threads_to_spawn; ix++) {
+		pthread_join(thread_handler[ix], NULL);
+	}
 
 }
 

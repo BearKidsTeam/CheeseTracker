@@ -73,6 +73,7 @@
 
 #include <iostream>
 #include <exception>
+#include <cstdlib> // abort()
 #include <unistd.h>
 
 #include "Error.h"
@@ -91,11 +92,16 @@ static bool thread_finished=false;
 
 void* audio_thread_cbk(void *data) {
 
-	while(!quit_request)
-		if (driver_manager.external_poll_active_driver())
-			SLEEP_MSECS(1);
+	try {
+		while(!quit_request)
+			if (driver_manager.external_poll_active_driver())
+				SLEEP_MSECS(1);
 
-	thread_finished=true;
+		thread_finished=true;
+	} catch (Error E) {
+		cerr << E.what() << std::endl;
+		abort();
+	}
 	
 	return NULL;
 }
@@ -664,100 +670,101 @@ int main( int argc, char **argv )
 
 	printf("Entering main() at %s:%d\n", __FILE__, __LINE__);
 
-	try {
-	#ifdef POSIX_ENABLED
+#ifdef POSIX_ENABLED
 
-		Mutex_Lock_Pthreads variables_lock;
-		Mutex_Lock_Pthreads pattern_lock;
-		Mutex_Lock_Pthreads driver_lock;
-		Mutex_Lock_Pthreads info_lock;
+	Mutex_Lock_Pthreads variables_lock;
+	Mutex_Lock_Pthreads pattern_lock;
+	Mutex_Lock_Pthreads driver_lock;
+	Mutex_Lock_Pthreads info_lock;
 
-		pthread_t player_thread;
-		pthread_attr_t thread_attr;
-	#endif
-
+	pthread_t player_thread;
+	pthread_attr_t thread_attr;
+#endif
 
 
-		driver_manager.set_variables_lock(&variables_lock);
-		driver_manager.set_driver_lock(&driver_lock);
-		Pattern::data_lock=&pattern_lock;
 
-	//	driver_oss.link_to_mixer(&mixer);
-	#ifdef OSS_ENABLED
-		Sound_Driver_OSS driver_oss;
-		driver_manager.register_driver(&driver_oss);
-	#endif
+	driver_manager.set_variables_lock(&variables_lock);
+	driver_manager.set_driver_lock(&driver_lock);
+	Pattern::data_lock=&pattern_lock;
 
-	#ifdef RTAUDIO_ENABLED
-		Sound_Driver_RtAudio driver_rtaudio;
-		driver_manager.register_driver(&driver_rtaudio);
-	#endif
+//	driver_oss.link_to_mixer(&mixer);
+#ifdef OSS_ENABLED
+	Sound_Driver_OSS driver_oss;
+	driver_manager.register_driver(&driver_oss);
+#endif
 
-	#ifdef JACK_ENABLED
-		Sound_Driver_JACK driver_jack;
-		driver_manager.register_driver(&driver_jack);
-	#endif
+#ifdef RTAUDIO_ENABLED
+	Sound_Driver_RtAudio driver_rtaudio;
+	driver_manager.register_driver(&driver_rtaudio);
+#endif
 
-		MIDI_Client_Manager midi_client_manager;
-		midi_client_manager.set_app_name("CheeseTracker");
+#ifdef JACK_ENABLED
+	Sound_Driver_JACK driver_jack;
+	driver_manager.register_driver(&driver_jack);
+#endif
 
-	#ifdef ALSA_ENABLED
+	MIDI_Client_Manager midi_client_manager;
+	midi_client_manager.set_app_name("CheeseTracker");
 
-		MIDI_Client_ALSA midi_client_alsa;
-		midi_client_manager.add_midi_client(&midi_client_alsa);
-	#endif
+#ifdef ALSA_ENABLED
 
-	#if ((CYGWIN_ENABLED) || (WIN32_ENABLED))
+	MIDI_Client_ALSA midi_client_alsa;
+	midi_client_manager.add_midi_client(&midi_client_alsa);
+#endif
 
-		Sound_Driver_WinMM driver_winmm;
-		driver_manager.register_driver(&driver_winmm);
-	#endif
-		Sound_Driver_Dummy driver_dummy;
+#if ((CYGWIN_ENABLED) || (WIN32_ENABLED))
 
-		driver_manager.register_driver(&driver_dummy);
+	Sound_Driver_WinMM driver_winmm;
+	driver_manager.register_driver(&driver_winmm);
+#endif
+	Sound_Driver_Dummy driver_dummy;
 
-		Resampler_Manager resampler_manager;
-		Resampler_Raw resampler_raw;
-		Resampler_Linear resampler_linear;
-		Resampler_Cosine resampler_cosine(Resampler_Cosine::COSINE);
-		Resampler_Cosine resampler_fm(Resampler_Cosine::FM);
-		Resampler_Cubic resampler_cubic;
-		Resampler_Dummy resampler_dummy;
-		//resampler_manager.register_resampler(&resampler_dummy);
-		resampler_manager.register_resampler(&resampler_raw);
-		resampler_manager.register_resampler(&resampler_fm);
-		resampler_manager.register_resampler(&resampler_cosine);
-		resampler_manager.register_resampler(&resampler_linear);
-		resampler_manager.register_resampler(&resampler_cubic);
+	driver_manager.register_driver(&driver_dummy);
 
-		Effect_Source_Manager effect_source_manager_singleton;
-			
-		Effect_Source_Internal effect_source_internal;
+	Resampler_Manager resampler_manager;
+	Resampler_Raw resampler_raw;
+	Resampler_Linear resampler_linear;
+	Resampler_Cosine resampler_cosine(Resampler_Cosine::COSINE);
+	Resampler_Cosine resampler_fm(Resampler_Cosine::FM);
+	Resampler_Cubic resampler_cubic;
+	Resampler_Dummy resampler_dummy;
+	//resampler_manager.register_resampler(&resampler_dummy);
+	resampler_manager.register_resampler(&resampler_raw);
+	resampler_manager.register_resampler(&resampler_fm);
+	resampler_manager.register_resampler(&resampler_cosine);
+	resampler_manager.register_resampler(&resampler_linear);
+	resampler_manager.register_resampler(&resampler_cubic);
 
-		effect_source_manager_singleton.register_effect_source(&effect_source_internal);
-		effect_source_internal.register_effect_constructor("Amplifier","INTERNAL: amplifier",&Effect_Amp::create_this,&Effect_Amp::create_parameters );	
-		effect_source_internal.register_effect_constructor("Reverb","INTERNAL: freeverb",&Freeverb_Effect::create_this,&Freeverb_Effect::create_parameters );
-		effect_source_internal.register_effect_constructor("Stereo Chorus","INTERNAL: stereo_chorus",&Chorus_Effect::create_this,&Chorus_Effect::create_parameters );
-		effect_source_internal.register_effect_constructor("Echo","INTERNAL: echo",&Effect_Echo::create_this,&Effect_Echo::create_parameters );
-		effect_source_internal.register_effect_constructor("Stereo FX","INTERNAL: stereo_fx",&Effect_Stereo_FX::create_this,&Effect_Stereo_FX::create_parameters );
-		effect_source_internal.register_effect_constructor("6 Bands EQ","INTERNAL: eq_6_bands",&Effect_Equalizer::create_this,&Effect_Equalizer::create_parameters_6bands);
-		effect_source_internal.register_effect_constructor("10 Bands EQ","INTERNAL: eq_10_bands",&Effect_Equalizer::create_this,&Effect_Equalizer::create_parameters_10bands);
-		effect_source_internal.register_effect_constructor("21 Bands EQ","INTERNAL: eq_21_bands",&Effect_Equalizer::create_this,&Effect_Equalizer::create_parameters_21bands);
-		effect_source_internal.register_effect_constructor("31 Bands EQ","INTERNAL: eq_31_bands",&Effect_Equalizer::create_this,&Effect_Equalizer::create_parameters_31bands);
-		effect_source_internal.register_effect_constructor("Distortion","INTERNAL: distortion",&Effect_Distortion::create_this,&Effect_Distortion::create_parameters );
-		effect_source_internal.register_effect_constructor("Pitch Shift","INTERNAL: pshift",&Effect_PShift::create_this,&Effect_PShift::create_parameters );
+	Effect_Source_Manager effect_source_manager_singleton;
 		
-	#ifdef LADSPA_ENABLED
-		LADSPA_Effect_Source effect_source_ladspa;
-		effect_source_manager_singleton.register_effect_source(&effect_source_ladspa);
+	Effect_Source_Internal effect_source_internal;
 
-	#endif
+	effect_source_manager_singleton.register_effect_source(&effect_source_internal);
+	effect_source_internal.register_effect_constructor("Amplifier","INTERNAL: amplifier",&Effect_Amp::create_this,&Effect_Amp::create_parameters );	
+	effect_source_internal.register_effect_constructor("Reverb","INTERNAL: freeverb",&Freeverb_Effect::create_this,&Freeverb_Effect::create_parameters );
+	effect_source_internal.register_effect_constructor("Stereo Chorus","INTERNAL: stereo_chorus",&Chorus_Effect::create_this,&Chorus_Effect::create_parameters );
+	effect_source_internal.register_effect_constructor("Echo","INTERNAL: echo",&Effect_Echo::create_this,&Effect_Echo::create_parameters );
+	effect_source_internal.register_effect_constructor("Stereo FX","INTERNAL: stereo_fx",&Effect_Stereo_FX::create_this,&Effect_Stereo_FX::create_parameters );
+	effect_source_internal.register_effect_constructor("6 Bands EQ","INTERNAL: eq_6_bands",&Effect_Equalizer::create_this,&Effect_Equalizer::create_parameters_6bands);
+	effect_source_internal.register_effect_constructor("10 Bands EQ","INTERNAL: eq_10_bands",&Effect_Equalizer::create_this,&Effect_Equalizer::create_parameters_10bands);
+	effect_source_internal.register_effect_constructor("21 Bands EQ","INTERNAL: eq_21_bands",&Effect_Equalizer::create_this,&Effect_Equalizer::create_parameters_21bands);
+	effect_source_internal.register_effect_constructor("31 Bands EQ","INTERNAL: eq_31_bands",&Effect_Equalizer::create_this,&Effect_Equalizer::create_parameters_31bands);
+	effect_source_internal.register_effect_constructor("Distortion","INTERNAL: distortion",&Effect_Distortion::create_this,&Effect_Distortion::create_parameters );
+	effect_source_internal.register_effect_constructor("Pitch Shift","INTERNAL: pshift",&Effect_PShift::create_this,&Effect_PShift::create_parameters );
+	
+#ifdef LADSPA_ENABLED
+	LADSPA_Effect_Source effect_source_ladspa;
+	effect_source_manager_singleton.register_effect_source(&effect_source_ladspa);
 
-		Keyboard_Input keyboard_input; //singleton instance here!
+#endif
 
-		QApplication a( argc, argv );
+	Keyboard_Input keyboard_input; //singleton instance here!
 
-		MDI_Main_Window main_window;
+	QApplication a( argc, argv );
+
+	MDI_Main_Window main_window;
+
+	try {
 		main_window.set_sound_driver_manager(&driver_manager);
 		main_window.set_info_lock(&info_lock);
 
@@ -785,7 +792,7 @@ int main( int argc, char **argv )
 
 		main_window.show();
 
-		//start the thread
+		//start the thread (WARNING: Other threads are started somewhere or other.)
 
 		int priority=sched_get_priority_max(SCHED_RR);
 
@@ -830,9 +837,13 @@ int main( int argc, char **argv )
 		//quit requested, cleaning up!
 
 		quit_request=true;
+		pthread_join(player_thread, NULL);
+		printf("Joined audio_thread_cbk thread. Blindly assuming it's safe to exit...\n");
+		
+		/*
 		while(!thread_finished) {
 			SLEEP_MSECS(1);
-		}
+		} */
 		return result;
 	} catch (Error E) {
 		cerr << E.what() << std::endl;

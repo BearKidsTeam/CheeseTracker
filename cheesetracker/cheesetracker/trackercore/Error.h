@@ -57,6 +57,7 @@ class Error : public exception
 #endif
 		void report_errno(int);
 		void eprintf(const char *fmt, ...);
+		void fatal_error();
 		virtual const char* what()
 		{
 			strcpy(error_msg, error_func);

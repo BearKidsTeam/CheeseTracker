@@ -42,6 +42,8 @@
 #define FUNCTION_SUCCESS 0
 #define FUNCTION_FAILURE -1
 
+extern int *debug_int;
+
 //#define DIR_SEPARATOR "/"
 //
 
