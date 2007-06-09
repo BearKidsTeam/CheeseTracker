@@ -27,6 +27,8 @@
 //
 #include "ns_autoptr.h"
 #include "sample_viewer.h"
+#include "Error.h"
+#include <qmessagebox.h>
 #include <qpainter.h>
 
 
@@ -438,7 +440,7 @@ void Sample_Viewer::screen_to_sample(int p_int, float *p_max_peak,float *p_min_p
 			sample_data->get_sample((size_t)sample_idx+1, sample_next);
 		} catch (Out_Of_Bounds OOB) {
 			sample_next[0] = 0.0;
-		}
+		} 
 		float fract=sample_idx-(size_t)sample_idx;
 		float sample_final=INTERP(sample_current[0],sample_next[0],fract);
 
@@ -583,51 +585,67 @@ void Sample_Viewer::draw_screen_pos(int p_x,QPainter &painter,int factor) {
 
 }
 
+// paintEvent - An entry point to this module
+//
+// notes      - Called by Qt
+//
+
 void Sample_Viewer::paintEvent( QPaintEvent * p_event ) {
+	
+	if(fatal_error) return;
 
-	if ((sample_data==NULL) || (sample_data->get_size()==0)) {
+	try {
 
-		QPainter painter(this);
-		painter.fillRect(0,0,width(),height(),QColor(0,0,0));
-		return;
-	}
+		if ((sample_data==NULL) || (sample_data->get_size()==0)) {
 
-	int cur_width=width();
-	int cur_height=height();
+			QPainter painter(this);
+			painter.fillRect(0,0,width(),height(),QColor(0,0,0));
+			return;
+		}
 
-	if (recompute_pending) {
+		int cur_width=width();
+		int cur_height=height();
 
-		initialize_sample_cache();
-		update_sample_cache(0,sample_data->get_size()-1);
-		recompute_pending=false;
-	}
+		if (recompute_pending) {
 
-
-	if (cur_height!=backing_store_height || cur_width!=backing_store_width) {
-
-		if (backing_store)
-			delete backing_store;
-		backing_store = new QPixmap (cur_width,cur_height);
-	}
-	if ((int)position_display_cache.size()!=width()) {
-
-		position_display_cache.resize(width());
-		old_position_display_cache.resize(width());
-	}
-
-//	float prev;
-	QPainter painter;
-//	painter.begin(backing_store, this );
-	painter.begin(this );
-
-	painter.setPen(QColor(0,0,200));
+			initialize_sample_cache();
+			update_sample_cache(0,sample_data->get_size()-1);
+			recompute_pending=false;
+		}
 
 
-	int factor=get_factor();
+		if (cur_height!=backing_store_height || cur_width!=backing_store_width) {
 
-	for (int i=0;i<cur_width;i++) {
+			if (backing_store)
+				delete backing_store;
+			backing_store = new QPixmap (cur_width,cur_height);
+		}
+		if ((int)position_display_cache.size()!=width()) {
 
-		draw_screen_pos(i,painter,factor);
+			position_display_cache.resize(width());
+			old_position_display_cache.resize(width());
+		}
+
+	//	float prev;
+		QPainter painter;
+	//	painter.begin(backing_store, this );
+		painter.begin(this );
+
+		painter.setPen(QColor(0,0,200));
+
+
+		int factor=get_factor();
+
+		for (int i=0;i<cur_width;i++) {
+
+			draw_screen_pos(i,painter,factor);
+		}
+	} catch (Error E) {
+		fatal_error=true;	// Prevent further paintEvents, as they will generate
+					// fatal errors too. This will cause a bizarre effect
+					// if the message box about to be displayed is moved.
+
+		E.qt_fatal_error();	// Display a message box and abort.
 	}
 
 	//bitBlt(this,0,0,backing_store);
@@ -732,6 +750,7 @@ void Sample_Viewer::set_position_list(const PositionList& p_list) {
 
 Sample_Viewer::Sample_Viewer( QWidget *p_parent) : QWidget( p_parent,"Sample Viewer" ) {
 
+	fatal_error=false;
 	sample_data=NULL;
 	zoom=1; //1:1
 	offset=0;

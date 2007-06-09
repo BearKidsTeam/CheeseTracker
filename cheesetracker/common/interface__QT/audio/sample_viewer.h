@@ -60,6 +60,8 @@ protected:
 	static int color_list[Col_Max*3];
 	static QColor colors[Col_Max];
 	static bool colors_initialized;
+	bool fatal_error; 	 // To prevent further paintEvents while an
+	                         // error message is being displayed.
 
 	QPixmap *backing_store;
 	int backing_store_width,backing_store_height;

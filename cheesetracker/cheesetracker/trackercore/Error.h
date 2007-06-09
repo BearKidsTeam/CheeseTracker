@@ -37,6 +37,15 @@ using std::string;
 
 #define DERIVE_EMPTY(parent, child) class child : public parent { public: }
 #define GENERIC_ERROR(name) DERIVE_EMPTY(Error, name)
+#define FATAL_ERROR(name) \
+	class name : public Error {						\
+		public:									\
+			name(const char *file, int line) : Error() {		\
+				set_error_pfx(file);					\
+				eprintf("%i: %s", line, #name);			\
+			}								\
+	}
+
 
 class Error : public exception
 {
@@ -58,6 +67,7 @@ class Error : public exception
 		void report_errno(int);
 		void eprintf(const char *fmt, ...);
 		void fatal_error();
+		void qt_fatal_error();
 		virtual const char* what()
 		{
 			strcpy(error_msg, error_func);
@@ -82,6 +92,5 @@ class bug : public Error
 		}
 };
 
-GENERIC_ERROR(Out_Of_Bounds);
-
+FATAL_ERROR(Out_Of_Bounds);
 #endif

@@ -105,7 +105,7 @@ Note Pattern::process_retrieve_request(int p_column,int p_row) {
 	// This would be an assert, but there is code that
 	// triggers this exception on purpose.
 	if(!(p_column < column.size())) {
-		Out_Of_Bounds OOB;
+		Out_Of_Bounds OOB(__FILE__, __LINE__);
 		throw OOB;
 	}
 

@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <stdarg.h>
+#include <qmessagebox.h>
 #include "Error.h"
 
 #ifdef _WINDOWS
@@ -62,6 +63,13 @@ void
 Error::fatal_error()
 {
 	std::cerr << what() << std::endl;
+	abort();
+}
+
+void
+Error::qt_fatal_error()
+{
+	QMessageBox::critical(NULL, "Fatal Error", what(), "Exit");
 	abort();
 }
 

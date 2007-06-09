@@ -199,7 +199,7 @@ Sample_Data::~Sample_Data(){
 void Sample_Data::get_sample(size_t p_index, float *dest)  const{
 
 	if(p_index >= size) {
-		throw Out_Of_Bounds();
+		throw Out_Of_Bounds(__FILE__, __LINE__);
 	}
 	assert(is_16bits);
 
@@ -264,7 +264,7 @@ void Sample_Data::change_sign() {
 const sample_int_t *Sample_Data::get_data_value(size_t p_pos) {
 
 	if (p_pos >= size || data_ptr == NULL) {
-		throw Out_Of_Bounds();
+		throw Out_Of_Bounds(__FILE__, __LINE__);
 	}
 	assert(is_16bits);
 
