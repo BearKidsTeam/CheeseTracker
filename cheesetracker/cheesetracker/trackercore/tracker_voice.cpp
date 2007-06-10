@@ -94,11 +94,11 @@ void Tracker_Voice::mix(size_t p_amount,sample_t* p_where) {
 	 
 	float pan, vol;
 		// Calculate increment index depending on frequency difference
-	info.increment_index=((Sint64)(info.current_frequency<<FRACTIONAL))/mixfreq;
+	// info.increment_index=((Sint64)(info.current_frequency<<FRACTIONAL))/mixfreq;
 	info.sample_data_ptr->use_fixedpoint(true);
 	info.sample_data_ptr->fixedpoint_set_resample_rate(info.current_frequency, mixfreq, info.playing_backwards);
 
-	if (info.playing_backwards) info.increment_index=-info.increment_index;
+	// if (info.playing_backwards) info.increment_index=-info.increment_index;
 
 	vol = info.volume;
 	pan = info.panning/(float)PAN_RIGHT;
@@ -143,41 +143,29 @@ void Tracker_Voice::mix(size_t p_amount,sample_t* p_where) {
 }
 
 void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer) {
-
-
-	size_t end,done;
-	sample_t *mixing_buffer_index; 
-
-	mixing_buffer_index=p_buffer;
-
+	sample_t *mixing_buffer_index=p_buffer; 
 	size_t total=p_amount;
 	size_t todo=total;
-
 	float ramp_tangent_l;
 	float ramp_tangent_r;
 
         if ( info.sample_data_ptr == NULL ) {
-
 		info.current_index=0;
 		info.active=false;
 		return;
 	}
 
 
-	/* precalculate ramp */
+	/* PRECALCULATE RAMP */
 
-
-	/* update the 'current' index so the sample loops, or stops playing if it
+	/* update the 'current_index' so the sample loops, or stops playing if it
 	   reached the end of the sample */
 
 	bool loop_active=info.sample_data_ptr->is_loop_enabled() && (idxlend>idxlpos);
 
 	if (total==0) return;
-
 	ramp_tangent_l=(float)(info.lvolsel-info.oldlvol)/(float)total;
 	ramp_tangent_r=(float)(info.rvolsel-info.oldrvol)/(float)total;
-
-	//                  2
 
 	Resampler::Mix_Data &mixdata=resampler.get_mixdata();
 
@@ -185,7 +173,6 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer) {
 	size_t rend=loop_active?idxlend:idxsize;
 
 	while(todo>0) {
-
 		if ( info.playing_backwards ) {
 			/* The sample is playing in reverse */
 			if( ( loop_active )&&(info.current_index<idxlpos) ) {
@@ -195,7 +182,7 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer) {
 					   current index against the idxlpos */
 					info.current_index = idxlpos+(idxlpos-info.current_index);
 					info.playing_backwards=false;
-					info.increment_index = -info.increment_index;
+					// info.increment_index = -info.increment_index;
 					info.sample_data_ptr->fixedpoint_aboutface();
 				} else
 					/* normal backwards looping, so set the current position to
@@ -207,7 +194,6 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer) {
 					/* playing index reached 0, so stop playing this sample */
 					info.current_index=0;
 					info.active=false;
-
 					break;
 				}
 			}
@@ -233,19 +219,14 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer) {
 					/* yes, so stop playing this sample */
 					info.current_index=0;
 					info.active=false;
-
 					break;
 				}
 			}
 		}
 
 		info.sample_data_ptr->use_fixedpoint(false);
-
 		info.sample_data_ptr->seek(info.current_index);
-
 		info.sample_data_ptr->use_fixedpoint(true);
-
-		end=info.playing_backwards?lend:rend;
 
 		//  Sun Apr 22 16:54:40 EDT 2007
 		//
@@ -298,7 +279,9 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer) {
 		//  address-space limitation.
 
 		size_t total_samples=0;
+		size_t end,done;
 
+		end=info.playing_backwards?lend:rend;
 		if(end > info.current_index) {
 			total_samples = end-info.current_index;
 		} else {

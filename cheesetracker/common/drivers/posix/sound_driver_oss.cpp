@@ -82,11 +82,7 @@ int Sound_Driver_OSS::init() {
 	}
 
 	if ( (sound_fd=open(device_file.c_str(),O_WRONLY))<0 ) {
-
-		Error E;
-		E.report_errno(errno);
-		E.set_error_pfx(device_file.c_str());
-		throw E;
+		throw Error(errno, device_file.c_str());
 	}
 
 
@@ -101,26 +97,17 @@ int Sound_Driver_OSS::init() {
 	fragment_size=(numfrags<<16)|fragsize;
 
 	if( ioctl(sound_fd,SNDCTL_DSP_SETFRAGMENT,&fragment_size)<0 ) {
-		Error E;
-
-		E.report_errno(errno);
+		Error E(errno, "SNDCTL_DSP_SETFRAGMENT");
 		finish();
-		E.set_error_pfx("SNDCTL_DSP_SETFRAGMENT");
 		throw E;
-		// return SOUND_DRIVER_ERROR_CONFIGURING_DEVICE;
 	}
 
 
 /* Ask device for supported formats */
 	if(ioctl(sound_fd,SNDCTL_DSP_GETFMTS,&supported_formats)<0) {
-		Error E;
-		E.report_errno(errno);
-
+		Error E(errno, "SNDCTL_DSP_GETFMTS");
 		finish();
-		
-		E.set_error_pfx("SNDCTL_DSP_GETFMTS");
 		throw E;
-		// return SOUND_DRIVER_ERROR_CONFIGURING_DEVICE;
 	}
 
 	orig_precision=play_precision=(mix_16bits)?AFMT_S16_NE:AFMT_U8;
@@ -143,9 +130,7 @@ int Sound_Driver_OSS::init() {
 
 	if ( (ioctl(sound_fd,SNDCTL_DSP_SETFMT,&play_precision)<0 ) && ( orig_precision!=play_precision )) {
 
-		Error E;
-		E.report_errno(errno);
-		E.set_error_pfx("SNDCTL_DSP_SETFMT");
+		Error E(errno, "SNDCTL_DSP_SETFMT");
 		finish();
 		throw E;
 	}
@@ -154,9 +139,7 @@ int Sound_Driver_OSS::init() {
 
 	if ( ioctl(sound_fd,SNDCTL_DSP_CHANNELS,&play_stereo)<0 ) {
 
-		Error E;
-		E.report_errno(errno);
-		E.set_error_pfx("SNDCTL_DSP_CHANNELS");
+		Error E(errno, "SNDCTL_DSP_CHANNELS");
 		finish();
 		throw E;
 	}
@@ -165,9 +148,7 @@ int Sound_Driver_OSS::init() {
 
 	if ( (ioctl(sound_fd,SNDCTL_DSP_SPEED,&play_rate)<0) ) {
 
-		Error E;
-		E.report_errno(errno);
-		E.set_error_pfx("SNDCTL_DSP_SPEED");
+		Error E(errno, "SNDCTL_DSP_SPEED");
 		finish();
 		throw E;
 	}

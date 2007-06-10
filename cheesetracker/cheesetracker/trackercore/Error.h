@@ -76,6 +76,11 @@ class Error : public exception
 			return error_msg;
 		}
 		Error() { error_buf[0] = '\0'; error_func[0]='\0'; _errno=0; }
+		Error(int err, const char *pfx) {
+			Error();
+			report_errno(err);
+			set_error_pfx(pfx);
+		}
 
 		virtual ~Error() throw() { return; }
 };
