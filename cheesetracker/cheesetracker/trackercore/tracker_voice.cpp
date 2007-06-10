@@ -143,6 +143,7 @@ void Tracker_Voice::mix(size_t p_amount,sample_t* p_where) {
 }
 
 void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer) {
+
 	sample_t *mixing_buffer_index=p_buffer; 
 	size_t total=p_amount;
 	size_t todo=total;
@@ -154,7 +155,6 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer) {
 		info.active=false;
 		return;
 	}
-
 
 	/* PRECALCULATE RAMP */
 
