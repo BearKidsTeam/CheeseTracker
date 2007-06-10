@@ -780,26 +780,24 @@ Sample_Data::fixedpoint_set_resample_rate(size_t current_freq, size_t mix_freq, 
 
 void
 Sample_Data::fixedpoint_move_cursor() {
-	for(size_t chan = 0; chan<num_channels(); chan++) {
-		fixedpoint_offset += fixedpoint_inc;
+	fixedpoint_offset += fixedpoint_inc;
 
-		size_t int_batch = (fixedpoint_offset >> FIXEDPOINT_INT_PART_BITS);	// Convert fixed-point to int.
+	size_t int_batch = (fixedpoint_offset >> FIXEDPOINT_INT_PART_BITS);	// Convert fixed-point to int.
 
-		if(int_batch >= 1) {
-			if(fixedpoint_backwards) {
-				if(current_pos < int_batch) {
-					Sample_EOF_Error E;
-					E.set_error_pfx("fixedpoint_move_cursor");
-					E.set_error("Beginning of sample reached while incrementing backwards");
-					throw E;
-				}
-				current_pos -= int_batch;
+	if(int_batch >= 1) {
+		if(fixedpoint_backwards) {
+			if(current_pos < int_batch) {
+				Sample_EOF_Error E;
+				E.set_error_pfx("fixedpoint_move_cursor");
+				E.set_error("Beginning of sample reached while incrementing backwards");
+				throw E;
 			}
-			else
-				current_pos += int_batch;
-
-			fixedpoint_offset-= int_batch << FIXEDPOINT_INT_PART_BITS;
+			current_pos -= int_batch;
 		}
+		else
+			current_pos += int_batch;
+
+		fixedpoint_offset-= int_batch << FIXEDPOINT_INT_PART_BITS;
 	}
 }
 

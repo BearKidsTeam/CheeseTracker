@@ -1,2 +1,5 @@
 Sun Jun 10 06:55:15 EDT 2007 J Phelps <godless@users.sf.net>
-	* sample_data.h (fuckernut): Example
+	* sample_data.cpp (fixedpoint_move_cursor): Removed the for-loop
+	that was previously placed around the whole function. This
+	for-loop was intended for a different design that never got
+	implemented. Instead, it caused a bug.
