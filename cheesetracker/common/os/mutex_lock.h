@@ -64,6 +64,10 @@ public:
 	virtual ~Mutex_Lock();
 };
 
+// Mutex_Lock_Container does not own the Mutex_Locks it contains.
+// Therefore, a Mutex_Lock_Container must not outlive the object that
+// returned it.
+
 class Mutex_Lock_Container {
 	private:
 		std::vector<Mutex_Lock *> locks;
@@ -79,8 +83,9 @@ class Mutex_Lock_Container {
 		}
 		~Mutex_Lock_Container() {
 #ifdef POSIX_ENABLED
-			vector<Mutex_Lock*>::iterator ix;
-			for(ix=locks.begin(); ix!=locks.end(); ix++) {
+			std::vector<Mutex_Lock*>::iterator ix;
+			for(ix=locks.begin(); ix!=locks.end();
+			    ix++) {
 				(*ix)->release();
 			}
 #endif

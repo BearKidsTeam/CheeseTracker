@@ -93,8 +93,7 @@ class Sample_Data {
 
 	int c5_freq;
 
-	Mutex_Lock *read_mutex;
-	Mutex_Lock *write_mutex;
+	Mutex_Lock *mutex;
 
 	// Memory management variables
 	//
