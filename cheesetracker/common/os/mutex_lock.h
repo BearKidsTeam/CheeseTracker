@@ -74,7 +74,7 @@ class Mutex_Lock_Container {
 		void add(Mutex_Lock *lck) {
 #ifdef POSIX_ENABLED
 			lck->grab();
-			lock.push_back(lck);
+			locks.push_back(lck);
 #endif
 		}
 		~Mutex_Lock_Container() {
