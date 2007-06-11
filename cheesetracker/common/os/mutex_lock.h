@@ -33,6 +33,7 @@
 #ifndef MUTEX_LOCK_H
 #define MUTEX_LOCK_H
 
+#include <vector>
 #include "typedefs.h"
 
 /**
@@ -65,17 +66,23 @@ public:
 
 class Mutex_Lock_Container {
 	private:
-		Mutex_Lock *lock;
+		std::vector<Mutex_Lock *> locks;
 	public:
 		Mutex_Lock_Container (Mutex_Lock *lck) {
-			lock=lck;
+			add(lck);
+		}
+		void add(Mutex_Lock *lck) {
 #ifdef POSIX_ENABLED
-			lock->grab();
+			lck->grab();
+			lock.push_back(lck);
 #endif
 		}
 		~Mutex_Lock_Container() {
 #ifdef POSIX_ENABLED
-			lock->release();
+			vector<Mutex_Lock*>::iterator ix;
+			for(ix=locks.begin(); ix!=locks.end(); ix++) {
+				(*ix)->release();
+			}
 #endif
 		}
 };

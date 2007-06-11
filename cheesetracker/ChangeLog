@@ -1,3 +1,8 @@
+Mon Jun 11 14:18:56 EDT 2007 J Phelps <godless@users.sf.net>
+	* mutex_lock.h: New method on Mutex_Lock_Container: add().
+	This makes it possible to put more than one mutex in the
+	same Mutex_Lock_Container, all of which will be released
+	together.
 Mon Jun 11 10:16:54 EDT 2007 J Phelps <godless@users.sf.net>
 	* mutex_lock.h: New class, Mutex_Lock_Container, which locks a
 	mutex during construction and unlocks it upon destruction.
