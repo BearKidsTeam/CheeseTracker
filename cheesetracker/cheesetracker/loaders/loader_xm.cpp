@@ -542,7 +542,6 @@ Loader::Error Loader_XM::load_instrument_internal(Instrument *p_instr,bool p_xi,
 
 			char auxb;
 			sample.data.set_num_channels(1);
-			sample.data.seek(0);
 			sample_size=reader.get_dword();
 			sample.data.set_loop_begin( reader.get_dword() );
 
@@ -600,6 +599,7 @@ Loader::Error Loader_XM::load_instrument_internal(Instrument *p_instr,bool p_xi,
 			sample_int_t old=0;
 			sample_int_t newsample;
 
+			sample->data.seek(0);
 			for(size_t ix=0; ix<sample_size; ix++) {
 				if(sample_is_16bits)
 					sampleval=CONVERT_FROM_TYPE(Sint16, reader.get_word());

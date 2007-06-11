@@ -63,4 +63,21 @@ public:
 	virtual ~Mutex_Lock();
 };
 
+class Mutex_Lock_Container {
+	private:
+		Mutex_Lock *lock;
+	public:
+		Mutex_Lock_Container (Mutex_Lock *lck) {
+			lock=lck;
+#ifdef POSIX_ENABLED
+			lock->grab();
+#endif
+		}
+		~Mutex_Lock_Container() {
+#ifdef POSIX_ENABLED
+			lock->release();
+#endif
+		}
+};
+
 #endif

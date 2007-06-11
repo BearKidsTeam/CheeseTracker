@@ -47,7 +47,6 @@ public:
 
 	inline void set_sample_offset(Sint64 p_offset);
 	inline void set_increment(Sint64 p_increment);
-	inline void set_fractional(Uint8 p_fract);
 	inline void set_samples_to_mix(int p_amount);
 	inline void set_l_volume(float p_volume);
 	inline void set_r_volume(float p_volume);
@@ -84,12 +83,6 @@ inline void Resampler_Instance::set_increment(Sint64 p_increment) {
 
 	 mixdata.increment=p_increment;
 
-
-}
-
-inline void Resampler_Instance::set_fractional(Uint8 p_fract) {
-
-	 mixdata.fractional_size=p_fract;
 
 }
 

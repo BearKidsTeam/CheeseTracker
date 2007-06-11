@@ -22,7 +22,8 @@
 #include "effect_source_manager.h"
 
 
-void DDS_Helpers::set_property_bridge_list_data(vector_dds& p_dds_array,list<Property_Bridge*> *p_list) {
+void DDS_Helpers::set_property_bridge_list_data(vector_dds& p_dds_array,list<Property_Bridge*> *p_list)
+{
 
 
 	for (int i=0;i<p_dds_array.size();i++) {
@@ -91,7 +92,8 @@ void DDS_Helpers::set_property_bridge_list_data(vector_dds& p_dds_array,list<Pro
 	}
 }
 
-void DDS_Helpers::set_effect_chain_data(DDS* p_dds,Effect_Parameter_Chain *p_chain) {
+void DDS_Helpers::set_effect_chain_data(DDS* p_dds,Effect_Parameter_Chain *p_chain)
+{
 
 
 
@@ -113,7 +115,8 @@ void DDS_Helpers::set_effect_chain_data(DDS* p_dds,Effect_Parameter_Chain *p_cha
 	}
 }
 
-void DDS_Helpers::set_envelope(DDS* p_dds,Envelope *p_envelope) {
+void DDS_Helpers::set_envelope(DDS* p_dds,Envelope *p_envelope)
+{
 
 	p_envelope->reset();
 
@@ -153,7 +156,8 @@ void DDS_Helpers::set_envelope(DDS* p_dds,Envelope *p_envelope) {
 
 }
 
-void DDS_Helpers::set_sample_data(DDS* p_dds,Sample_Data *p_sample) {
+void DDS_Helpers::set_sample_data(DDS* p_dds,Sample_Data *p_sample)
+{
 
 
 	p_sample->set_c5_freq( p_dds->get_int_var("c5_freq") );
@@ -208,7 +212,8 @@ void DDS_Helpers::set_sample_data(DDS* p_dds,Sample_Data *p_sample) {
 
 }
 
-void DDS_Helpers::set_mixer_data(DDS* p_dds,Mixer *p_mixer) {
+void DDS_Helpers::set_mixer_data(DDS* p_dds,Mixer *p_mixer)
+{
 
 	vector_dds& buffers=p_dds->get_dds_array_var("buffers");
 
@@ -268,7 +273,8 @@ void DDS_Helpers::set_mixer_data(DDS* p_dds,Mixer *p_mixer) {
 }
 
 
-void DDS_Helpers::get_property_bridge_list_data(list<Property_Bridge*> *p_list,vector_dds& p_dds_array) {
+void DDS_Helpers::get_property_bridge_list_data(list<Property_Bridge*> *p_list,vector_dds& p_dds_array)
+{
 
 	list<Property_Bridge*>::iterator I=p_list->begin();
 	list<Property_Bridge*>::iterator E=p_list->end();
@@ -331,7 +337,8 @@ void DDS_Helpers::get_property_bridge_list_data(list<Property_Bridge*> *p_list,v
 
 }
 
-void DDS_Helpers::get_effect_chain_data(Effect_Parameter_Chain *p_chain,DDS* p_dds) {
+void DDS_Helpers::get_effect_chain_data(Effect_Parameter_Chain *p_chain,DDS* p_dds)
+{
 
 	vector_dds aux_vector_dds;
 
@@ -341,9 +348,12 @@ void DDS_Helpers::get_effect_chain_data(Effect_Parameter_Chain *p_chain,DDS* p_d
 	for (int i=0;i<p_chain->get_effect_count();i++) {
 
 		DDS effect;
+		list<Property_Bridge*> property_list = p_chain->get_effect(i)->get_property_list();
+		
+
 		effect.set_str_var("name",p_chain->get_effect(i)->get_identifier_name());
 		effect.set_dds_array_var("controls",aux_vector_dds);
-		get_property_bridge_list_data(&p_chain->get_effect(i)->get_property_list(),effect.get_dds_array_var("controls"));
+		get_property_bridge_list_data(&property_list,effect.get_dds_array_var("controls"));
 
                 effects.push_back(effect);
 	}
@@ -351,7 +361,8 @@ void DDS_Helpers::get_effect_chain_data(Effect_Parameter_Chain *p_chain,DDS* p_d
 
 
 
-void DDS_Helpers::get_mixer_data(Mixer *p_mixer,DDS* p_dds) {
+void DDS_Helpers::get_mixer_data(Mixer *p_mixer,DDS* p_dds)
+{
 
 	p_dds->set_float_var("preamp",1.0);
 
@@ -415,7 +426,8 @@ void DDS_Helpers::get_mixer_data(Mixer *p_mixer,DDS* p_dds) {
 
 
 
-void DDS_Helpers::get_sample_data(Sample_Data *p_sample,DDS* p_dds) {
+void DDS_Helpers::get_sample_data(Sample_Data *p_sample,DDS* p_dds)
+{
 
 
 	p_dds->set_int_var("c5_freq",p_sample->get_c5_freq());
@@ -460,7 +472,8 @@ void DDS_Helpers::get_sample_data(Sample_Data *p_sample,DDS* p_dds) {
 
 
 
-void DDS_Helpers::get_envelope(Envelope *p_envelope,DDS* p_dds) {
+void DDS_Helpers::get_envelope(Envelope *p_envelope,DDS* p_dds)
+{
 
 	p_dds->set_int_var("max_nodes",p_envelope->get_max_nodes());
 	p_dds->set_int_var("min_nodes",p_envelope->get_min_nodes());

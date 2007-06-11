@@ -89,16 +89,18 @@ void Tracker_Voice::mix(size_t p_amount,sample_t* p_where) {
 		return;
 	}
 
-
-//	int i;
-	 
 	float pan, vol;
-		// Calculate increment index depending on frequency difference
-	// info.increment_index=((Sint64)(info.current_frequency<<FRACTIONAL))/mixfreq;
+	ns_autoptr<Mutex_Lock_Container> ns_sample_lock;
+	// Lock the sample's mutex, to prevent illegal attempts
+	// to modify the sample while we're in use_fixedpoint()
+	// mode.
+	Mutex_Lock_Container *sample_lock = info.sample_data_ptr->lock();  
+	// Mutex will be automatically unlocked at
+	// the end of this scope.
+	ns_sample_lock.ptr_new(sample_lock); 
+
 	info.sample_data_ptr->use_fixedpoint(true);
 	info.sample_data_ptr->fixedpoint_set_resample_rate(info.current_frequency, mixfreq, info.playing_backwards);
-
-	// if (info.playing_backwards) info.increment_index=-info.increment_index;
 
 	vol = info.volume;
 	pan = info.panning/(float)PAN_RIGHT;
@@ -106,6 +108,7 @@ void Tracker_Voice::mix(size_t p_amount,sample_t* p_where) {
 	info.oldlvol=info.lvolsel;
 	info.oldrvol=info.rvolsel;
 
+	// TODO: Determine if this is still needed. {
 
 	if(info.panning != PAN_SURROUND) {
 
@@ -115,6 +118,7 @@ void Tracker_Voice::mix(size_t p_amount,sample_t* p_where) {
 	} else	{
 		info.lvolsel=info.rvolsel=vol/2.0;
 	}
+	// }
 
 	if (info.first_mix) {
 
@@ -129,15 +133,10 @@ void Tracker_Voice::mix(size_t p_amount,sample_t* p_where) {
 		info.first_mix=false;
 	}
 
+
 	idxsize = info.sample_data_ptr->get_size();
-	idxlend = info.sample_data_ptr->get_loop_end();
-	idxlpos = info.sample_data_ptr->get_loop_begin();
-
-	if (info.increment_index==0) {
-
-		info.active=false;
-		return;
-	}
+	loop_end = info.sample_data_ptr->get_loop_end();
+	loop_begin = info.sample_data_ptr->get_loop_begin();
 	add_to_mix_buffer(p_amount,p_where);
 	info.sample_data_ptr->use_fixedpoint(false);
 }
@@ -145,8 +144,7 @@ void Tracker_Voice::mix(size_t p_amount,sample_t* p_where) {
 void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer) {
 
 	sample_t *mixing_buffer_index=p_buffer; 
-	size_t total=p_amount;
-	size_t todo=total;
+	size_t todo=p_amount;
 	float ramp_tangent_l;
 	float ramp_tangent_r;
 
@@ -158,36 +156,42 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer) {
 
 	/* PRECALCULATE RAMP */
 
-	/* update the 'current_index' so the sample loops, or stops playing if it
-	   reached the end of the sample */
+	bool loop_active=info.sample_data_ptr->is_loop_enabled() && (loop_end>loop_begin);
 
-	bool loop_active=info.sample_data_ptr->is_loop_enabled() && (idxlend>idxlpos);
-
-	if (total==0) return;
-	ramp_tangent_l=(float)(info.lvolsel-info.oldlvol)/(float)total;
-	ramp_tangent_r=(float)(info.rvolsel-info.oldrvol)/(float)total;
+	if (p_amount==0) return;
+	ramp_tangent_l=(float)(info.lvolsel-info.oldlvol)/(float)p_amount;
+	ramp_tangent_r=(float)(info.rvolsel-info.oldrvol)/(float)p_amount;
 
 	Resampler::Mix_Data &mixdata=resampler.get_mixdata();
 
-	size_t lend=loop_active?idxlpos:0;
-	size_t rend=loop_active?idxlend:idxsize;
+	size_t left_end=loop_active?loop_begin:0;
+	size_t right_end=loop_active?loop_end:idxsize;
+
+
+	info.current_index=info.sample_data_ptr->get_current_pos();
+
+	// This while-loop is here because the sample might
+	// not have enough data in it to fill the p_buffer 
+	// with p_amount stereo samples. But, if the sample is looping,
+	// we can still fill the buffer by making multiple
+	// passes until {todo} samples have been put into the
+	// mixing buffer.
 
 	while(todo>0) {
+		// Implement looping behavior and check boundaries. 
+
 		if ( info.playing_backwards ) {
 			/* The sample is playing in reverse */
-			if( ( loop_active )&&(info.current_index<idxlpos) ) {
-				/* the sample is looping and has reached the loopstart index */
+			if( ( loop_active )&&(info.current_index<=loop_begin) ) {
+				/* the sample is looping and has reached loop_begin */
 				if ( info.sample_data_ptr->is_loop_ping_pong() ) {
-					/* sample is doing bidirectional loops, so 'bounce' the
-					   current index against the idxlpos */
-					info.current_index = idxlpos+(idxlpos-info.current_index);
+					/* Ping-pong loop: Reverse loop direction */
 					info.playing_backwards=false;
-					// info.increment_index = -info.increment_index;
 					info.sample_data_ptr->fixedpoint_aboutface();
 				} else
-					/* normal backwards looping, so set the current position to
-					   loopend index */
-					info.current_index=idxlend-(idxlpos-info.current_index);
+					/* normal backwards looping, so set the current
+					 * position to loopend index */
+					info.current_index=loop_end;
 			} else {
 				/* the sample is not looping, so check if it reached index 0 */
 				if(info.current_index < 1) {
@@ -199,19 +203,15 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer) {
 			}
 		} else {
 			/* The sample is playing forward */
-			if ( (loop_active) && (info.current_index >= idxlend)) {
+			if ( (loop_active) && (info.current_index >= loop_end)) {
 				/* the sample is looping, check the loopend index */
 				if( info.sample_data_ptr->is_loop_ping_pong() ) {
-					/* sample is doing bidirectional loops, so 'bounce' the
-					   current index against the idxlend */
 					info.playing_backwards=true;
 					info.sample_data_ptr->fixedpoint_aboutface();
-					info.increment_index = -info.increment_index;
-					info.current_index = idxlend-(info.current_index-idxlend);
 				} else
 					/* normal backwards looping, so set the current position
 					   to loopend index */
-					info.current_index=idxlpos+(info.current_index-idxlend);
+					info.current_index=loop_begin;
 			} else {
 				/* sample is not looping, so check if it reached the last
 				   position */
@@ -224,79 +224,70 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer) {
 			}
 		}
 
+		// Make sure that the changes to current_index above
+		// are reflected in the sample's position indicator.
+		// Furthermore, verify the actual position within the
+		// sample in case we're off.
+
 		info.sample_data_ptr->use_fixedpoint(false);
-		info.sample_data_ptr->seek(info.current_index);
+		info.current_index=info.sample_data_ptr->seek(info.current_index);
 		info.sample_data_ptr->use_fixedpoint(true);
 
-		//  Sun Apr 22 16:54:40 EDT 2007
-		//
-		//  My goal is to eliminate the address-range limitations created by
-		//  the use of 32-bit fixed-point numbers. Juan Linietsky addressed
-		//  this problem on 32-bit systems by making some of the indices
-		//  (such as lend and rend) 64-bit (and signed), but this is broken
-		//  on 64-bit systems, because the underlying assumption is that half
-		//  the bits in a 64-bit number are going to be unused in a (32-bit)
-		//  index.
-		//
-		//  The original code only used 64-bit numbers for SOME of the
-		//  fixed-point numbers: Others were only 32 bits, with 11 of
-		//  those bits being devoted to fractional data and an additional
-		//  bit lost because those numbers were all signed. This left a
-		//  20-bit address range for indexing samples, whether your
-		//  native address space is 32 bits, 64 bits, or a million bits.
-		//
-		//  This is now addressed by keeping a temporary index counter in
-		//  the Sample_Data in fixed-point (unsigned) format. When this temporary counter's
-		//  value exceeds 1 (that is, 1 << 11), the number is converted to integer
-		//  format and the resulting integer is added to the real position-counter
-		//  (which is of type size_t) and then this integer is converted back
-		//  to fixed-point format to be subtracted from the temporary counter.
-		//
-		//  This allows me to appear to be adding a fractional value to an integer,
-		//  without losing any range (not even on 64-bit systems, or on systems with
-		//  even bigger address spaces that haven't been built yet), but it doesn't
-		//  allow me to divide the integer value by a fixed-point value and get the
-		//  number of actual samples that will end up going to the mixing buffer.
-		//
-		//  This can be overcome with special-case handling, going back to the way
-		//  the fixed-point incrementation number is calculated in the first place:
-		//
-		//  fixedpoint_inc = (current_freq << 11)/mixfreq;
-		//
-		//  that is, the incrementation is a fraction whose numerator is current_freq and whose
-		//  denomonator is mixfreq (<< 11 converts current_freq to the fixed-point form). When
-		//  current_freq is greater than mixfreq, the total number of samples will be decreased
-		//  to (total_samples/(current_freq/mixfreq)).
-		//  
-		//  When current_freq is LESS than mixfreq, then the total number of samples will be
-		//  INCREASED to (total_samples * (mixfreq/current_freq))
-		//
-		//  This can be done with 100% fidelity in unsigned integer math, but is slower
-		//  than the original signed fixed-point math that was once here because it requires many
-		//  more instructions (such as tests to make sure that subtraction will not result in overflow
-		//  and to make sure that division will not result in less-than-one). But it's also more portable,
-		//  being as correct on 64-bit chips as it is on 32-bit chips, and it creates no arbitrary
-		//  address-space limitation.
+		// Time to calculate how much of p_buffer we'll
+		// use during this iteration of the loop.
 
 		size_t total_samples=0;
 		size_t end,done;
 
-		end=info.playing_backwards?lend:rend;
+		// FIXME: Invalid if the sample is looping and either
+		// loop index is not equal to the beginning or end
+		// of the sample.
+
+		end=info.playing_backwards?left_end:right_end;
+
+		// Let total_samples be the number of samples
+		// between the current position and the
+		// end (or beginning) of the sample.
+
 		if(end > info.current_index) {
 			total_samples = end-info.current_index;
 		} else {
 			total_samples = info.current_index - end;
 		}
 
+
+		// total_samples * (mixfreq/info.current_frequency)
+		// is the number of samples that would actually get
+		// stored in the p_buffer as a result of iterating
+		// at the resampling rate instead of one sample at a
+		// time. We'll call this the number of "virtual samples"
+		// that can be extracted from the sample_data_ptr.
+
+		// Since we're using integer math, we also use
+		// the equivalent expression total_samples
+		// / (info.current_frequency/mixfreq) if
+		// (mixfreq/info.current_frequency) would be less
+		// than one.
+
+		// A third condition is used for the case where
+		// (mixfreq/info.current_frequency) would equal one,
+		// in which case multiplication would be pointless.
+
+		// Let "done" be the lesser of either the number of
+		// virtual samples that would be extracted from the
+		// sample, or the number of samples remaining before we
+		// have filled p_buffer.
+
 		if(info.current_frequency > mixfreq) {
-			done=std::min<size_t>(total_samples/(info.current_frequency/mixfreq)+1, todo);
+			done=std::min<size_t>(total_samples/(info.current_frequency/mixfreq), todo);
 		} else if (info.current_frequency < mixfreq) {
-			done=std::min<size_t>(total_samples * (mixfreq/info.current_frequency)+1, todo);
+			done=std::min<size_t>(total_samples * (mixfreq/info.current_frequency), todo);
 		} else {
 			// Mixing frequency and sample frequency are equal
 			//
 			done = std::min<size_t>(total_samples, todo);
 		}
+
 
 		if ( done==0 ) {
 			info.active = 0;
@@ -305,12 +296,16 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer) {
 
 		float l_vol_old,l_vol_new;
 		float r_vol_old,r_vol_new;
-		int written=total-todo;
+		int written=p_amount-todo;
 
 		l_vol_old=info.oldlvol+(float)written*ramp_tangent_l;
 		r_vol_old=info.oldrvol+(float)written*ramp_tangent_r;
 		l_vol_new=info.oldlvol+(float)(written+done)*ramp_tangent_l;
 		r_vol_new=info.oldrvol+(float)(written+done)*ramp_tangent_r;
+
+		// Copy a bunch of data from {info} into another
+		// slightly different data structure that is used
+		// by the resampler modules.
 
 		mixdata.increment_fraction.num = info.current_frequency;
 		mixdata.increment_fraction.den = mixfreq;
@@ -318,22 +313,47 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer) {
 		mixdata.dst_buff=mixing_buffer_index;
 
 		mixdata.sample_offset=info.current_index;
-		mixdata.increment=info.increment_index;
 		mixdata.samples_to_mix=done;
 		mixdata.l_volume_prev=l_vol_old;
 		mixdata.r_volume_prev=r_vol_old;
 		mixdata.l_volume=l_vol_new;
 		mixdata.r_volume=r_vol_new;
 
-		mixdata.fractional_size=FRACTIONAL;
 		mixdata.panning = info.panning;
 
 		resampler.set_filter(info.filter.enabled,info.filter.coeffs);
 
 		resampler.mix();
 
+
+		// FIXME: In the event that info.current_frequency > mixfreq, it
+		// is possible that the calculation used to produce "done"
+		// cannot be reversed to get total_samples, due to loss of
+		// precision. In these cases, the reverse operation will
+		// always be less than total_samples, meaning that the
+		// actual sample position after mixing will be less than
+		// info.current_index + total_samples.
+
+		// In all other cases, we expect that the sample position
+		// after mixing will always be exactly equal to
+		// info.current_index + total_samples.
+
+#ifndef NDEBUG
+		if(info.current_frequency <= mixfreq && done != todo) {
+			assert(info.sample_data_ptr->get_current_pos()
+			       == info.current_index + total_samples);
+		}
+#endif
+
+		// Update our local copy of the current position
+		// in the sample.
+
                 info.current_index=info.sample_data_ptr->get_current_pos();
 		todo-=done;
+
+		// Incrementing by done*2 because mixing_buffer_index
+		// contains stereo data and {done} is expressed in
+		// samples.
 
 		mixing_buffer_index += done*2;
 	}
@@ -395,12 +415,15 @@ void Tracker_Voice::set_panning(int p_pan) {
 
 	info.panning=p_pan;
 }
-void Tracker_Voice::set_volume(int p_vol) {
+void Tracker_Voice::set_volume(int p_vol)
+{
 
 	info.volume=(float)p_vol/512.0;
 	info.volume*=VOICE_VOLUME_ADJUST;
 }
-void Tracker_Voice::set_filter(const IIR_SVF::Coeffs& p_coeffs,bool p_enabled) {
+
+void Tracker_Voice::set_filter(const IIR_SVF::Coeffs& p_coeffs,bool p_enabled)
+{
 
 
 	info.filter.coeffs=p_coeffs;
@@ -417,13 +440,15 @@ void Tracker_Voice::set_filter(const IIR_SVF::Coeffs& p_coeffs,bool p_enabled) {
 }
 
 
-bool Tracker_Voice::has_stopped() {
+bool Tracker_Voice::has_stopped()
+{
 
 
  	return was_removed_from_mixer();
 }
 
-void Tracker_Voice::reset() {
+void Tracker_Voice::reset()
+{
 
 	preamp=1;
 	mixfreq=1;

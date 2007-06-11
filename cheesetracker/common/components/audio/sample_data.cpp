@@ -34,6 +34,9 @@
 #include <cassert>
 #include <new>
 #include <cmath>
+#ifdef POSIX_ENABLED
+#   include "common/drivers/posix/mutex_lock_pthreads.h"
+#endif
 #include "ns_autoptr.h"
 #include "sample_data.h"
 
@@ -144,6 +147,11 @@ void Sample_Data::set_c5_freq(int p_c5_freq) {
 }
 
 Sample_Data::Sample_Data() {
+#ifdef POSIX_ENABLED
+	mutex = new Mutex_Lock_Pthreads;
+#else
+	mutex = NULL;
+#endif
 	reset();
 }
 
@@ -192,6 +200,9 @@ Sample_Data::Sample_Data(const Sample_Data &rhs) {
 }
 
 Sample_Data::~Sample_Data(){
+#ifdef POSIX_ENABLED
+	delete mutex;
+#endif
 	if(data_ptr)
 		delete[] data_ptr;
 }
@@ -477,15 +488,18 @@ Sample_Data::put_sample(const sample_int_t *smp) {
 //          - If not in fixed-point mode, the fixed-point incrementation
 //            cache is left alone.
 //
+// return   - Returns the final value of the position indicator.
+//
 // see also - get_size
 
-void
+size_t
 Sample_Data::seek(size_t new_pos) {
 	if(new_pos > get_size())
 		new_pos = get_size();
 	current_pos = new_pos;
 	if(fixedpoint_mode)
 		fixedpoint_offset=0;
+	return current_pos;
 }
 
 // get_current_pos - Get the position indicator of the specified channel.
@@ -794,8 +808,11 @@ Sample_Data::fixedpoint_move_cursor() {
 			}
 			current_pos -= int_batch;
 		}
-		else
+		else {
 			current_pos += int_batch;
+			if(eof_reached())
+				current_pos = size-1;
+		}
 
 		fixedpoint_offset-= int_batch << FIXEDPOINT_INT_PART_BITS;
 	}
@@ -833,10 +850,10 @@ blank_f_sample(float *dest, size_t channels) {
 
 void
 Sample_Data::get_sample_for_cosine_mixer(float *dest, bool use_cosine_mode) {
-	if(eof_reached()) {
+	/* if(eof_reached()) {
 		blank_f_sample(dest, channels);
 		return;
-	}
+	} */
 	const sample_int_t *current_frame = get_data_value(get_current_pos());
 	const sample_int_t *next_frame;
 	ns_autoptr<sample_int_t> ns_temp;
@@ -886,10 +903,10 @@ Sample_Data::get_sample_for_cosine_mixer(float *dest, bool use_cosine_mode) {
 
 void
 Sample_Data::do_cubic_mixer_voodoo(float *dest) {
-	if(eof_reached()) {
+	/* if(eof_reached()) {
 		blank_f_sample(dest, channels);
 		return;
-	}
+	} */
 
 	size_t poshi = get_current_pos();
 	size_t poslo_fixed = (get_current_pos() << FIXEDPOINT_INT_PART_BITS) + fixedpoint_offset;
@@ -911,10 +928,10 @@ Sample_Data::do_cubic_mixer_voodoo(float *dest) {
 void
 Sample_Data::get_sample_for_linear_mixer(float *dest) {
 
-	if(eof_reached()) {
+	/* if(eof_reached()) {
 		blank_f_sample(dest, channels);
 		return;
-	}
+	} */
 
 	size_t pos = get_current_pos();
 	const sample_int_t *current_frame = get_int_sample();
@@ -933,5 +950,17 @@ Sample_Data::get_sample_for_linear_mixer(float *dest) {
 				FIXEDPOINT_INT_PART_BITS)
 		); 
 	}
+}
+
+
+// lock         - Lock the sample's mutex.
+//
+// return value - Pointer to Mutex_Lock_Container, which unlocks
+//                the mutex when deleted.
+//
+
+Mutex_Lock_Container *
+Sample_Data::lock() {
+	return new Mutex_Lock_Container(mutex);
 }
 

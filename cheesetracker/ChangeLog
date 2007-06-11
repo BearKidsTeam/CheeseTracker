@@ -1,3 +1,44 @@
+Mon Jun 11 10:16:54 EDT 2007 J Phelps <godless@users.sf.net>
+	* mutex_lock.h: New class, Mutex_Lock_Container, which locks a
+	mutex during construction and unlocks it upon destruction.
+
+	* sample_data.h/cpp (lock): Now returns pointer to
+	Mutex_Lock_Container.
+	* sample_data.h/cpp (unlock): Removed.
+	* sample_data.h/cpp (seek): Now returns the final seek position.
+
+	* tracker_voice.cpp (mix): Using sample_data mutexes.
+
+	* tracker_voice.cpp (add_to_mix_buffer): Renamed several
+	cryptically-named variables, corrected an OB1 bug in the
+	loop-checking logic.
+
+	Removed the 300-page dissertation on fixed-point numbers.
+
+	* sample_data.cpp (resample functions): Commented out the checks
+	for sample EOF, as I attempt to make tracker_voice stay
+	perfectly within the boundaries.
+
+	* resampler_instance.h/cpp (set_fractional): Removed.
+
+	* : Removed all variables and class members named
+	"fractional_size".
+
+Sun Jun 10 13:50:36 EDT 2007 J Phelps <godless@users.sf.net>
+	* resampler_manager_new.cpp: Removed.
+
+	* dds_helpers.cpp (get_effect_chain_data): Corrected "taking
+	address of temporary" warning from G++ by creating new local
+	variable "property_list".
+
+	Also moved curly braces in function definitions to Column 1,
+	so that ']]' works in vi.
+
+Sun Jun 10 13:41:59 EDT 2007 J Phelps 
+	* loader_xm.cpp (loader_instrument_internal): Moved the
+	sample.data.seek(0) call down to the part that loads the sample
+	data from the disk.
+
 Sun Jun 10 06:55:15 EDT 2007 J Phelps <godless@users.sf.net>
 	* sample_data.cpp (fixedpoint_move_cursor): Removed the for-loop
 	that was previously placed around the whole function. This

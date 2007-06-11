@@ -34,6 +34,7 @@
 #define SAMPLE_DATA_H
 
 // #include "../../../cheesetracker/trackercore/Error.h"
+#include "os/mutex_lock.h"
 #include "cheesetracker/trackercore/Error.h"
 #include "typedefs.h"
 #include "sample_defs.h"
@@ -92,6 +93,8 @@ class Sample_Data {
 
 	int c5_freq;
 
+	Mutex_Lock *mutex;
+
 	// Memory management variables
 	//
 	// fixedpoint_mode and friends are used during resampling.
@@ -137,6 +140,7 @@ class Sample_Data {
 	inline sample_8s_t *get_data_8()  const;
 	void release_data_ptr();
 	void set_data_ptr(void *p_data,int p_size=0,bool p_16bits=true);
+	
 
 public:
 	// The "paragraph" of functions below are the
@@ -188,7 +192,7 @@ public:
 	void set_size(size_t new_size);
 	inline size_t get_size()  const;
 
-        void seek(size_t new_pos);
+        size_t seek(size_t new_pos);
 	void truncate();
         bool eof_reached();
 	bool is_empty();
@@ -202,6 +206,7 @@ public:
 	void fixedpoint_set_resample_rate(size_t current_freq, size_t mix_freq, bool backwards=false);
 	bool fixedpoint_is_backwards();
 	void fixedpoint_move_cursor();
+	Mutex_Lock_Container *lock();
 
 	const Sample_Data& operator=(const Sample_Data &r_data);
 

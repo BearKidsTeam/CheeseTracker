@@ -36,7 +36,6 @@ public:
 		Sint64 sample_offset;
 		Sint32 increment;
 		Sint32 samples_to_mix;
-		Uint8 fractional_size;
 		int panning;
 		size_t mixfreq;
 		size_t current_frequency;

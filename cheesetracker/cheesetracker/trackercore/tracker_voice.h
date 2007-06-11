@@ -54,7 +54,6 @@ class Tracker_Voice : public Voice
 		float oldlvol,oldrvol;
 
 		size_t current_index;           /* current index in the sample */
-		Sint64 increment_index;         /* increment value */
 		
 		Uint16 reverb_send;
   		Uint16 chorus_send;
@@ -76,7 +75,7 @@ class Tracker_Voice : public Voice
 			start_index=current_frequency=0;
 			chorus_send=reverb_send=0;
 			volume=lvolsel=rvolsel=oldlvol=oldrvol=0;
-			panning=current_index=increment_index=0;
+			panning=current_index=0;
                         sample_data_ptr=NULL;
 			first_mix=true;
                         filter.enabled=false;
@@ -88,7 +87,14 @@ class Tracker_Voice : public Voice
 		void restart() {
 
 			playing_backwards=false;
-			current_index=((Sint64)start_index)<<FRACTIONAL;
+			current_index=start_index;
+			if(sample_data_ptr) {
+				current_index=sample_data_ptr->seek(current_index);
+				if(sample_data_ptr->fixedpoint_is_backwards()) {
+					sample_data_ptr->fixedpoint_aboutface();
+				}
+			}
+			
 			active=true;
 			first_mix=true;
 		}
@@ -108,7 +114,7 @@ class Tracker_Voice : public Voice
 	size_t mixfreq;
 	float preamp;
 
-	Sint64 idxsize,idxlpos,idxlend; // index size/begin/end for fast loop/pos check
+	size_t idxsize,loop_begin,loop_end; // index size/begin/end for fast loop/pos check
 
 	//virtuals
 	virtual Priority get_priority(); //finally, this is proovided to poll priority.
