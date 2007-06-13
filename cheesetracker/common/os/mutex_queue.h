@@ -36,11 +36,13 @@
 
 #include "mutex_lock.h"
 
-#define QUEUE_LEN 5
+#define QUEUE_LEN 2
 
 class Mutex_Queue {
-		Mutex_Lock waiting[QUEUE_LEN];
+		Mutex_Lock *waiting[QUEUE_LEN];
 	public:
+		Mutex_Queue();
+		~Mutex_Queue();
 		void enter();
 		void leave();
 }

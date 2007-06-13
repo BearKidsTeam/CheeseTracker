@@ -1,3 +1,4 @@
+#include "drivers/posix/mutex_lock_pthreads.h"
 #include "multireader_lock.h"
 
 /***************************************************************************
@@ -38,40 +39,61 @@
 multireader_lock::multireader_lock()
 {
 	touchers=0;
+#ifdef POSIX_ENABLED
+	mutex = new Mutex_Lock_Pthreads;
+#endif
 }
+
+#ifdef POSIX_ENABLED
+multireader_lock::~multireader_lock() {
+	delete mutex;
+}
+#endif
 
 void
 multireader_lock::touch()
 {
 	queue.enter();
-	mutex.grab();
+#ifdef POSIX_ENABLED
+	mutex->grab();
+#endif
 	queue.leave();
 	touchers++;
-	mutex.release();
+#ifdef POSIX_ENABLED
+	mutex->release();
+#endif
 }
 
 void
 multireader_lock::let_go()
 {
-	mutex.grab();
+#ifdef POSIX_ENABLED
+	mutex->grab();
+#endif
 	touchers--;
-	mutex.release();
+#ifdef POSIX_ENABLED
+	mutex->release();
+#endif
 }
 
 void
 multireader_lock::lock()
 {
 	queue.enter();
-	mutex.grab();
+#ifdef POSIX_ENABLED
+	mutex->grab();
 	while(touchers) {
-		mutex.release();
-		mutex.grab();
+		mutex->release();
+		mutex->grab();
 	}
+#endif
 	queue.leave();
 }
 
 void
 multireader_lock::unlock()
 {
-	mutex.release();
+#ifdef POSIX_ENABLED
+	mutex->release();
+#endif
 }

@@ -51,11 +51,14 @@
 // have called touch() but have not called let_go().
 
 class multireader_lock {
-		Mutex_Lock mutex;
+		Mutex_Lock *mutex;
 		Mutex_Queue queue;
 		size_t touchers;
 	public:
 		multireader_lock();
+#ifdef POSIX_ENABLED
+		~multireader_lock();
+#endif
 		void touch();
 		void let_go();
 		void lock();
