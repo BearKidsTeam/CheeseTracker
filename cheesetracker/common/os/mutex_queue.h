@@ -45,6 +45,6 @@ class Mutex_Queue {
 		~Mutex_Queue();
 		void enter();
 		void leave();
-}
+};
 
 #endif

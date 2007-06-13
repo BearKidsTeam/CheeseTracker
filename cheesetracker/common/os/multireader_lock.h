@@ -78,7 +78,7 @@ class multireader_lock_container {
 			if(touch_only)	asem->touch();
 			else		asem->lock();
 		}
-		~multireader_lock() {
+		~multireader_lock_container() {
 			if(do_touch)	asem->let_go();
 			else		asem->unlock();
 		}
