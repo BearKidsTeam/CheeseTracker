@@ -34,7 +34,7 @@
 #define SAMPLE_DATA_H
 
 // #include "../../../cheesetracker/trackercore/Error.h"
-#include "os/mutex_lock.h"
+#include "os/multireader_lock.h"
 #include "cheesetracker/trackercore/Error.h"
 #include "typedefs.h"
 #include "sample_defs.h"
@@ -93,7 +93,7 @@ class Sample_Data {
 
 	int c5_freq;
 
-	Mutex_Lock *mutex;
+	multireader_lock *mrlock;
 
 	// Memory management variables
 	//
@@ -164,6 +164,13 @@ public:
 	void set_num_channels(size_t num);
 	size_t get_current_pos() const;
 
+	// Threads should touch() before reading
+	// and lock() before writing and before
+	// calling use_fixedpoint(true).
+
+	multireader_lock_container *lock();
+	multireader_lock_container *touch();
+
 	// Several methods of getting and setting
 	// data from the sample buffer are supported.
 	//
@@ -202,11 +209,10 @@ public:
 	void get_sample_for_linear_mixer(float *dest);
 
 	void use_fixedpoint(bool yes_or_no);
-	void fixedpoint_aboutface();
 	void fixedpoint_set_resample_rate(size_t current_freq, size_t mix_freq, bool backwards=false);
-	bool fixedpoint_is_backwards();
 	void fixedpoint_move_cursor();
-	Mutex_Lock_Container *lock();
+	void fixedpoint_aboutface();
+	bool fixedpoint_is_backwards();
 
 	const Sample_Data& operator=(const Sample_Data &r_data);
 

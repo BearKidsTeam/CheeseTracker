@@ -8,10 +8,10 @@
 //              to make it more difficult to make those modules support
 //              wide, multi-channel samples. 
 //
-//
 //              Fortunately, those two modules are the only ones
 //              that use this class.
 //
+// BTW:		EMACS sucks. Use vi instead.
 //
 // Author: Juan Linietsky <coding@reduz.com.ar>, (C) 2003
 //

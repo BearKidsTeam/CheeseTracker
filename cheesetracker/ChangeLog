@@ -1,8 +1,30 @@
+Wed Jun 13 01:10:50 EDT 2007 J Phelps <godless@users.sf.net>
+	* sample_data.cpp: ASSERT_NOTFIXEDPOINT is defined to nothing
+	if NDEBUG is defined.  * common/components/audio/fixedpoint.h:
+	Created. The fixed-point functions from sample_data.h are
+	defined here, and there are comments that explain how the whole
+	fixed-point scheme works.
+
+	Incidentally, another fixedpoint.h file was discovered,
+	common/components/data/fixedpoint.h, which defines a fixed-point
+	class for which there are no method definitions in the source.
+
+Tue Jun 12 01:32:10 EDT 2007 J Phelps <godless@users.sf.net>
+	* multireader_lock.h/cpp: Created. Any number of threads 
+	can hold an multireader_lock, and any one process can lock
+	all the others out. This allows many threads to read
+	a memory region, and one thread to kick the others out
+	for writing.
+
+	* sample_data.h: Now uses a multireader_lock instead of
+	a mutex.
+
 Mon Jun 11 14:18:56 EDT 2007 J Phelps <godless@users.sf.net>
 	* mutex_lock.h: New method on Mutex_Lock_Container: add().
 	This makes it possible to put more than one mutex in the
 	same Mutex_Lock_Container, all of which will be released
 	together.
+
 Mon Jun 11 10:16:54 EDT 2007 J Phelps <godless@users.sf.net>
 	* mutex_lock.h: New class, Mutex_Lock_Container, which locks a
 	mutex during construction and unlocks it upon destruction.

@@ -1,8 +1,9 @@
 /***************************************************************************
     This file is part of the CheeseTronic Music Tools
-    url                  : http://reduz.com.ar/cheesetronic
+    url                  : http://www.geocities.com/godlessinfidelus/
     copyright            : (C) 2003 by Juan Linietsky
-    email                : coding@reduz.com.ar
+    maintainer           : J Phelps
+    email                : godless@users.sf.net
  ***************************************************************************/
 
 /***************************************************************************
@@ -41,10 +42,8 @@
 #include "sample_data.h"
 
 #define CURRENT_FRAME current_pos*channels+chan
-#define FIXEDPOINT_INT_PART_BITS 11
-#define FRACTIONAL_MASK ((1 << FIXEDPOINT_INT_PART_BITS)-1)
-#define COSINE_LEN (1 << FIXEDPOINT_INT_PART_BITS)
-#define FIXEDPOINT_FLOOR(number) (number & (~0 << FIXEDPOINT_INT_PART_BITS))
+#ifndef NDEBUG
+
 #define ASSERT_NOTFIXEDPOINT(function) {			\
 	if(fixedpoint_mode) {					\
 		Sample_Readonly_Error E;			\
@@ -53,6 +52,10 @@
 		throw E;					\
 	}							\
 }
+
+#else // defined(NDEBUG)
+#define ASSERT_NOTFIXEDPOINT(function)
+#endif
 #define SPLINE_FRACBITS 8
 #define SPLINE_QUANTBITS        14
 #define SPLINE_QUANTSCALE       (1L<<SPLINE_QUANTBITS)
@@ -60,6 +63,10 @@
 #define SPLINE_16SHIFT          (SPLINE_QUANTBITS)
 // forces coefsset to unity gain
 #define SPLINE_CLAMPFORUNITY
+
+// fixedpoint.h must be included AFTER all #define constants.
+
+#include "fixedpoint.h"
 
 int frac_cosine[COSINE_LEN];
 int frac_cosine_not_cosine_mode[COSINE_LEN];
@@ -148,9 +155,9 @@ void Sample_Data::set_c5_freq(int p_c5_freq) {
 
 Sample_Data::Sample_Data() {
 #ifdef POSIX_ENABLED
-	mutex = new Mutex_Lock_Pthreads;
+	mrlock = new multireader_lock;
 #else
-	mutex = NULL;
+	mrlock = NULL;
 #endif
 	reset();
 }
@@ -201,7 +208,7 @@ Sample_Data::Sample_Data(const Sample_Data &rhs) {
 
 Sample_Data::~Sample_Data(){
 #ifdef POSIX_ENABLED
-	delete mutex;
+	delete mrlock;
 #endif
 	if(data_ptr)
 		delete[] data_ptr;
@@ -750,78 +757,6 @@ Sample_Data::operator=(const Sample_Data &r_data) {
 	return *this;
 }
 
-// use_fixedpoint - Set whether or not to use the special fixed-point processing mode.
-// 
-// notes          - Fixed-point mode is a special mode required by the resamplers
-//                  found in common/plugins/resamplers/. In fixed-point mode, a
-//                  channel's position indicator doesn't move when the read/write
-//                  interface is used. This behavior is required because the mixer
-//                  may need to mix the same sample into multiple channels.
-//
-//                  Instead, the position indicator is moved explicitly with
-//                  fixedpoint_move_cursor() when all channels at the current position
-//                  have been mixed. 
-//
-//                - When the indicator does move, it moves according to the resample
-//                  ratio calculated by fixedpoint_set_resample_rate().
-//
-//                - Fixed-point mode supports forward and backward cursor movement, whereas
-//                  normal mode only supports forward movement.
-//
-// see also       - fixedpoint_set_resample_rate, fixedpoint_move_cursor, fixedpoint_aboutface,
-//                  fixedpoint_is_backwards
-
-void
-Sample_Data::use_fixedpoint(bool yes_or_no)
-{
-	fixedpoint_mode=yes_or_no;
-}
-
-void
-Sample_Data::fixedpoint_set_resample_rate(size_t current_freq, size_t mix_freq, bool backwards)
-{
-	fixedpoint_inc = (current_freq << FIXEDPOINT_INT_PART_BITS)/mix_freq;
-	fixedpoint_backwards = backwards;
-}
-
-// fixedpoint_move_cursor - Move the cursor in fixed-point mode.
-//
-// warning                - Does not make sure that the sample is actually in fixed-point mode.
-//                          If the sample is in fixed-point mode, the read/write interface
-//                          will advance the cursor by one for each sample read or written.
-//
-// see also               - use_fixedpoint
-
-void
-Sample_Data::fixedpoint_move_cursor() {
-	fixedpoint_offset += fixedpoint_inc;
-
-	size_t int_batch = (fixedpoint_offset >> FIXEDPOINT_INT_PART_BITS);	// Convert fixed-point to int.
-
-	if(int_batch >= 1) {
-		if(fixedpoint_backwards) {
-			if(current_pos < int_batch) {
-				Sample_EOF_Error E;
-				E.set_error_pfx("fixedpoint_move_cursor");
-				E.set_error("Beginning of sample reached while incrementing backwards");
-				throw E;
-			}
-			current_pos -= int_batch;
-		}
-		else {
-			current_pos += int_batch;
-			if(eof_reached())
-				current_pos = size-1;
-		}
-
-		fixedpoint_offset-= int_batch << FIXEDPOINT_INT_PART_BITS;
-	}
-}
-
-void
-Sample_Data::fixedpoint_aboutface() {
-	fixedpoint_backwards = !fixedpoint_backwards;
-}
 
 void
 Sample_Data::correct_loop_pointers() {
@@ -836,10 +771,6 @@ Sample_Data::correct_loop_pointers() {
 		sustain_loop_end = size;
 }
 
-bool
-Sample_Data::fixedpoint_is_backwards() {
-	return fixedpoint_backwards;
-}
 
 void
 blank_f_sample(float *dest, size_t channels) {
@@ -885,12 +816,12 @@ Sample_Data::get_sample_for_cosine_mixer(float *dest, bool use_cosine_mode) {
 
 		if(use_cosine_mode) {
 			magic_number *= frac_cosine[fixedpoint_offset & FRACTIONAL_MASK];
-			magic_number >>= FIXEDPOINT_INT_PART_BITS;
+			IP_FIXED_TO_INT(magic_number);
 			final_data += magic_number;
 		}
 		else {
 			magic_number *= frac_cosine_not_cosine_mode[fixedpoint_offset & FRACTIONAL_MASK];
-			magic_number >>= FIXEDPOINT_INT_PART_BITS;
+			IP_FIXED_TO_INT(magic_number);
 			final_data += magic_number;
 		}
 		dest[chan] = SAMPLE_INT_T_TO_FLOAT(final_data);
@@ -909,7 +840,7 @@ Sample_Data::do_cubic_mixer_voodoo(float *dest) {
 	} */
 
 	size_t poshi = get_current_pos();
-	size_t poslo_fixed = (get_current_pos() << FIXEDPOINT_INT_PART_BITS) + fixedpoint_offset;
+	size_t poslo_fixed = INT_TO_FIXED(get_current_pos()) + fixedpoint_offset;
 	const sample_int_t *prev_frame = get_data_value(poshi ? poshi-1 : 0);
 	const sample_int_t *current_frame = get_data_value(poshi);
 
@@ -946,21 +877,24 @@ Sample_Data::get_sample_for_linear_mixer(float *dest) {
 	for(size_t chan=0; chan<channels; chan++) {
 		sample_int_t final_data = current_frame[chan];
 		dest[chan] = SAMPLE_INT_T_TO_FLOAT(
-			final_data+((next_frame[chan]-final_data)*mix_t(fixedpoint_offset&FRACTIONAL_MASK) >>
-				FIXEDPOINT_INT_PART_BITS)
+			final_data+FIXED_TO_INT((next_frame[chan]-final_data)*mix_t(fixedpoint_offset&FRACTIONAL_MASK))
 		); 
 	}
 }
 
 
-// lock         - Lock the sample's mutex.
+// lock         - Lock the sample's multireader_lock.
 //
-// return value - Pointer to Mutex_Lock_Container, which unlocks
-//                the mutex when deleted.
+// return value - Pointer to multireader_lock_container, which unlocks
+//                the multireader_lock when deleted.
 //
 
-Mutex_Lock_Container *
+multireader_lock_container *
 Sample_Data::lock() {
-	return new Mutex_Lock_Container(mutex);
+	return new multireader_lock_container(mrlock, LOCK);
 }
 
+multireader_lock_container *
+Sample_Data::touch() {
+	return new multireader_lock_container(mrlock, TOUCH);
+}
