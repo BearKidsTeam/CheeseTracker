@@ -32,6 +32,7 @@
  ***************************************************************************/
 
 #include "drivers/posix/mutex_lock_pthreads.h"
+#include "mutex_queue.h"
 
 // Mutex_Queue solves the problem of the multireader_lock where if one
 // thread wants to write, it must wait until there are no other threads
