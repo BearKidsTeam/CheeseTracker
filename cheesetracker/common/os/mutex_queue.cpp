@@ -52,6 +52,7 @@ Mutex_Queue::enter() {
 	// front of the queue. We simply use try_grab()
 	// on each position until it succeeds. However,
 	// we reserve the last position in the line.
+	size_t ix;
 	for(ix=0; ix < QUEUE_LEN-1; ix++) {
 		if(!waiting[ix]->try_grab())
 			break;
