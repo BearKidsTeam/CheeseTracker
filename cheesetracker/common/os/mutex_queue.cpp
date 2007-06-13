@@ -1,11 +1,8 @@
-#ifndef MULTIREADER_LOCK_H
-#define MULTIREADER_LOCK_H
-
 /***************************************************************************
     This file is part of the CheeseTronic Music Tools
     url                  : http://www.geocities.com/godlessinfidelus
     copyright            : (C) 2003 by Juan Linietsky
-    email                : coding@reduz.com.ar
+    maintainer           : J Phelps
     maintainer email     : godless@users.sf.net
  ***************************************************************************/
 
@@ -18,7 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 /***************************************************************************
-                          multireader_lock.h -  
+                          mutex_queue.cpp -  
                              -------------------
     begin                : Tue 11 Jun 2007
     copyright            : © 2007 by Jeremy Phelps
@@ -34,51 +31,52 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "Error.h"
-#include "mutex_queue.h"
-
-// The multireader_lock allows an infinite number of 
-// processes to access a memory region for read-only
-// access, and one process to lock all others out for
-// read-write access. 
-
-// The multireader_lock has two pairs of operations: touch()
-// and let_go() are for read-only access, while lock() and
-// unlock() are for write access.
+// Mutex_Queue solves the problem of the multireader_lock where if one
+// thread wants to write, it must wait until there are no other threads
+// holding the lock. In order for other threads to release their lock, the
+// mutex must be released, which also allows new threads to acquire locks.
 //
-// touch() blocks while the multireader_lock is locked, and
-// lock() blocks while there are any threads which
-// have called touch() but have not called let_go().
+// The Mutex_Queue forces threads to acquire multireader_locks in a specific
+// order, one by one, so that the acquisition of a write lock can be
+// atomic.
 
-class multireader_lock {
-		Mutex_Lock mutex;
-		Mutex_Queue queue;
-		size_t touchers;
-	public:
-		multireader_lock();
-		void touch();
-		void let_go();
-		void lock();
-		void unlock();
-};
+// Maximum number of operations: 19*QUEUE_LEN - 3
 
-#define LOCK false
-#define TOUCH true
+void
+Mutex_Queue::enter() {
+	// Try to grab the mutex closest to the
+	// front of the queue. We simply use try_grab()
+	// on each position until it succeeds. However,
+	// we reserve the last position in the line.
+	for(ix=0; ix < QUEUE_LEN-1; ix++) {
+		if(!waiting[ix].try_grab())
+			break;
+	}
+	if(ix==(QUEUE_LEN-1)) {
+		// ix now points to end of waiting[],
+		// which means we have reached the end
+		// of the queue. Since we can't go any
+		// further back, we must wait for this
+		// spot to become available.
+		waiting[ix].grab();
+	}
+	// We are now in line. Start moving to
+	// the front. We do this by obtaining
+	// the mutex for the position in front of
+	// us, and then releasing the mutex for the
+	// current position.
 
-class multireader_lock_container {
-		multireader_lock *asem;
-		bool do_touch;
-	public:
-		multireader_lock_container(multireader_lock *sem, bool touch_only) {
-			asem=sem;
-			do_touch=touch_only;
-			if(touch_only)	asem->touch();
-			else		asem->lock();
-		}
-		~multireader_lock() {
-			if(do_touch)	asem->let_go();
-			else		asem->unlock();
-		}
-};
+	for(; ix; ix--) {
+		waiting[ix-1].grab();
+		waiting[ix].release();
+	}
+	// We are now at the front of the line.
+	// Good bye!
+}
 
-#endif
+// Maximum number of operations: 5
+void
+Mutex_Queue::leave()
+{
+	waiting[0].release();
+}
