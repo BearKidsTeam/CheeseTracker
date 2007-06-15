@@ -102,14 +102,11 @@ void Pattern::process_insert_request(int p_column,int p_row,Note p_note) {
 
 Note Pattern::process_retrieve_request(int p_column,int p_row) {
 
-	// This would be an assert, but there is code that
-	// triggers this exception on purpose.
+	Note tmp_result;
 	if(!(p_column < column.size())) {
-		Out_Of_Bounds OOB(__FILE__, __LINE__);
-		throw OOB;
+		return empty_note;
 	}
 
-	Note tmp_result;
 	Column::const_iterator I;
 
 	tmp_result.clear();
@@ -149,12 +146,7 @@ Note Pattern::get_note(int p_column, int p_row) {
 
 		tmp_result=aux_storage_note;
 	} else {
-
-		try {
-			tmp_result=process_retrieve_request(p_column,p_row);
-		} catch (Out_Of_Bounds OOB) {
-			tmp_result = empty_note;
-		}
+		tmp_result=process_retrieve_request(p_column,p_row);
 	}
 
 	if (data_lock!=NULL) data_lock->release();
@@ -186,11 +178,7 @@ Note& Pattern::get_note_ref(int p_column, int p_row) {
 		storage_note_column=p_column;
 		storage_note_row=p_row;
 
-		try {
-			aux_storage_note=process_retrieve_request(p_column,p_row);
-		} catch (Out_Of_Bounds OOB) {
-			aux_storage_note=empty_note;
-		}
+		aux_storage_note=process_retrieve_request(p_column,p_row);
 	}
 
 	if (data_lock!=NULL) data_lock->release();

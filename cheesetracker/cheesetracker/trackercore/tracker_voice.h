@@ -90,11 +90,7 @@ class Tracker_Voice : public Voice
 			playing_backwards=false;
 			current_index=start_index;
 			if(sample_data_ptr) {
-				Mutex_Lock_Container *lock;
-				ns_autoptr<Mutex_Lock_Container> ns_lock;
-
-				lock = sample_data_ptr->lock();
-				ns_lock.ptr_new(lock);
+				// NOTE: sample_data_ptr IS ALREADY LOCKED.
 				current_index=sample_data_ptr->seek(current_index);
 				if(sample_data_ptr->fixedpoint_is_backwards()) {
 					sample_data_ptr->fixedpoint_aboutface();

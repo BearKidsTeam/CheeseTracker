@@ -1,3 +1,31 @@
+Fri Jun 15 13:24:02 EDT 2007 J Phelps <godless@users.sf.net>
+	* cheesetracker/loaders/loader_raw.cpp
+	* cheesetracker/loaders/loader_wav.cpp
+	* cheesetracker/loaders/loader_it_samples.cpp
+	* cheesetracker/loaders/loader_s3m.cpp
+	* cheesetracker/savers/saver_raw.cpp
+	* cheesetracker/savers/saver_it.cpp
+	* cheesetracker/savers/saver_wav.cpp
+	* cheesetracker/trackercore/tracker_voice.cpp
+	* common/plugins/edit_effects/simple_edit_effects.cpp
+	* common/interface__QT/audio/sample_viewer.cpp
+	* common/interface__QT/audio/sample_editor_clipboard.cpp
+	* common/components/audio/sample_data.h
+	* common/components/audio/sample_data.cpp
+	* common/components/audio/dds_helpers.cpp:
+		Now using Mutex_Lock instead of multireader_lock for
+		access to Sample_Data. Since Sample_Data's access
+		functions also manage an internal iterator (instead
+		of the iterator being in the calling function),
+		Sample_Data must be locked during "read" operations
+		as well as "write" operations.
+
+	* pattern.cpp (process_retrieve_request): Performance enhancement:
+	Removed exception-throwing behavior because all functions that
+	use this function were catching the exception and substututing
+	"empty_note" for the return value. So now, it simply returns
+	empty_note.
+
 Wed Jun 13 01:10:50 EDT 2007 J Phelps <godless@users.sf.net>
 	* sample_data.cpp: ASSERT_NOTFIXEDPOINT is defined to nothing
 	if NDEBUG is defined.  * common/components/audio/fixedpoint.h:
