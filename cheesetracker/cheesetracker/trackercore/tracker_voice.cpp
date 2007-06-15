@@ -90,11 +90,11 @@ void Tracker_Voice::mix(size_t p_amount,sample_t* p_where) {
 	}
 
 	float pan, vol;
-	ns_autoptr<multireader_lock_container> ns_sample_lock;
+	ns_autoptr<Mutex_Lock_Container> ns_sample_lock;
 	// Lock the sample, to prevent illegal attempts
 	// to modify or read the sample while we're in
 	// use_fixedpoint() mode.
-	multireader_lock_container *sample_lock = info.sample_data_ptr->lock();  
+	Mutex_Lock_Container *sample_lock = info.sample_data_ptr->lock();  
 	// The sample will be automatically unlocked at
 	// the end of this scope.
 	ns_sample_lock.ptr_new(sample_lock); 
@@ -387,6 +387,9 @@ void Tracker_Voice::setup_sample(Sample_Data *p_sample_data,size_t p_offset) {
 	ns_autoptr<float> ns_buffer;
 	float *buffer = new float[p_sample_data->num_channels()];
 	ns_buffer.arr_new(buffer);
+	Mutex_Lock_Container *lock = p_sample_data->lock();
+	ns_autoptr<Mutex_Lock_Container> ns_lock;
+	ns_lock.ptr_new(lock);
 	
 	p_sample_data->get_sample(p_offset, buffer);
 

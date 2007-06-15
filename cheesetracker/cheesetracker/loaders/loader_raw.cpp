@@ -15,6 +15,7 @@
  ***************************************************************************/
 
 #include "loader_raw.h"
+#include "ns_autoptr.h"
 #include <iostream>
 #include <cstdio>
 
@@ -48,6 +49,9 @@ int Loader_RAW::load_sample_func(const char *p_filename, Sample_Data *SD) {
 
 	// Copy the data into the Sample_Data structure.
 
+	Mutex_Lock_Container *lock = SD->lock();
+	ns_autoptr<Mutex_Lock_Container> ns_lock;
+	ns_lock.ptr_new(lock);
 	SD->seek(0);
 	sample_int_t buffer;
 	for(size_t ix=0; ix<size; ix++) {

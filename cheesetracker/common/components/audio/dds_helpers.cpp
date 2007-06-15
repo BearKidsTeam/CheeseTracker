@@ -20,6 +20,7 @@
 //
 #include "dds_helpers.h"
 #include "effect_source_manager.h"
+#include "ns_autoptr.h"
 
 
 void DDS_Helpers::set_property_bridge_list_data(vector_dds& p_dds_array,list<Property_Bridge*> *p_list)
@@ -441,6 +442,11 @@ void DDS_Helpers::get_sample_data(Sample_Data *p_sample,DDS* p_dds)
 	vector<Uint8> data;
 	data.resize(p_sample->is_16bit() ? (p_sample->get_size() * 2) : p_sample->get_size() );
 
+	Mutex_Lock_Container *lock = p_sample->lock();
+	ns_autoptr<Mutex_Lock_Container> ns_lock;
+	ns_lock.ptr_new(lock);
+	p_sample->seek(0);
+
 	if (p_sample->is_16bit()) {
 
 		// Convert a 16-bit sample into little-endian
@@ -452,7 +458,6 @@ void DDS_Helpers::get_sample_data(Sample_Data *p_sample,DDS* p_dds)
 		// we can drop all channels except channel 0.
 		//
 
-		p_sample->seek(0);
 		for (size_t i=0;i<p_sample->get_size();i++) {
 			Uint16 raw_twoscomp_data = CONVERT_TO_TYPE(Uint16, *p_sample->get_int_sample());
 

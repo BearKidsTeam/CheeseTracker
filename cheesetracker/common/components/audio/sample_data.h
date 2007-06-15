@@ -34,7 +34,7 @@
 #define SAMPLE_DATA_H
 
 // #include "../../../cheesetracker/trackercore/Error.h"
-#include "os/multireader_lock.h"
+#include "os/mutex_lock.h"
 #include "cheesetracker/trackercore/Error.h"
 #include "typedefs.h"
 #include "sample_defs.h"
@@ -93,7 +93,7 @@ class Sample_Data {
 
 	int c5_freq;
 
-	multireader_lock *mrlock;
+	Mutex_Lock *mutex;
 
 	// Memory management variables
 	//
@@ -168,8 +168,7 @@ public:
 	// and lock() before writing and before
 	// calling use_fixedpoint(true).
 
-	multireader_lock_container *lock();
-	multireader_lock_container *touch();
+	Mutex_Lock_Container *lock();
 
 	// Several methods of getting and setting
 	// data from the sample buffer are supported.

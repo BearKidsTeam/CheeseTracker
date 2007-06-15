@@ -70,15 +70,11 @@ Loader::Error Loader_IT::load_sample_info(IT_Sample *p_sample) {
 
 	p_sample->data.set_loop_enabled( (p_sample->flag >> 4) & 1);
 	p_sample->data.set_loop_ping_pong((p_sample->flag >> 6) & 1);
-//	p_sample->data.sustain_loop_on=(p_sample->flag >> 5) & 1;
-//	p_sample->data.sustain_pingpong_loop=(p_sample->flag >> 7) & 1;
 
 	p_sample->data.set_size(sample_size);
 
 	p_sample->data.set_c5_freq(p_sample->c5spd);
-	//p_sample->data.import_frequency(p_sample->c5spd);
 
-	//p_sample->data.data_ptr=NULL;
 	p_sample->header[4]=0;
 	p_sample->filename[13]=0;
 	p_sample->sampname[29]=0;
@@ -91,9 +87,13 @@ Loader::Error Loader_IT::load_sample_data(IT_Sample *p_sample) {
 
 
 	if ((p_sample->flag & IT_SAMPLE_EXISTS)) { 
-		int aux_sample_properties = p_sample->flag & 10; // 2nd and 4th bytes only
+		int aux_sample_properties = p_sample->flag & 10; // 2nd and 4th bits only
 
 		file_read.seek(p_sample->sampoffset);
+		Mutex_Lock_Container *lock = p_sample->data.lock();
+		ns_autoptr<Mutex_Lock_Container> ns_lock;
+		ns_lock.ptr_new(lock);
+		p_sample->data.seek(0);
 
 		if(aux_sample_properties & IT_SAMPLE_COMPRESSED) {
 				size_t size = p_sample->data.get_size();
@@ -135,7 +135,6 @@ Loader::Error Loader_IT::load_sample_data(IT_Sample *p_sample) {
 
 				if(aux_sample_properties & IT_SAMPLE_STEREO) {
 					size_t jx;
-					p_sample->data.seek(0);
 
 					// What's this? It's called, "Proper handling of stereo."
 					// Added Sun Apr 8 02:53:35 EDT 2007 by <godless@users.sf.net>
@@ -168,7 +167,6 @@ Loader::Error Loader_IT::load_sample_data(IT_Sample *p_sample) {
 				else { // COMPRESSED MONO
 
 					sample_int_t buffer;
-					p_sample->data.seek(0);
 
 					for(size_t ix=0; !p_sample->data.eof_reached(); ix++) {
 						if(p_sample->flag & IT_SAMPLE_16BITS) 
@@ -188,7 +186,6 @@ Loader::Error Loader_IT::load_sample_data(IT_Sample *p_sample) {
 
 				if(p_sample->flag & IT_SAMPLE_STEREO) {
 					p_sample->data.set_num_channels(2);
-					p_sample->data.seek(0);
 					p_sample->data.set_size(size/2);
 
 					while(!p_sample->data.eof_reached()) {
@@ -207,7 +204,6 @@ Loader::Error Loader_IT::load_sample_data(IT_Sample *p_sample) {
 				} else { // MONO
 					sample_int_t buffer;
 					p_sample->data.set_num_channels(1);
-					p_sample->data.seek(0);
 					p_sample->data.set_size(size);
 
 					while(!p_sample->data.eof_reached()) {

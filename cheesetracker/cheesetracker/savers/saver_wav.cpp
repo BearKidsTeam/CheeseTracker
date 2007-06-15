@@ -31,7 +31,7 @@
  ***************************************************************************/
 
 #include "saver_wav.h"
-
+#include "ns_autoptr.h"
 
 
 
@@ -90,6 +90,9 @@ int Saver_Wav::save_sample(const char *p_filename,int p_sample_index) {
 
 
 
+	Mutex_Lock_Container *lock = smp->data.lock();
+	ns_autoptr<Mutex_Lock_Container> ns_lock;
+	ns_lock.ptr_new(lock);
 	smp->data.seek(0);
 
 	while(!smp->data.eof_reached()) {

@@ -302,15 +302,14 @@ void Sample_Viewer::update_sample_cache(size_t p_range_begin,size_t p_range_end)
 
 	int target_size=(p_range_end/factor);
 
-
-
+	Mutex_Lock_Container *lock = sample_data->lock();
+	ns_autoptr<Mutex_Lock_Container> ns_lock;
+	ns_lock.ptr_new(lock);
 
 	for (int i=p_range_begin;i<target_size;i++) {
-
 		float max_peak=-2.0f;
 		float min_peak=2.0f;
 		for (int j=0;j<factor;j++) {
-
 			float *sample = new float[sample_data->num_channels()];
 			ns_autoptr<float> ns_sample;
 			ns_sample.arr_new(sample);
@@ -330,21 +329,12 @@ void Sample_Viewer::update_sample_cache(size_t p_range_begin,size_t p_range_end)
 
 		factor=sample_cache[i].factor;
 		range_begin=p_range_begin/factor;
-
 		target_size=(p_range_end/factor);
-
-
-
-
-
 		for (int j=range_begin;j<target_size;j++) {
-
-
 			float max_a,max_b;
 			max_a=sample_cache[i-1].max_peak_data[j*2];
 			max_b=sample_cache[i-1].max_peak_data[j*2+1];
 			sample_cache[i].max_peak_data[j]=((max_a>max_b)?max_a:max_b);
-
 
 			float min_a,min_b;
 			min_a=sample_cache[i-1].min_peak_data[j*2];
@@ -378,7 +368,6 @@ int Sample_Viewer::get_factor() {
 }
 
 void Sample_Viewer::screen_to_sample(int p_int, float *p_max_peak,float *p_min_peak, int sample_cache_idx,int cur_width,int *p_final_sample) {
-
 	float sample_idx;
 	float size=sample_data->get_size();
 	float factor=1;
@@ -433,6 +422,10 @@ void Sample_Viewer::screen_to_sample(int p_int, float *p_max_peak,float *p_min_p
 
 		sample_next = new float[sample_data->num_channels()];
 		ns_sample_next.arr_new(sample_next);
+
+		Mutex_Lock_Container *lock = sample_data->lock();
+		ns_autoptr<Mutex_Lock_Container> ns_lock;
+		ns_lock.ptr_new(lock);
 
 		sample_data->get_sample((size_t)sample_idx, sample_current);
 
@@ -673,7 +666,6 @@ void Sample_Viewer::set_sample_data(Sample_Data *p_sample_Data) {
 void Sample_Viewer::update_position_list_display() {
 
 	if (recompute_pending) {
-
 		initialize_sample_cache();
 		update_sample_cache(0,sample_data->get_size()-1);
 		recompute_pending=false;
@@ -693,9 +685,7 @@ void Sample_Viewer::update_position_list_display() {
 	int drawn=0;
 
 	for (int i=0;i<(int)position_display_cache.size();i++) {
-
 		if (position_display_cache[i] || old_position_display_cache[i]) {
-
 			draw_screen_pos(i,painter,factor);
 			drawn++;
 		}
@@ -707,13 +697,10 @@ void Sample_Viewer::update_position_list_display() {
 }
 
 void Sample_Viewer::set_position_list(const PositionList& p_list) {
-
 	if ((int)position_display_cache.size()!=width()) {
-
 		position_display_cache.resize(width());
 		old_position_display_cache.resize(width());
 	}
-
 	if (!isVisible())
 		return; //go back if hidden
 	if (!sample_data->get_size())
@@ -722,39 +709,30 @@ void Sample_Viewer::set_position_list(const PositionList& p_list) {
         float screen_size=(float)sample_data->get_size()*zoom;
 
 	for (int i=0;i<(int)position_display_cache.size();i++) {
-
 		position_display_cache[i]=false;
 	}
-
 	for (int i=0;i<(int)p_list.size();i++) {
-
-
 		if ( (p_list[i]<offset) || ((float)p_list[i]>((float)offset+screen_size)))
 			continue; //cant plot this;
-
 		float pos=p_list[i];
                 pos-=(float)offset;
 		pos=pos*(float)width()/screen_size;
 		if (pos>=position_display_cache.size()) {
 			//printf("Error? how can this happen?\n");
 		} else {
-
 			position_display_cache[(int)pos]=true;
 		}
 		//screen_pos+=offset;
 	}
-
 }
 
 
 
 Sample_Viewer::Sample_Viewer( QWidget *p_parent) : QWidget( p_parent,"Sample Viewer" ) {
-
 	fatal_error=false;
 	sample_data=NULL;
 	zoom=1; //1:1
 	offset=0;
-
 	sample_cache_target=40;
 	max_sample_cache_size=200*1024;
 	backing_store_width=backing_store_height=-1;
@@ -765,14 +743,11 @@ Sample_Viewer::Sample_Viewer( QWidget *p_parent) : QWidget( p_parent,"Sample Vie
 	grabbing_mouse=false;
 	init_colormap();
 	grab_type=SET_SELECTION;
-
 }
 
 
 Sample_Viewer::~Sample_Viewer()
 {
-
 	if (backing_store)
 		delete backing_store;
-
 }

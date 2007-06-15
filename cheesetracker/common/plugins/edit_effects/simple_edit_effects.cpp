@@ -37,10 +37,7 @@
 
 /* Processing */
 void Edit_Effect_Reverse::process(Sample_Data *p_data,size_t p_begin,size_t p_end) {
-
-
 	size_t i;
-
 	size_t size=p_end-p_begin;
 	size_t channels = p_data->num_channels();
 	size++;
@@ -49,6 +46,10 @@ void Edit_Effect_Reverse::process(Sample_Data *p_data,size_t p_begin,size_t p_en
 
 	aux_val = new sample_int_t[channels];
 	ns_aux_val.arr_new(aux_val);
+
+	Mutex_Lock_Container *p_data_lock = p_data->lock();
+	ns_autoptr<Mutex_Lock_Container> ns_p_data_lock;
+	ns_p_data_lock.ptr_new(p_data_lock);
 
 	// Reverse the sample data.
 	//
@@ -80,6 +81,9 @@ void Edit_Effect_SelToLoop::process(Sample_Data *p_data,size_t p_begin,size_t p_
 
 	if (!p_data->get_size())
 		return;
+	Mutex_Lock_Container *p_data_lock = p_data->lock();
+	ns_autoptr<Mutex_Lock_Container> ns_p_data_lock;
+	ns_p_data_lock.ptr_new(p_data_lock);
 
 	p_data->set_loop_enabled(true);
 	p_data->set_loop_begin(p_begin);
@@ -92,12 +96,14 @@ void Edit_Effect_Toggle_Sign::process(Sample_Data *p_data,size_t p_begin,size_t 
 	if (!p_data->get_size())
 		return;
 
+	Mutex_Lock_Container *p_data_lock = p_data->lock();
+	ns_autoptr<Mutex_Lock_Container> ns_p_data_lock;
+	ns_p_data_lock.ptr_new(p_data_lock);
+
 	p_data->change_sign();
 }
 
 void Edit_Effect_FadeIn::process(Sample_Data *p_data,size_t p_begin,size_t p_end) {
-
-
 	if (!p_data->get_size())
 		return;
 
@@ -107,6 +113,10 @@ void Edit_Effect_FadeIn::process(Sample_Data *p_data,size_t p_begin,size_t p_end
 
 	aux_val = new float[channels];
 	ns_aux_val.arr_new(aux_val);
+
+	Mutex_Lock_Container *p_data_lock = p_data->lock();
+	ns_autoptr<Mutex_Lock_Container> ns_p_data_lock;
+	ns_p_data_lock.ptr_new(p_data_lock);
 
 	for (size_t i=p_begin;i<=p_end;i++) {
 		p_data->get_sample(i, aux_val);
@@ -131,6 +141,10 @@ Edit_Effect_FadeOut::process(Sample_Data *p_data,size_t p_begin,size_t p_end) {
 
 	aux_val = new float[channels];
 	ns_aux_val.arr_new(aux_val);
+
+	Mutex_Lock_Container *p_data_lock = p_data->lock();
+	ns_autoptr<Mutex_Lock_Container> ns_p_data_lock;
+	ns_p_data_lock.ptr_new(p_data_lock);
 
 	for (size_t i=p_begin;i<=p_end;i++) {
 		p_data->get_sample(i, aux_val);
@@ -169,7 +183,11 @@ void Edit_Effect_Tunner::process(Sample_Data *p_data,size_t p_begin,size_t p_end
 
 	cycle_len*=c5_freq;
 
+
+
+	Mutex_Lock_Container *p_data_lock = p_data->lock();
 	p_data->set_c5_freq(int(cycle_len));
+	delete p_data_lock;
 }
 
 Edit_Effect_Tunner::Edit_Effect_Tunner() : cycle_prop("Cycles Selected:",(int*)&cycles,1,100) {
@@ -190,6 +208,11 @@ void Edit_Effect_Normalize::selected_notify(Sample_Data *p_data,size_t p_begin,s
 
 	aux_val = new float[channels];
 	ns_aux_val.arr_new(aux_val);
+
+
+	Mutex_Lock_Container *p_data_lock = p_data->lock();
+	ns_autoptr<Mutex_Lock_Container> ns_p_data_lock;
+	ns_p_data_lock.ptr_new(p_data_lock);
 
 	for (i=p_begin;i<=p_end;i++) {
 
@@ -226,6 +249,11 @@ void Edit_Effect_Normalize::process(Sample_Data *p_data,size_t p_begin,size_t p_
 	aux_val = new float[channels];
 	ns_aux_val.arr_new(aux_val);
 
+
+	Mutex_Lock_Container *p_data_lock = p_data->lock();
+	ns_autoptr<Mutex_Lock_Container> ns_p_data_lock;
+	ns_p_data_lock.ptr_new(p_data_lock);
+
 	for (size_t i=p_begin;i<=p_end;i++) {
 		p_data->get_sample(i, aux_val);
 		for(size_t chan=0; chan<channels; chan++) {
@@ -253,6 +281,9 @@ void Edit_Effect_Toggle_Depth::process(Sample_Data *p_data,size_t p_begin,size_t
 	if (!p_data->get_size())
 		return;
 
+	Mutex_Lock_Container *p_data_lock = p_data->lock();
+	ns_autoptr<Mutex_Lock_Container> ns_p_data_lock;
+	ns_p_data_lock.ptr_new(p_data_lock);
 	p_data->toggle_quality();
 }
 
@@ -265,8 +296,11 @@ void Edit_Effect_PostLoop_Cut::process(Sample_Data *p_data,size_t p_begin,size_t
 	if (p_data->get_loop_end()<=0)
 		return;
 
-		p_data->seek(p_data->get_loop_end()+1);
-		p_data->truncate();
+	Mutex_Lock_Container *p_data_lock = p_data->lock();
+	ns_autoptr<Mutex_Lock_Container> ns_p_data_lock;
+	ns_p_data_lock.ptr_new(p_data_lock);
+	p_data->seek(p_data->get_loop_end()+1);
+	p_data->truncate();
 }
 
 void Edit_Effect_Center::process(Sample_Data *p_data,size_t p_begin,size_t p_end) {
@@ -287,6 +321,10 @@ void Edit_Effect_Center::process(Sample_Data *p_data,size_t p_begin,size_t p_end
 
 	aux_val = new float[channels];
 	ns_aux_val.arr_new(aux_val);
+
+	Mutex_Lock_Container *p_data_lock = p_data->lock();
+	ns_autoptr<Mutex_Lock_Container> ns_p_data_lock;
+	ns_p_data_lock.ptr_new(p_data_lock);
 
 	size_t i;
 	for (i=p_begin;i<=p_end;i++) {
@@ -327,6 +365,10 @@ void Edit_Effect_PreLoop_Cut::process(Sample_Data *p_data,size_t p_begin,size_t 
 
 	size_t new_size = p_data->get_size() - p_data->get_loop_begin();
 	sample_int_t *new_data = new sample_int_t[new_size*p_data->num_channels()];
+
+	Mutex_Lock_Container *p_data_lock = p_data->lock();
+	ns_autoptr<Mutex_Lock_Container> ns_p_data_lock;
+	ns_p_data_lock.ptr_new(p_data_lock);
 
 	p_data->seek(p_data->get_loop_begin());
 	p_data->get_sample_array(new_data, new_size);

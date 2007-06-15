@@ -37,6 +37,10 @@ void Sample_Editor_Clipboard::copy_cbk() {
 	if (!sdata || !sdata->get_size())
 		return;
 
+	Mutex_Lock_Container *sdata_lock = sdata->lock();
+	ns_autoptr<Mutex_Lock_Container> ns_sdata_lock;
+	ns_sdata_lock.ptr_new(sdata_lock);
+
 	clipboard.set_num_channels(sdata->num_channels());
 	clipboard.set_size(selection->get_end() - selection->get_begin());
 	clipboard.seek(0);
@@ -59,6 +63,13 @@ void Sample_Editor_Clipboard::cut_cbk() {
 	// So we use the copy_cbk() function first...
 
 	copy_cbk();
+
+	// Lock the mutex only after copy_cbk(), because copy_cbk()
+	// also locks the mutex.
+
+	Mutex_Lock_Container *sdata_lock = sdata->lock();
+	ns_autoptr<Mutex_Lock_Container> ns_sdata_lock;
+	ns_sdata_lock.ptr_new(sdata_lock);
 
 	// Correct the loop-begin and loop-end indicators, as the
 	// change in sample size may invalidate them.
@@ -139,6 +150,9 @@ void Sample_Editor_Clipboard::paste_cbk() {
 	if (!clipboard.get_size())
 		return;
 
+	Mutex_Lock_Container *sdata_lock = sdata->lock();
+	ns_autoptr<Mutex_Lock_Container> ns_sdata_lock;
+	ns_sdata_lock.ptr_new(sdata_lock);
 	destructive_operation_begin();
 
 	if(!sdata->get_size()) {

@@ -87,7 +87,7 @@ class init_lookup_tables {
 			cosval=cos(cos(x)*x);
 			frac_cosine_not_cosine_mode[i]=int( (1.0-cosval) * 0.5 * (float)COSINE_LEN);
 		}
-		int length              = (1L<<SPLINE_FRACBITS);
+		size_t length              = (1L<<SPLINE_FRACBITS);
 		float length_f  = 1.0f / (float)length;
 		float scale     = (float)SPLINE_QUANTSCALE;
 		for(size_t i=0;i<length;i++)
@@ -155,9 +155,9 @@ void Sample_Data::set_c5_freq(int p_c5_freq) {
 
 Sample_Data::Sample_Data() {
 #ifdef POSIX_ENABLED
-	mrlock = new multireader_lock;
+	mutex = new Mutex_Lock_Pthreads;
 #else
-	mrlock = NULL;
+	mutex = NULL;
 #endif
 	reset();
 }
@@ -208,7 +208,7 @@ Sample_Data::Sample_Data(const Sample_Data &rhs) {
 
 Sample_Data::~Sample_Data(){
 #ifdef POSIX_ENABLED
-	delete mrlock;
+	delete mutex;
 #endif
 	if(data_ptr)
 		delete[] data_ptr;
@@ -889,12 +889,9 @@ Sample_Data::get_sample_for_linear_mixer(float *dest) {
 //                the multireader_lock when deleted.
 //
 
-multireader_lock_container *
+Mutex_Lock_Container *
 Sample_Data::lock() {
-	return new multireader_lock_container(mrlock, LOCK);
+	return new Mutex_Lock_Container(mutex);
 }
 
-multireader_lock_container *
-Sample_Data::touch() {
-	return new multireader_lock_container(mrlock, TOUCH);
-}
+

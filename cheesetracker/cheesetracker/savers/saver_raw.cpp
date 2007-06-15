@@ -33,6 +33,7 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "ns_autoptr.h"
 #include "saver_raw.h"
 
 
@@ -64,9 +65,11 @@ int Saver_Raw::save_sample(const char *p_filename,int p_sample_index) {
 	// Samples that don't match this data type will
 	// be silently converted.
 
+	Mutex_Lock_Container *lock = smp->data.lock();
+	ns_autoptr<Mutex_Lock_Container> ns_lock;
+	ns_lock.ptr_new(lock);
 	smp->data.seek(0);
 	for(size_t ix=0; ix<smp->data.get_size(); ix++) {
-		const sample_int_t *buffer = smp->data.get_int_sample();
 		writer.store_byte(CONVERT_TO_TYPE(Sint8, smp->data.get_int_sample()[0]));
 	}
 	

@@ -198,11 +198,11 @@ void Saver_IT::write_sample_internal(int p_sample_index,bool p_write_data) {
 	defpan|=song->get_sample(p_sample_index)->def_panning_on?128:0;
 	writer.store_byte(defpan);
 
-	multireader_lock_container *sample_data_lock;
+	Mutex_Lock_Container *sample_data_lock;
 
 	// Critical section!
 
-	sample_data_lock = song->get_sample(p_sample_index)->data.touch();
+	sample_data_lock = song->get_sample(p_sample_index)->data.lock();
 	writer.store_dword(song->get_sample(p_sample_index)->data.get_size());
 	writer.store_dword(song->get_sample(p_sample_index)->data.get_loop_begin());
 	writer.store_dword(song->get_sample(p_sample_index)->data.get_loop_end());
@@ -233,10 +233,10 @@ void Saver_IT::write_sample_internal(int p_sample_index,bool p_write_data) {
 			// Touch the sample so that we don't access it
 			// while it's being modified or while it's in
 			// use_fixedpoint() mode.
-			multireader_lock_container *read_lock = smp->data.touch();
+			Mutex_Lock_Container *read_lock = smp->data.lock();
 			// Ensure that the touch will be released at the end
 			// of this if-block.
-			ns_autoptr<multireader_lock_container> ns_read_lock;
+			ns_autoptr<Mutex_Lock_Container> ns_read_lock;
 			ns_read_lock.ptr_new(read_lock);
 
 			for(size_t ix=0; ix< smp->data.get_size(); ix++) {
@@ -801,6 +801,9 @@ int Saver_IT::save_instrument(const char *p_filename,int p_instrument_index) {
      		prev_offset=writer.get_file_pos();
 
 		Sample *smp = song->get_sample(samples_used[i]);
+		Mutex_Lock_Container *lock = smp->data.lock();
+		ns_autoptr<Mutex_Lock_Container> ns_lock;
+		ns_lock.ptr_new(lock);
 
 		for(size_t ix=0; ix< smp->data.get_size(); ix++) {
 			const sample_int_t *buffer = smp->data.get_int_sample();
