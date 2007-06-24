@@ -30,11 +30,6 @@
 class Tracker_Voice : public Voice
 {
 
-	enum {
-
-		FRACTIONAL=11
-	};
-
 	struct Info {
 
 		bool active;            /* =1 -> sample is playing */

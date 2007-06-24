@@ -1,3 +1,39 @@
+Sat Jun 23 03:51:59 EDT 2007 J Phelps <godless@users.sf.net>
+	* tracker_voice.h: Removed unused definition for
+	Tracker_Voice::FRACTIONAL.
+	* tracker_voice.cpp: Reintroduced SOME of the fixed-point math.
+
+	Removed the variable "debug_int", which was being used to
+	trace a memory error (which turned out to be caused by
+	improper data sharing between threads).
+
+	* typedefs.h: Macro WARN() does not use ANSI color sequences
+	unless ANSI_COLORS is defined.
+	* resampler_manager.cpp (get_resampler): Replaced NULL return
+	value with an exception-throw, since the NULL return value is
+	never checked for.
+
+	New behavior: get_resampler(-1) is equivalent to
+	get_resampler(get_default_resampler()), because this is how
+	it's used.
+
+	Added "signed" to the parameter type of p_index to show
+	that it really _is_ supposed to be signed.
+	* resampler_instance.h (set_current_resampler): Replaced use of
+	ERROR macro with an exception-throw.
+	* resampler_instance.h (mix): Simplified the initialization
+	of resampler_idx because it is no longer necessary to call
+	Resampler_Manager::get_default_resampler() explicitly.
+	* fixedpoint.h: Renamed to sample_data_fixedpoint.h. Preprocessor
+	macros will attempt to prevent its inclusion in source files
+	other than sample_data.cpp.
+	* fixedpoint_defs.h: Created. Macros previously in fixedpoint.h
+	have been moved here. It turns out that certain calculations
+	in tracker_voice.cpp cannot be made accurately without
+	fixed-point math.
+	* resampler_kernel.cpp/h: Created. This is a cleaner
+	implementation of the algorithm previously implemented
+	with macros from helpers.h.
 Fri Jun 15 13:24:02 EDT 2007 J Phelps <godless@users.sf.net>
 	* cheesetracker/loaders/loader_raw.cpp
 	* cheesetracker/loaders/loader_wav.cpp

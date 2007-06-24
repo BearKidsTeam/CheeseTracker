@@ -38,12 +38,16 @@ using std::string;
 #define DERIVE_EMPTY(parent, child) class child : public parent { public: }
 #define GENERIC_ERROR(name) DERIVE_EMPTY(Error, name)
 #define FATAL_ERROR(name) \
-	class name : public Error {						\
-		public:									\
-			name(const char *file, int line) : Error() {		\
-				set_error_pfx(file);					\
-				eprintf("%i: %s", line, #name);			\
-			}								\
+	class name : public Error {								\
+		public:										\
+			name(const char *file, int line, const char *why=NULL) : Error() {	\
+				set_error_pfx(file);						\
+				if (why == NULL) {						\
+					eprintf("%i: %s", line, #name);				\
+				} else {							\
+					eprintf("%i: %s: %s", line, #name, why);		\
+				}								\
+			}									\
 	}
 
 

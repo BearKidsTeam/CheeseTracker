@@ -18,6 +18,7 @@
 #include <cassert>
 #include "tracker_voice.h"
 #include "ns_autoptr.h"
+#include "common/defines/fixedpoint_defs.h"
 
 
 #define VOICE_VOLUME_ADJUST 0.008f
@@ -239,22 +240,23 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer) {
 		size_t total_samples=0;
 		size_t end,done;
 
-		// FIXME: Invalid if the sample is looping and either
-		// loop index is not equal to the beginning or end
-		// of the sample.
+		// Let "end" point to either the end, beginning,
+		// or next loop point in the sample, or in
+		// other words, let "end" point to the spot
+		// where we must stop playing the sample.
 
 		end=info.playing_backwards?left_end:right_end;
 
 		// Let total_samples be the number of samples
 		// between the current position and the
-		// end (or beginning) of the sample.
+		// end (or beginning) of the sample (or loop
+		// segment).
 
 		if(end > info.current_index) {
 			total_samples = end-info.current_index;
 		} else {
 			total_samples = info.current_index - end;
 		}
-
 
 		// total_samples * (mixfreq/info.current_frequency)
 		// is the number of samples that would actually get
@@ -263,33 +265,45 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer) {
 		// time. We'll call this the number of "virtual samples"
 		// that can be extracted from the sample_data_ptr.
 
-		// Since we're using integer math, we also use
-		// the equivalent expression total_samples
-		// / (info.current_frequency/mixfreq) if
-		// (mixfreq/info.current_frequency) would be less
-		// than one.
+		// In integer math, this relationship gets distorted
+		// by the lack of fractional precision. To counteract
+		// this, it is necessary to multiply a certain factor
+		// into the expression so that the integers behave
+		// like fixed-point numbers. (see fixedpoint.h for
+		// a complete explanation...). 
 
-		// A third condition is used for the case where
-		// (mixfreq/info.current_frequency) would equal one,
-		// in which case multiplication would be pointless.
+		// Since we process samples in small chunks (a few hundred
+		// samples at a time), there is no possibility of integer
+		// overflow in these operations.
 
 		// Let "done" be the lesser of either the number of
 		// virtual samples that would be extracted from the
 		// sample, or the number of samples remaining before we
-		// have filled p_buffer.
+		// have filled p_buffer. Since only whole numbers of
+		// samples can be stored in an array, fractional
+		// amounts in "done" are dropped.
+		//
+		// This means that it is not possible to recalculate
+		// "total_samples" from "done", mixfreq, and
+		// info.current_frequency:
+		//
+		//   total_samples != done/(mixfreq/current_freq);
+		//
+		// "total_samples" may exactly equal the expression to
+		// the right of the "!=", or it may be 1 greater.
 
-		if(info.current_frequency > mixfreq) {
-			done=std::min<size_t>(total_samples/(info.current_frequency/mixfreq), todo);
-		} else if (info.current_frequency < mixfreq) {
-			done=std::min<size_t>(total_samples * (mixfreq/info.current_frequency), todo);
+		// And now we calculate the value of "done":
+
+		if (info.current_frequency != mixfreq) {
+			done=std::min<size_t>(FIXED_TO_INT(total_samples * (INT_TO_FIXED(mixfreq)/info.current_frequency)), todo);
 		} else {
 			// Mixing frequency and sample frequency are equal
-			//
 			done = std::min<size_t>(total_samples, todo);
 		}
 
-
 		if ( done==0 ) {
+			// Either no (whole) virtual samples can be extracted, or
+			// p_buffer is full.
 			info.active = 0;
 			break;
 		}
@@ -307,43 +321,17 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer) {
 		// slightly different data structure that is used
 		// by the resampler modules.
 
-		mixdata.increment_fraction.num = info.current_frequency;
-		mixdata.increment_fraction.den = mixfreq;
 		mixdata.sample=info.sample_data_ptr;
 		mixdata.dst_buff=mixing_buffer_index;
 
-		mixdata.sample_offset=info.current_index;
 		mixdata.samples_to_mix=done;
 		mixdata.l_volume_prev=l_vol_old;
-		mixdata.r_volume_prev=r_vol_old;
 		mixdata.l_volume=l_vol_new;
-		mixdata.r_volume=r_vol_new;
 
 		mixdata.panning = info.panning;
 
 		resampler.set_filter(info.filter.enabled,info.filter.coeffs);
-
 		resampler.mix();
-
-
-		// FIXME: In the event that info.current_frequency > mixfreq, it
-		// is possible that the calculation used to produce "done"
-		// cannot be reversed to get total_samples, due to loss of
-		// precision. In these cases, the reverse operation will
-		// always be less than total_samples, meaning that the
-		// actual sample position after mixing will be less than
-		// info.current_index + total_samples.
-
-		// In all other cases, we expect that the sample position
-		// after mixing will always be exactly equal to
-		// info.current_index + total_samples.
-
-#ifndef NDEBUG
-		if(info.current_frequency <= mixfreq && done != todo) {
-			assert(info.sample_data_ptr->get_current_pos()
-			       == info.current_index + total_samples);
-		}
-#endif
 
 		// Update our local copy of the current position
 		// in the sample.
