@@ -142,7 +142,21 @@ void Tracker_Voice::mix(size_t p_amount,sample_t* p_where) {
 	info.sample_data_ptr->use_fixedpoint(false);
 }
 
-void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer) {
+class tracker_voice_resampler : public Sample_Data::resample_functor
+{
+		Resampler::Mix_Data *mixdata;
+	public :
+		tracker_voice_resampler(Resampler::Mix_Data *mdata) {
+			mixdata = mdata;
+		}
+		virtual void operator() {
+			
+		}
+		virtual ~tracker_voice_resampler() { }
+};
+
+void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer)
+{
 
 	sample_t *mixing_buffer_index=p_buffer; 
 	size_t todo=p_amount;
@@ -181,59 +195,8 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer) {
 	while(todo>0) {
 		// Implement looping behavior and check boundaries. 
 
-		if ( info.playing_backwards ) {
-			/* The sample is playing in reverse */
-			if( ( loop_active )&&(info.current_index<=loop_begin) ) {
-				/* the sample is looping and has reached loop_begin */
-				if ( info.sample_data_ptr->is_loop_ping_pong() ) {
-					/* Ping-pong loop: Reverse loop direction */
-					info.playing_backwards=false;
-					info.sample_data_ptr->fixedpoint_aboutface();
-				} else
-					/* normal backwards looping, so set the current
-					 * position to the loop-end index */
-					info.current_index=loop_end;
-			} else {
-				/* the sample is not looping, so check if it reached index 0 */
-				if(info.current_index < 1) {
-					/* playing index reached 0, so stop playing this sample */
-					info.current_index=0;
-					info.active=false;
-					break;
-				}
-			}
-		} else {
-			/* The sample is playing forward */
-			if ( (loop_active) && (info.current_index >= loop_end)) {
-				/* the sample is looping and has reached the end */
-				if( info.sample_data_ptr->is_loop_ping_pong() ) {
-					/* Ping-pong mode: Begin playing backwards. */
-					info.playing_backwards=true;
-					info.sample_data_ptr->fixedpoint_aboutface();
-				} else
-					/* normal looping, so set the current position
-					   to the loop_begin index */
-					info.current_index=loop_begin;
-			} else {
-				/* sample is not looping, so check if it reached the last
-				   position */
-				if(info.current_index >= idxsize) {
-					/* yes, so stop playing this sample */
-					info.current_index=0;
-					info.active=false;
-					break;
-				}
-			}
-		}
-
-		// Make sure that the changes to current_index above
-		// are reflected in the sample's position indicator.
-		// Furthermore, verify the actual position within the
-		// sample in case we're off.
-
-		info.sample_data_ptr->use_fixedpoint(false);
-		info.current_index=info.sample_data_ptr->seek(info.current_index);
-		info.sample_data_ptr->use_fixedpoint(true);
+		info.active = info.sample_data_ptr->fixedpoint_loop();
+		info.current_index=info.sample_data_ptr->get_current_pos();
 
 		// Time to calculate how much of p_buffer we'll
 		// use during this iteration of the loop.

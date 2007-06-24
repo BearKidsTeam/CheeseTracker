@@ -124,7 +124,6 @@ Sample_Data::fixedpoint_is_backwards() {
 	return fixedpoint_backwards;
 }
 
-/*
 
 bool
 Sample_Data::fixedpoint_loop() {
@@ -134,11 +133,11 @@ Sample_Data::fixedpoint_loop() {
 		// on the next increment, because it will never
 		// actually be at the loop beginning if the loop
 		// begins at the beginning of the sample.
+		if(!loop_on) {
+			return (current_pos >= jump_size);
+		}
 		if(current_pos - jump_size <= loop_begin) {
-			if(!loop_on && loop_begin == 0) {
-				// Sample should stop playing.
-				return false;
-			} else if (pingpong_loop) {
+			if (pingpong_loop) {
 				fixedpoint_backwards = false;
 				current_pos -= (2*(current_pos-loop_begin)-jump_size);
 			} else {
@@ -150,18 +149,18 @@ Sample_Data::fixedpoint_loop() {
 			return !eof_reached() && current_pos <= loop_end && current_pos > loop_begin;
 		}
 	} else {
+		if(!loop_on) {
+			return (current_pos+jump_size < size);
+		}
 		if(current_pos + jump_size >= loop_end) {
-			if(!loop_on & loop_begin == size-1) {
-				return false;
-			} else if (pingpong_loop) {
+			if (pingpong_loop) {
 				fixedpoint_backwards = true;
-				current_pos += ((2*loop_end-current_pos)-jump)
+				current_pos += ((2*loop_end-current_pos)-jump_size);
 			} else {
-				current_pos = loop_begin;
+				current_pos = loop_begin + (jump_size-(loop_end-current_pos));
 			}
 			return !eof_reached() && current_pos < loop_end && current_pos >= loop_begin;
 		}
 	}
 	return true;
 }
- */

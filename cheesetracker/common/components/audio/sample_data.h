@@ -218,6 +218,14 @@ public:
 	void fixedpoint_aboutface();
 	bool fixedpoint_is_backwards();
 
+	class resample_functor {
+		public:
+			virtual operator()=0;
+			virtual ~resample_functor() { };
+	};
+
+	bool fixedpoint_loop(resample_functior *resample);
+
 	// }
 
 	const Sample_Data& operator=(const Sample_Data &r_data);

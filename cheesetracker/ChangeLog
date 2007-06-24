@@ -1,3 +1,10 @@
+Sun Jun 24 02:12:38 EDT 2007 J Phelps <godless@users.sf.net>
+	* tracker_voice.cpp(add_to_mix_buffer)
+	  sample_data_fixedpoint.h(fixedpoint_loop)
+	  sample_data.h: Moved the code that does looping
+	  from add_to_mix_buffer to fixedpoint_loop, a new
+	  function.
+	  
 Sat Jun 23 22:38:25 EDT 2007 J Phelps <godless@users.sf.net>
 	* resampler_linear.cpp
 	  resampler_cosine.cpp
