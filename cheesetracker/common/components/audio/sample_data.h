@@ -220,11 +220,11 @@ public:
 
 	class resample_functor {
 		public:
-			virtual operator()=0;
+			virtual void operator()()=0;
 			virtual ~resample_functor() { };
 	};
 
-	bool fixedpoint_loop(resample_functior *resample);
+	bool fixedpoint_loop();
 
 	// }
 

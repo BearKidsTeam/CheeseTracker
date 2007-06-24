@@ -16,6 +16,9 @@
 
 #include <algorithm>
 #include <cassert>
+#ifdef NEED_GMP
+#  include <gmp.h>
+#endif
 #include "tracker_voice.h"
 #include "ns_autoptr.h"
 #include "common/defines/fixedpoint_defs.h"
@@ -142,19 +145,6 @@ void Tracker_Voice::mix(size_t p_amount,sample_t* p_where) {
 	info.sample_data_ptr->use_fixedpoint(false);
 }
 
-class tracker_voice_resampler : public Sample_Data::resample_functor
-{
-		Resampler::Mix_Data *mixdata;
-	public :
-		tracker_voice_resampler(Resampler::Mix_Data *mdata) {
-			mixdata = mdata;
-		}
-		virtual void operator() {
-			
-		}
-		virtual ~tracker_voice_resampler() { }
-};
-
 void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer)
 {
 
@@ -236,9 +226,10 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer)
 		// like fixed-point numbers. (see fixedpoint.h for
 		// a complete explanation...). 
 
-		// Since we process samples in small chunks (a few hundred
-		// samples at a time), there is no possibility of integer
-		// overflow in these operations.
+		// If total_samples is large enough, the extra factor
+		// would result in an integer overflow. On 64-bit
+		// systems, there is no larger integer that can
+		// be used. Therefore, we use GMP on 64-bit platforms.
 
 		// Let "done" be the lesser of either the number of
 		// virtual samples that would be extracted from the
@@ -259,7 +250,44 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer)
 		// And now we calculate the value of "done":
 
 		if (info.current_frequency != mixfreq) {
-			done=std::min<size_t>(FIXED_TO_INT(total_samples * (INT_TO_FIXED(mixfreq)/info.current_frequency)), todo);
+#ifdef NEED_GMP
+			mpz_t gmp_mixfreq;
+			mpz_t gmp_current_freq;
+			mpz_t gmp_total_samples;
+			mpz_t F;
+
+			mpz_init(gmp_mixfreq);
+			mpz_init(gmp_current_freq);
+			mpz_init(gmp_total_samples);
+			mpz_init(F);
+			mpz_set_ui(gmp_mixfreq, mixfreq);
+			mpz_set_ui(gmp_current_freq, info.current_frequency);
+			mpz_set_ui(gmp_total_samples, total_samples);
+			mpz_set_ui(F, 2048);
+
+			// The following is equivalent to:
+			//
+			// (total_samples * (mixfreq*2048)/info.current_frequency)/2048
+			//
+			// Multiplying by 2048 prevents the division from dropping
+			// less-significant digits.
+
+			mpz_mul(gmp_mixfreq, gmp_mixfreq, F);
+			mpz_div(gmp_mixfreq, gmp_mixfreq, gmp_current_freq);
+			mpz_mul(gmp_total_samples, gmp_total_samples, gmp_mixfreq);
+			mpz_div(gmp_total_samples, gmp_total_samples, F);
+
+			size_t virtual_samples = mpz_get_ui(gmp_total_samples);
+			
+			done=std::min<size_t>(virtual_samples, todo);
+
+			// CLEANUP
+			mpz_clear(gmp_mixfreq);
+			mpz_clear(gmp_current_freq);
+			mpz_clear(gmp_total_samples);
+#else
+			done=std::min<size_t>((size_t)FIXED_TO_INT((Uint64)total_samples * (Uint64)(INT_TO_FIXED((Uint64)mixfreq)/(Uint64)info.current_frequency)), todo);
+#endif
 		} else {
 			// Mixing frequency and sample frequency are equal
 			done = std::min<size_t>(total_samples, todo);

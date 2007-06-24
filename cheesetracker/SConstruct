@@ -83,6 +83,9 @@ env.Append(CXXFLAGS=['-DPOSIX_ENABLED']);
 env.Append(CXXFLAGS=['-DBITS_PER_BYTE='+
                      str(env.detect.bits_per_byte)]);
 
+if (env.detect.need_gmp):
+	env.Append(CXXFLAGS=['-DNEED_GMP']);
+	env.Append(LIBS=['-lgmp']);
 if (env.detect.need_limit_macros_define) :
 	env.Append(CXXFLAGS=['-D__STDC_LIMIT_MACROS']);
 if (env.detect.have_gnu_basename) :

@@ -49,7 +49,7 @@
 // matches certain critical assumptions made about it.
 
 #define XYZ(X,Y,Z) X##Y##Z
-#define COMPILER_ASSERT(exp) extern char XYZ(_CompilerAssert,__FILE__,__LINE__)[(exp)?1:-1]
+#define COMPILER_ASSERT(exp) extern char _CompilerAssert[(exp)?1:-1]
 
 #ifdef HAVE_STDINT_H
 

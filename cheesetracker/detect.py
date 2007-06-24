@@ -38,8 +38,10 @@ def compile_cpp(program, cxxflags):
 	f=open("test.cpp", "w");
 	f.write(program);
 	f.close();
-	res=os.system("c++ test.cpp " + cxxflags + "-o test 2>>config_errors.log");
+	res=os.system("c++ test.cpp " + cxxflags + " -o test 2>>config_errors.log");
 	if (res != 0):
+		os.system("echo Failed program was: >> config_errors.log");
+		os.system("cat test.cpp >> config_errors.log");
 		return 0;
 	return 1;
 
@@ -131,6 +133,39 @@ def check_libdl(libdata):
 			os.system("rm test");
 			return 0;
 	return 1;
+
+def check_need_gmp(libdata):
+	print "Checking if GMP is needed...",
+	if(libdata.have_stdint_h):
+		stdint = "#define HAVE_STDINT_H\n";
+	elif(libdata.have_msint):
+		stdint = "#define HAVE_MSINT\n";
+	res=check_cpp_compile(
+		"#include <new>\n" +
+		stdint +
+		"#include \"common/defines/typedefs.h\"\n"+
+		"int main() {\n"		+
+		"	char DontNeedIt[(sizeof(size_t) < sizeof(Uint64)) ? 1 : -1];\n"	+
+		"}\n", "");
+	if(res == 0):
+		print "Yes."
+		print "Checking if GMP is available...",
+		res = check_cpp_compile(
+			"#include <gmp.h>\n" +
+			"int main() {return 0;}\n", "-lgmp");
+		if(res == 0):
+			print "No."
+			print "\n\n**** CANNOT FIND GMP LIBRARY ****\n\n";
+			print "\n\nGMP is required to build CheeseTracker on your system."
+			sys.exit(1);
+		else:
+			print "Yes."
+			libdata.need_gmp=1;
+			return 1;
+	else:
+		print "No."
+		libdata.need_gmp = 0;
+		return 0;
 
 # On some systems (namely, those systems running G++ 4.1.2 and newer
 # compiler versions), <stdint.h> gets silently included when other C++
@@ -605,6 +640,7 @@ def check_dependences(libdata):
 		libdata.have_madvise=0;
 
 	check_stdc_limit_macros(libdata);
+	check_need_gmp(libdata);
 
 	check_oss(libdata);
 	print "Dependency check successful, writing cache";
