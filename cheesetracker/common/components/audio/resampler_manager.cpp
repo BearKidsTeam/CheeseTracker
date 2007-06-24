@@ -29,11 +29,13 @@ int Resampler_Manager::get_resampler_count() {
 
  	return resampler_list.size();
 }
-Resampler * Resampler_Manager::get_resampler(int p_index) {
+Resampler * Resampler_Manager::get_resampler(signed int p_index) {
 
+	if (p_index == -1) {
+		p_index = get_default_resampler();
+	}
 	if ((p_index<0) || (p_index>=resampler_list.size()) ) {
-
-		return NULL;
+		throw Out_Of_Bounds(__FILE__, __LINE__);
 	}
 
 	return resampler_list[p_index];

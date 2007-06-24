@@ -131,7 +131,7 @@ inline Sint64 Resampler_Instance::get_sample_offset() {
  	return mixdata.sample_offset;
 }
 
-inline void Resampler_Instance:: set_current_resampler(int p_index) {
+inline void Resampler_Instance::set_current_resampler(int p_index) {
 
 	if (current_resampler==p_index)
 		return;
@@ -139,10 +139,7 @@ inline void Resampler_Instance:: set_current_resampler(int p_index) {
 	if (p_index<0) {
 		current_resampler=DEFAULT_RESAMPLER;
 	} else if (p_index>=resampler_manager->get_resampler_count())  {
-
-
-		ERROR("Invalid Resampler!");
-		return;
+		throw Out_Of_Bounds(__FILE__, __LINE__, "Invalid resampler!");
 	}
 
 	current_resampler=p_index;
@@ -150,7 +147,7 @@ inline void Resampler_Instance:: set_current_resampler(int p_index) {
 
 void Resampler_Instance::mix() {
 
-	int resampler_idx=(current_resampler<0)?resampler_manager->get_default_resampler():current_resampler;
+	int resampler_idx=current_resampler;
 
 	resampler_manager->get_resampler(resampler_idx)->mix(&mixdata);
 }

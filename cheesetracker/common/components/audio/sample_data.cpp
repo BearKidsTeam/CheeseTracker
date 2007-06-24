@@ -64,9 +64,10 @@
 // forces coefsset to unity gain
 #define SPLINE_CLAMPFORUNITY
 
-// fixedpoint.h must be included AFTER all #define constants.
+// sample_data_fixedpoint.h must be included AFTER all #define constants.
 
-#include "fixedpoint.h"
+#define IN_SAMPLE_DATA_CPP 1
+#include "sample_data_fixedpoint.h"
 
 int frac_cosine[COSINE_LEN];
 int frac_cosine_not_cosine_mode[COSINE_LEN];
@@ -74,6 +75,10 @@ sample_int_t cubic_lut[4*(1L<<SPLINE_FRACBITS)];
 
 typedef Sint32 mix_t;
 COMPILER_ASSERT(sizeof(mix_t) > sizeof(sample_int_t));
+
+// A class to initialize the lookup tables "frac_cosine",
+// "frac_cosine_not_cosine_mode", and "cubic_lut" at global scope,
+// without the need for an explicit call to an initialization function.
 
 class init_lookup_tables {
 	public:
@@ -215,7 +220,7 @@ Sample_Data::~Sample_Data(){
 }
 
 
-void Sample_Data::get_sample(size_t p_index, float *dest)  const{
+void Sample_Data::get_sample(size_t p_index, sample_t *dest)  const{
 
 	if(p_index >= size) {
 		throw Out_Of_Bounds(__FILE__, __LINE__);
@@ -228,7 +233,7 @@ void Sample_Data::get_sample(size_t p_index, float *dest)  const{
 	
 }
 
-void Sample_Data::set_sample(size_t p_idx, const float *p_val) {
+void Sample_Data::set_sample(size_t p_idx, const sample_t *p_val) {
 	ASSERT_NOTFIXEDPOINT("set_sample");
 	assert(is_16bits);
 
@@ -601,7 +606,7 @@ Sample_Data::truncate() {
 //                In normal mode, 0.0 is 
 //                returned continuously after eof_reached(),
 
-void Sample_Data::get_f_sample(float *dest) {
+void Sample_Data::get_f_sample(sample_t *dest) {
 	assert(is_16bits);
 	if(eof_reached()) {
 		for(size_t chan=0; chan<channels; chan++)
@@ -625,7 +630,7 @@ void Sample_Data::get_f_sample(float *dest) {
 //
 // see also     - set_size
 
-void Sample_Data::put_f_sample(const float *p_val) {
+void Sample_Data::put_f_sample(const sample_t *p_val) {
 	ASSERT_NOTFIXEDPOINT("put_f_sample");
 	assert(is_16bits);
 
@@ -773,14 +778,14 @@ Sample_Data::correct_loop_pointers() {
 
 
 void
-blank_f_sample(float *dest, size_t channels) {
+blank_f_sample(sample_t *dest, size_t channels) {
 	for(size_t chan=0; chan<channels; chan++) {
 		dest[chan]=0.0;
 	}
 }
 
 void
-Sample_Data::get_sample_for_cosine_mixer(float *dest, bool use_cosine_mode) {
+Sample_Data::get_sample_for_cosine_mixer(sample_t *dest, bool use_cosine_mode) {
 	/* if(eof_reached()) {
 		blank_f_sample(dest, channels);
 		return;
@@ -833,7 +838,7 @@ Sample_Data::get_sample_for_cosine_mixer(float *dest, bool use_cosine_mode) {
 
 
 void
-Sample_Data::do_cubic_mixer_voodoo(float *dest) {
+Sample_Data::do_cubic_mixer_voodoo(sample_t *dest) {
 	/* if(eof_reached()) {
 		blank_f_sample(dest, channels);
 		return;
@@ -857,7 +862,7 @@ Sample_Data::do_cubic_mixer_voodoo(float *dest) {
 }
 
 void
-Sample_Data::get_sample_for_linear_mixer(float *dest) {
+Sample_Data::get_sample_for_linear_mixer(sample_t *dest) {
 
 	/* if(eof_reached()) {
 		blank_f_sample(dest, channels);

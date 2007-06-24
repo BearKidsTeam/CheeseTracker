@@ -36,7 +36,6 @@
 #include "message_box.h"
 
 Sound_Driver_Manager * Sound_Driver_Manager::singleton_instance=NULL;
-int *debug_int = NULL;
 
 Sound_Driver_Manager * Sound_Driver_Manager::get_singleton_instance() {
 

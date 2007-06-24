@@ -63,8 +63,8 @@ that will make your life easier
 
 #define IS_16_BIT true
 
-#define SAMPLE_INT_T_TO_FLOAT(x) ((float)(x)/(float)SAMPLE_INT_T_MAX)
-#define FLOAT_TO_SAMPLE_INT_T(x) ((float)SAMPLE_INT_T_MAX*x)
+#define SAMPLE_INT_T_TO_FLOAT(x) ((sample_t)(x)/(sample_t)SAMPLE_INT_T_MAX)
+#define FLOAT_TO_SAMPLE_INT_T(x) ((sample_t)SAMPLE_INT_T_MAX*x)
 
 DERIVE_EMPTY(Error, Sample_Error);
 DERIVE_EMPTY(Sample_Error, Sample_EOF_Error);
@@ -183,8 +183,8 @@ public:
         const sample_int_t *get_int_sample();
         void put_sample(const sample_int_t *smp);
 
-	void get_f_sample(float *dest);
-	void put_f_sample(const float *p_val);
+	void get_f_sample(sample_t *dest);
+	void put_f_sample(const sample_t *p_val);
 
 	const sample_int_t *get_data_value(size_t p_pos);
 	void put_data_value(size_t p_pos, const sample_int_t *p_val);
@@ -192,8 +192,8 @@ public:
         size_t get_sample_array(sample_int_t *dest, size_t len);
         void put_sample_array(const sample_int_t *src, size_t len);
 
-	void get_sample(size_t p_index, float *dest)  const;
-	void set_sample(size_t p_idx, const float *p_val);
+	void get_sample(size_t p_index, sample_t *dest)  const;
+	void set_sample(size_t p_idx, const sample_t *p_val);
 
 	void set_size(size_t new_size);
 	inline size_t get_size()  const;
@@ -203,15 +203,22 @@ public:
         bool eof_reached();
 	bool is_empty();
 
-	void get_sample_for_cosine_mixer(float *dest, bool use_cosine_mode);
-	void do_cubic_mixer_voodoo(float *dest);
-	void get_sample_for_linear_mixer(float *dest);
+	// Resampler-related methods {
 
+	void get_sample_for_cosine_mixer(sample_t *dest, bool use_cosine_mode);
+	void do_cubic_mixer_voodoo(sample_t *dest);
+	void get_sample_for_linear_mixer(sample_t *dest);
+
+	// }
+
+	// Fixed-point methods (defined in fixedpoint.h) {
 	void use_fixedpoint(bool yes_or_no);
 	void fixedpoint_set_resample_rate(size_t current_freq, size_t mix_freq, bool backwards=false);
 	void fixedpoint_move_cursor();
 	void fixedpoint_aboutface();
 	bool fixedpoint_is_backwards();
+
+	// }
 
 	const Sample_Data& operator=(const Sample_Data &r_data);
 

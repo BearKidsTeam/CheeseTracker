@@ -13,75 +13,38 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+#include "resampler_kernel.h"
 #include "resampler_cosine.h"
 #include "helpers.h"
 #include <cmath>
 
+class cosine_getter : public sample_getter {
+		Sample_Data *data_ptr;
+		bool cosine_mode;
+	public:
+		cosine_getter(Sample_Data *data, bool cos_mode) {
+			data_ptr = data;
+			cosine_mode = cos_mode;
+		}
+		virtual void operator()(float *output) {
+			data_ptr->get_sample_for_cosine_mixer(output, cosine_mode);
+		}
+		virtual ~cosine_getter() { };
+};
+
 //who says templates are useless? :)
-template <class Depth,bool FILTER_VERSION>
+template <bool FILTER_VERSION>
 static void mix_cosine(Resampler::Mix_Data *mixdata,Sint32 *p_table, bool cosine_mode) {
-
-	HELPER_INITIALIZE
-
-	if (CHECK_END_OF_SAMPLE_AT_MIX_BEGIN) {
-		samples_to_mix-=sample_increment_threshold;
-		int aux_samples_to_mix=sample_increment_threshold;
-
-		while (aux_samples_to_mix--) {
-			HELPER_MIX_ONE_RAW_SAMPLE
-		};
-	}
-	bool end_of_sample_at_mix_end=CHECK_END_OF_SAMPLE_AT_MIX_END;
-	if (end_of_sample_at_mix_end) {
-		// printf("end of sample at mix end!\n");
-		samples_to_mix-=sample_increment_threshold;
-	}
-
-	while(samples_to_mix--) {
-		// Mon Apr 30 01:14:44 EDT 2007
-		// Cosine-based sample hacking moved into the
-		// Sample_Data because it depended very heavily
-		// on the fixed-point part of the current position
-		// in the sample, which I really, really want
-		// to keep confined to the Sample_Data implementation.
-
-		HELPER_MIX_ONE_SAMPLE( {
-			mixdata->sample->get_sample_for_cosine_mixer(temp_float, cosine_mode);
-		})
-	}
-
-	if (end_of_sample_at_mix_end) {
-		samples_to_mix=sample_increment_threshold;
-		while (samples_to_mix--) {
-			HELPER_MIX_ONE_RAW_SAMPLE
-		};
-	}
-	HELPER_UPDATE_MIXDATA_STATUS
+	cosine_getter get_cosine(mixdata->sample, cosine_mode);
+	mix_sample(mixdata, &get_cosine, FILTER_VERSION);
 }
 
 
 void Resampler_Cosine::mix(Resampler::Mix_Data *p_data) {
-
-//	//printf("HOHO volumes %i,%i,\n",p_data->l_volume,p_data->r_volume);
-	if (p_data->sample->is_16bit()) {
-
-		if (p_data->filter.enabled) {
-
-			mix_cosine<Sint16,true>(p_data,frac_cosine,mode == COSINE);
-		} else {
-
-			mix_cosine<Sint16,false>(p_data,frac_cosine,mode == COSINE);
-		}
+	if (p_data->filter.enabled) {
+		mix_cosine<true>(p_data,frac_cosine,mode == COSINE);
 	} else {
-
-		if (p_data->filter.enabled) {
-
-			mix_cosine<Sint8,true>(p_data,frac_cosine, mode == COSINE);
-		} else {
-
-			mix_cosine<Sint8,false>(p_data,frac_cosine, mode == COSINE);
-  }
-	
+		mix_cosine<false>(p_data,frac_cosine,mode == COSINE);
 	}
 }
 
