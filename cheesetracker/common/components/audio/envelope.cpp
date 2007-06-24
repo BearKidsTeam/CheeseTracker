@@ -76,7 +76,7 @@ float Envelope::get_height_at_pos(float p_pos) {
 		count++;
 	}
 
-	if (p_pos==0) return node[0].value;
+	if (p_pos==0 || limit == 0) return node[0].value;
 
 	if (limit==-1) return NO_POINT;
 

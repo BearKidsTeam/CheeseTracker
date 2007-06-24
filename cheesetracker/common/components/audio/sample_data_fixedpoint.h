@@ -2,8 +2,8 @@
 #include "fixedpoint_defs.h"
 
 /***************************************************************************
-    This file is part of the CheeseTronic Music Tools
-    url                  : http://www.geocities.com/godlessinfidelus/
+    This file is part of CheeseTracker
+    url                  : http://cheesetracker.sourceforge.net/
     copyright            : (C) 2003 by Juan Linietsky
     maintainer           : J Phelps
     email                : godless@users.sf.net
@@ -124,3 +124,44 @@ Sample_Data::fixedpoint_is_backwards() {
 	return fixedpoint_backwards;
 }
 
+/*
+
+bool
+Sample_Data::fixedpoint_loop() {
+	int jump_size = FIXED_TO_INT(fixedpoint_offset + fixedpoint_inc);
+	if(fixedpoint_backwards) {
+		// Check if the sample will reach the loop-begin
+		// on the next increment, because it will never
+		// actually be at the loop beginning if the loop
+		// begins at the beginning of the sample.
+		if(current_pos - jump_size <= loop_begin) {
+			if(!loop_on && loop_begin == 0) {
+				// Sample should stop playing.
+				return false;
+			} else if (pingpong_loop) {
+				fixedpoint_backwards = false;
+				current_pos -= (2*(current_pos-loop_begin)-jump_size);
+			} else {
+				// Normal looping.
+				current_pos = loop_end - (jump_size-(current_pos-loop_begin));
+			}
+			// Sample should continue playing, unless it reaches
+			// the opposite boundary in a single jump.
+			return !eof_reached() && current_pos <= loop_end && current_pos > loop_begin;
+		}
+	} else {
+		if(current_pos + jump_size >= loop_end) {
+			if(!loop_on & loop_begin == size-1) {
+				return false;
+			} else if (pingpong_loop) {
+				fixedpoint_backwards = true;
+				current_pos += ((2*loop_end-current_pos)-jump)
+			} else {
+				current_pos = loop_begin;
+			}
+			return !eof_reached() && current_pos < loop_end && current_pos >= loop_begin;
+		}
+	}
+	return true;
+}
+ */

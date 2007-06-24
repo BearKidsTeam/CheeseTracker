@@ -13,6 +13,7 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+#include "resampler_kernel.h"
 #include "resampler_cubic.h"
 #include "helpers.h"
 
@@ -28,79 +29,29 @@
 #define SPLINE_FRACBITS 8 // ?
 #define SPLINE_LUTLEN (1L<<SPLINE_FRACBITS)
 
+DEFINE_GETTER(cubic_getter, { data_ptr->do_cubic_mixer_voodoo(output); });
+
 // LUT = "Look Up Table"
 //
 // See Resampler_Cubic::Resampler_Cubic.
 
 static signed short lut[4*(1L<<SPLINE_FRACBITS)];
 
-//who says templates are useless? :)
-template <class Depth,bool FILTER_VERSION>
+template <bool FILTER_VERSION>
 static void mix_linear(Resampler::Mix_Data *mixdata) {
-
-	HELPER_INITIALIZE
-
-	try {
-		//this very much fucking sucks, I need to find a better way..
-		if (CHECK_END_OF_SAMPLE_AT_MIX_BEGIN) {
-			samples_to_mix-=sample_increment_threshold;
-			int aux_samples_to_mix=sample_increment_threshold;
-
-			while (aux_samples_to_mix--) {
-				HELPER_MIX_ONE_RAW_SAMPLE
-			}
-		}
-		bool end_of_sample_at_mix_end=CHECK_END_OF_SAMPLE_AT_MIX_END;
-		if (end_of_sample_at_mix_end) {
-			////printf("end of sample at mix end!\n");
-			samples_to_mix-=sample_increment_threshold;
-		}
-
-		// The meat of the cubic algorithm is in the Sample_Data class
-		// because it depends on private members of that class.
-
-		while(samples_to_mix--) {
-
-			HELPER_MIX_ONE_SAMPLE({
-				mixdata->sample->do_cubic_mixer_voodoo(temp_float); 
-			})
-		}
-
-		if (end_of_sample_at_mix_end) {
-			samples_to_mix=sample_increment_threshold;
-			while (samples_to_mix--) {
-				HELPER_MIX_ONE_RAW_SAMPLE
-			};
-		}
-		HELPER_UPDATE_MIXDATA_STATUS
-	} catch (Sample_EOF_Error E) {
-		return;
-	}
+	cubic_getter get_cubic(mixdata->sample);
+	mix_sample(mixdata, &get_cubic, FILTER_VERSION);
 }
 
 
 void Resampler_Cubic::mix(Resampler::Mix_Data *p_data) {
 
 //	//printf("HOHO volumes %i,%i,\n",p_data->l_volume,p_data->r_volume);
-	if (p_data->sample->is_16bit()) {
 
-		if (p_data->filter.enabled) {
-
-			mix_linear<Sint16,true>(p_data);
-		} else {
-
-			mix_linear<Sint16,false>(p_data);
-		}
+	if (p_data->filter.enabled) {
+		mix_linear<true>(p_data);
 	} else {
-
-		if (p_data->filter.enabled) {
-
-			mix_linear<Sint8,true>(p_data);
-		} else {
-
-			mix_linear<Sint8,false>(p_data);
-		}
-
+		mix_linear<false>(p_data);
 	}
 }
 

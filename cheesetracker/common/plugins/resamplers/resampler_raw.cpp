@@ -13,45 +13,27 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+#include "resampler_kernel.h"
 #include "resampler_raw.h"
 #include "helpers.h"
 
+DEFINE_GETTER(raw_getter, { data_ptr->get_f_sample(output); });
 
 //who says templates are useless? :)
-template <class Depth,bool FILTER_VERSION>
+template <bool FILTER_VERSION>
 static void mix_raw(Resampler::Mix_Data *mixdata) {
-
-	HELPER_INITIALIZE
-	HELPER_BEGIN_LOOP
-		//very simple raw resampling
-		HELPER_MIX_ONE_RAW_SAMPLE
-	HELPER_END_LOOP
-	HELPER_UPDATE_MIXDATA_STATUS
+	raw_getter get_raw(mixdata->sample);
+	mix_sample(mixdata, &get_raw, FILTER_VERSION);
 }
 
 
 void Resampler_Raw::mix(Resampler::Mix_Data *p_data) {
 
 //	//printf("HOHO volumes %i,%i,\n",p_data->l_volume,p_data->r_volume);
-	if (p_data->sample->is_16bit()) {
-	
-		if (p_data->filter.enabled) {
-		
-			mix_raw<Sint16,true>(p_data);
-		} else {
-		
-			mix_raw<Sint16,false>(p_data);
-		}
+	if (p_data->filter.enabled) {
+		mix_raw<true>(p_data);
 	} else {
-	
-		if (p_data->filter.enabled) {
-		
-			mix_raw<Sint8,true>(p_data);
-		} else {
-		
-			mix_raw<Sint8,false>(p_data);
-		}
-	
+		mix_raw<false>(p_data);
 	}
 }
 

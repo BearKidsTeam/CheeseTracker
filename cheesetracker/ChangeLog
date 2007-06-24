@@ -1,3 +1,10 @@
+Sat Jun 23 22:38:25 EDT 2007 J Phelps <godless@users.sf.net>
+	* resampler_linear.cpp
+	  resampler_cosine.cpp
+	  resampler_cubic.cpp
+	  resampler_raw.cpp: Rewrote the resamplers. They now
+	all use the code in resampler_kernel.cpp, which eliminates
+	much of the code duplication.
 Sat Jun 23 03:51:59 EDT 2007 J Phelps <godless@users.sf.net>
 	* tracker_voice.h: Removed unused definition for
 	Tracker_Voice::FRACTIONAL.

@@ -260,10 +260,18 @@ void Sample_Data::set_loop_ping_pong(bool p_enabled) {
 void Sample_Data::set_loop_begin(int p_idx) {
 
 	loop_begin=p_idx;
+	if(size == 0)
+		loop_begin = 0;
+	else if(loop_begin >= size)
+		loop_begin = size-1;
 }
 void Sample_Data::set_loop_end(int p_idx) {
 
 	loop_end=p_idx;
+	if(size == 0)
+		loop_begin = 0;
+	else if(loop_end >= size)
+		loop_end = size-1;
 
 }
 
@@ -777,17 +785,17 @@ Sample_Data::correct_loop_pointers() {
 }
 
 
-void
-blank_f_sample(sample_t *dest, size_t channels) {
+template<class TYPE, TYPE zero> void
+blank_sample(TYPE *dest, size_t channels) {
 	for(size_t chan=0; chan<channels; chan++) {
-		dest[chan]=0.0;
+		dest[chan]=zero;
 	}
 }
 
 void
 Sample_Data::get_sample_for_cosine_mixer(sample_t *dest, bool use_cosine_mode) {
 	/* if(eof_reached()) {
-		blank_f_sample(dest, channels);
+		blank_sample<sample_t, 0.0>(dest, channels);
 		return;
 	} */
 	const sample_int_t *current_frame = get_data_value(get_current_pos());
@@ -802,9 +810,7 @@ Sample_Data::get_sample_for_cosine_mixer(sample_t *dest, bool use_cosine_mode) {
 		ns_temp.arr_new(temp);
 		next_frame = temp;
 
-		for(size_t chan=0; chan<channels; chan++) {
-			temp[chan]=0;
-		}
+		blank_sample<sample_int_t, 0>(temp, channels);
 	} else {
 		next_frame = get_data_value(get_current_pos()+1);
 	}
@@ -840,7 +846,7 @@ Sample_Data::get_sample_for_cosine_mixer(sample_t *dest, bool use_cosine_mode) {
 void
 Sample_Data::do_cubic_mixer_voodoo(sample_t *dest) {
 	/* if(eof_reached()) {
-		blank_f_sample(dest, channels);
+		blank_sample<sample_t, 0.0>(dest, channels);
 		return;
 	} */
 
@@ -865,19 +871,31 @@ void
 Sample_Data::get_sample_for_linear_mixer(sample_t *dest) {
 
 	/* if(eof_reached()) {
-		blank_f_sample(dest, channels);
+		blank_sample<sample_t, 0.0>(dest, channels);
 		return;
 	} */
 
 	size_t pos = get_current_pos();
 	const sample_int_t *current_frame = get_int_sample();
-	const sample_int_t *next_frame = get_data_value(pos+1);
+	const sample_int_t *next_frame;
+	ns_autoptr<sample_int_t> ns_temp;
+
+	if(get_current_pos() + 1 >= get_size()) {
+		sample_int_t *temp = new sample_int_t[num_channels()];
+		ns_temp.arr_new(temp);
+		next_frame=temp;
+		blank_sample<sample_int_t, 0>(temp, channels);
+	} else {
+		next_frame = get_data_value(pos+1);
+	}
 	// Tue May 29 04:41:45 EDT 2007
 	// BUG: The "mix_t" below is essential to obtaining a correct return value.
 	// The multiplication deliberately generates an overflow and then makes up for
 	// it by using a larger-than-normal integer. This means that the linear mixer
 	// cannot use the largest available integer type as sample_int_t: There simply
 	// _must_ be a larger integer type to catch the overflow.
+
+	COMPILER_ASSERT(sizeof(mix_t) > sizeof(sample_int_t));
 
 	for(size_t chan=0; chan<channels; chan++) {
 		sample_int_t final_data = current_frame[chan];

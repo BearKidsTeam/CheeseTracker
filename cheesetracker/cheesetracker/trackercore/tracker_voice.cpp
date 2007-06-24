@@ -191,7 +191,7 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer) {
 					info.sample_data_ptr->fixedpoint_aboutface();
 				} else
 					/* normal backwards looping, so set the current
-					 * position to loopend index */
+					 * position to the loop-end index */
 					info.current_index=loop_end;
 			} else {
 				/* the sample is not looping, so check if it reached index 0 */
@@ -205,13 +205,14 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer) {
 		} else {
 			/* The sample is playing forward */
 			if ( (loop_active) && (info.current_index >= loop_end)) {
-				/* the sample is looping, check the loopend index */
+				/* the sample is looping and has reached the end */
 				if( info.sample_data_ptr->is_loop_ping_pong() ) {
+					/* Ping-pong mode: Begin playing backwards. */
 					info.playing_backwards=true;
 					info.sample_data_ptr->fixedpoint_aboutface();
 				} else
-					/* normal backwards looping, so set the current position
-					   to loopend index */
+					/* normal looping, so set the current position
+					   to the loop_begin index */
 					info.current_index=loop_begin;
 			} else {
 				/* sample is not looping, so check if it reached the last
