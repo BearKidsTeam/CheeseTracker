@@ -112,17 +112,7 @@ void Tracker_Voice::mix(size_t p_amount,sample_t* p_where) {
 	info.oldlvol=info.lvolsel;
 	info.oldrvol=info.rvolsel;
 
-	// TODO: Determine if this is still needed. {
-
-	if(info.panning != PAN_SURROUND) {
-
-		info.lvolsel=vol*(1.0-pan);
-		info.rvolsel=vol*pan;
-
-	} else	{
-		info.lvolsel=info.rvolsel=vol/2.0;
-	}
-	// }
+	info.lvolsel=vol;
 
 	if (info.first_mix) {
 

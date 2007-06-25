@@ -18,7 +18,7 @@ void mix_sample(Resampler::Mix_Data *mixdata, sample_getter *get_sample, bool pe
 
 	float pan_normalized	= (float)mixdata->panning/(float)PAN_RIGHT;
 	bool right_of_centre	= pan_normalized > 0.5;
-	float from_centre 	= (right_of_centre ? (pan_normalized - 0.5) : (0.5 - pan_normalized))*2.0;
+	float from_centre 	= (right_of_centre ? (pan_normalized - 0.5) : (0.5 - pan_normalized)) * 2.0;
 	size_t samples_to_mix 	= mixdata->samples_to_mix;
 	float send_volume 	= mixdata->l_volume;
 	float prev_volume	= mixdata->l_volume_prev;
@@ -61,8 +61,10 @@ void mix_sample(Resampler::Mix_Data *mixdata, sample_getter *get_sample, bool pe
 		//        If the sample being processed has more than two channels,
 		//        each even channel will go to hardware channel 0, and
 		//        each odd channel will go to hardware channel 1.
+		//
+
 		for(size_t chan=0; chan<std::max<size_t>(HARD_CODED_MIXER_CHANNELS, channels); chan++) {
-			bool this_side_of_centre = (chan % HARD_CODED_MIXER_CHANNELS) ? !right_of_centre : right_of_centre;
+			bool this_side_of_centre = (chan % HARD_CODED_MIXER_CHANNELS) ? right_of_centre : !right_of_centre;
 			// Copy temp_float[CURRENT_CHANNEL] because the following operations
 			// are destructive, and temp_float[CURRENT_CHANNEL] may be processed
 			// more than once.
@@ -103,6 +105,7 @@ void mix_sample(Resampler::Mix_Data *mixdata, sample_getter *get_sample, bool pe
 			mixdata->filter.hist_a1 = final_float[0];
 		}
 		/*** MIXDOWN ***/
+		sample_t *fake_dest_buffer = dest_buffer;
 		for(size_t chan = 0; chan < HARD_CODED_MIXER_CHANNELS; chan++) {
 			*(dest_buffer++) += send_volume * final_float[chan];
 		}
