@@ -162,8 +162,17 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer)
 	size_t left_end=loop_active?loop_begin:0;
 	size_t right_end=loop_active?loop_end:idxsize;
 
+	// We keep a local copy of the position indicator
+	// in sample_data_ptr. This is because the
+	// same sample's position indicator might be
+	// iterated by other voices, or by the editor.
+	//
+	// When first entering this function,
+	// the local copy is considered authoritative.
 
-	info.current_index=info.sample_data_ptr->get_current_pos();
+	info.sample_data_ptr->use_fixedpoint(false);
+	info.sample_data_ptr->seek(info.current_index);
+	info.sample_data_ptr->use_fixedpoint(true);
 
 	// This while-loop is here because the sample might
 	// not have enough data in it to fill the p_buffer 

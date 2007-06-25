@@ -1,4 +1,11 @@
-Sun Jun 24 17:51:49 EDT 2007
+Mon Jun 25 06:37:25 EDT 2007 J Phelps <godless@users.sf.net>
+	* editor_selection.cpp
+	* sample_editor_effects.cpp
+	* simple_edit_effects.cpp: Fixed off-by-one for-loop bugs.
+	* message_box.h: Added new macro GENERIC_TRY_CATCH to avoid
+	reimplementing try-catch blocks in Qt-called functions.
+
+Sun Jun 24 17:51:49 EDT 2007 J Phelps <godless@users.sf.net>
 	* tracker_voice.cpp(add_to_mix_buffer): Added use of the GMP
 	library. It turns out that even the small amount of fixed-point
 	math used here may cause an integer overflow. On 32-bit systems,
