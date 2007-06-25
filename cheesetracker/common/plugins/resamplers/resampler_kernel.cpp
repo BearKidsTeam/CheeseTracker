@@ -105,9 +105,8 @@ void mix_sample(Resampler::Mix_Data *mixdata, sample_getter *get_sample, bool pe
 			mixdata->filter.hist_a1 = final_float[0];
 		}
 		/*** MIXDOWN ***/
-		sample_t *fake_dest_buffer = dest_buffer;
 		for(size_t chan = 0; chan < HARD_CODED_MIXER_CHANNELS; chan++) {
-			*(dest_buffer++) += send_volume * final_float[chan];
+			*dest_buffer++ += send_volume * final_float[chan];
 		}
 	}
 }
