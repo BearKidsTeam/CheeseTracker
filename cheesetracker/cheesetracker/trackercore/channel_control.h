@@ -124,7 +124,7 @@ struct Channel_Control {
 
 	bool kicking;
 
-	Sint32 sample_start_index;        /* The starting byte index in the sample */
+	size_t sample_start_index;        /* The starting byte index in the sample */
 	Uint8  instrument_index;
 	Instrument *instrument_ptr;
 	bool new_instrument;

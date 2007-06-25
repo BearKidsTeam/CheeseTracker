@@ -145,6 +145,7 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer)
 
         if ( info.sample_data_ptr == NULL ) {
 		info.current_index=0;
+		info.fixedpoint_offset=0;
 		info.active=false;
 		return;
 	}
@@ -169,10 +170,15 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer)
 	//
 	// When first entering this function,
 	// the local copy is considered authoritative.
+	//
+	// Since the mutex for this sample is locked
+	// right now, no other threads will iterate
+	// the sample until after this function returns.
 
 	info.sample_data_ptr->use_fixedpoint(false);
 	info.sample_data_ptr->seek(info.current_index);
 	info.sample_data_ptr->use_fixedpoint(true);
+	info.sample_data_ptr->set_fixedpoint_offset(info.fixedpoint_offset);
 
 	// This while-loop is here because the sample might
 	// not have enough data in it to fill the p_buffer 
@@ -328,6 +334,7 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer)
 		// in the sample.
 
                 info.current_index=info.sample_data_ptr->get_current_pos();
+		info.fixedpoint_offset = info.sample_data_ptr->get_fixedpoint_offset();
 		todo-=done;
 
 		// Incrementing by done*2 because mixing_buffer_index

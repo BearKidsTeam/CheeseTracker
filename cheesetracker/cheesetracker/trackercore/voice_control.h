@@ -67,7 +67,7 @@ struct Voice_Control {
 		Uint32 base_speed;        /* what finetune to use */
 		int period;
 		//sample start index
-        	int offset;        /* The starting byte index in the sample */
+        	size_t offset;        /* The starting byte index in the sample */
 		Sample* ptr;
 		
 		int index; //which samples (if applies, -1 if played from somewhere else )

@@ -47,7 +47,7 @@ void Player_Data::process_new_note(int p_track,Uint8 p_note) { // if there's rea
 		control.channel[p_track].layers[i].kick=KICK_NOTE;
 	}
 
-	control.channel[p_track].sample_start_index=-1;
+	control.channel[p_track].sample_start_index=0;
 	control.channel[p_track].sliding=0;
 	control.channel[p_track].row_has_note=true;
 

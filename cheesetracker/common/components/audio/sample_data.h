@@ -211,7 +211,7 @@ public:
 
 	// }
 
-	// Fixed-point methods (defined in fixedpoint.h) {
+	// Fixed-point methods (defined in sample_data_fixedpoint.h) {
 	void use_fixedpoint(bool yes_or_no);
 	void fixedpoint_set_resample_rate(size_t current_freq, size_t mix_freq, bool backwards=false);
 	void fixedpoint_move_cursor();
@@ -225,6 +225,8 @@ public:
 	};
 
 	bool fixedpoint_loop();
+	size_t get_fixedpoint_offset();
+	void set_fixedpoint_offset(size_t new_offset);
 
 	// }
 

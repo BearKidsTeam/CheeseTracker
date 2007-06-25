@@ -1,3 +1,18 @@
+Mon Jun 25 14:01:30 EDT 2007
+	* voice.control.h(UsedSample): Changed type of
+	Voice_Control::UsedSample::offset to size_t.
+	* channel_control.h: Changed type of
+	Channel_Control::sample_start_index from Sint32 to size_t.
+	* player_data_notes.cpp(process_new_note): Changed
+	assignment of (now unsigned) sample_start_index from -1
+	to 0.
+	* tracker_voice.h: Added new member fixedpoint_offset to
+	struct Tracker_Voice::Info.
+	* sample_data.h/sample_data_fixedpoint.h: Added new member
+	functions get_fixedpoint_offset and set_fixedpoint_offset.
+	* tracker_voice.cpp(add_to_mix_buffer): fixedpoint_offset
+	from the sample is now preserved across calls to
+	add_to_mix_buffer.
 Mon Jun 25 06:37:25 EDT 2007 J Phelps <godless@users.sf.net>
 	* editor_selection.cpp
 	* sample_editor_effects.cpp

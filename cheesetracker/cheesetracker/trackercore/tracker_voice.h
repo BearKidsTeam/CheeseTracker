@@ -40,6 +40,7 @@ class Tracker_Voice : public Voice
 		bool playing_backwards;
 
 		size_t start_index;             /* start index */
+		size_t fixedpoint_offset;	// An offset expressed in 1/2048th of a sample.
 		Uint32 current_frequency;  //frq;               /* current frequency */
 
 		float volume;               /* current volume */
@@ -69,6 +70,7 @@ class Tracker_Voice : public Voice
 
 			active=playing_backwards=false;
 			start_index=current_frequency=0;
+			fixedpoint_offset=0;
 			chorus_send=reverb_send=0;
 			volume=lvolsel=rvolsel=oldlvol=oldrvol=0;
 			panning=current_index=0;
@@ -84,6 +86,7 @@ class Tracker_Voice : public Voice
 
 			playing_backwards=false;
 			current_index=start_index;
+			fixedpoint_offset=0;
 			if(sample_data_ptr) {
 				// NOTE: sample_data_ptr IS ALREADY LOCKED.
 				current_index=sample_data_ptr->seek(current_index);

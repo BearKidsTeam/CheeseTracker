@@ -139,7 +139,7 @@ Sample_Data::fixedpoint_loop() {
 		if(current_pos - jump_size <= loop_begin) {
 			if (pingpong_loop) {
 				fixedpoint_backwards = false;
-				current_pos -= (2*(current_pos-loop_begin)-jump_size);
+				// current_pos -= (2*(current_pos-loop_begin)-jump_size);
 			} else {
 				// Normal looping.
 				current_pos = loop_end - (jump_size-(current_pos-loop_begin));
@@ -155,7 +155,7 @@ Sample_Data::fixedpoint_loop() {
 		if(current_pos + jump_size >= loop_end) {
 			if (pingpong_loop) {
 				fixedpoint_backwards = true;
-				current_pos += ((2*loop_end-current_pos)-jump_size);
+				// current_pos += ((2*loop_end-current_pos)-jump_size);
 			} else {
 				current_pos = loop_begin + (jump_size-(loop_end-current_pos));
 			}
@@ -163,4 +163,16 @@ Sample_Data::fixedpoint_loop() {
 		}
 	}
 	return true;
+}
+
+size_t
+Sample_Data::get_fixedpoint_offset()
+{
+	return fixedpoint_offset;
+}
+
+void
+Sample_Data::set_fixedpoint_offset(size_t new_offset)
+{
+	fixedpoint_offset=new_offset;
 }

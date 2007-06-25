@@ -52,6 +52,10 @@ pthreads version of mutex locking
 class Mutex_Lock_Pthreads : public Mutex_Lock  {
 
 	pthread_mutex_t internal_mutex;
+#ifndef NDEBUG
+	char *source_file;
+	size_t line_number;
+#endif
 
 public:
 
@@ -60,8 +64,10 @@ public:
 		pthread_mutex_lock(&internal_mutex);
 	};
 	bool try_grab() {
-
+#ifndef NDEBUG
+#else
 		return (pthread_mutex_trylock(&internal_mutex)==EBUSY);
+#endif
 	};
 
 	void release() {
