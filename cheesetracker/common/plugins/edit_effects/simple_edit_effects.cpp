@@ -118,7 +118,7 @@ void Edit_Effect_FadeIn::process(Sample_Data *p_data,size_t p_begin,size_t p_end
 	ns_autoptr<Mutex_Lock_Container> ns_p_data_lock;
 	ns_p_data_lock.ptr_new(p_data_lock);
 
-	for (size_t i=p_begin;i<=p_end;i++) {
+	for (size_t i=p_begin; i < p_end; i++) {
 		p_data->get_sample(i, aux_val);
 		for(size_t chan=0; chan<channels; chan++) {
 			aux_val[chan] *= (float)(i-p_begin)/(float)(p_end-p_begin) ;
@@ -146,7 +146,7 @@ Edit_Effect_FadeOut::process(Sample_Data *p_data,size_t p_begin,size_t p_end) {
 	ns_autoptr<Mutex_Lock_Container> ns_p_data_lock;
 	ns_p_data_lock.ptr_new(p_data_lock);
 
-	for (size_t i=p_begin;i<=p_end;i++) {
+	for (size_t i=p_begin; i < p_end; i++) {
 		p_data->get_sample(i, aux_val);
 		for(size_t chan=0; chan<channels; chan++) {
 			aux_val[chan] *=  (float)(p_end-i)/(float)(p_end-p_begin) ;
@@ -214,7 +214,7 @@ void Edit_Effect_Normalize::selected_notify(Sample_Data *p_data,size_t p_begin,s
 	ns_autoptr<Mutex_Lock_Container> ns_p_data_lock;
 	ns_p_data_lock.ptr_new(p_data_lock);
 
-	for (i=p_begin;i<=p_end;i++) {
+	for (i = p_begin; i < p_end; i++) {
 
 		p_data->get_sample(i, aux_val);
 
@@ -254,7 +254,7 @@ void Edit_Effect_Normalize::process(Sample_Data *p_data,size_t p_begin,size_t p_
 	ns_autoptr<Mutex_Lock_Container> ns_p_data_lock;
 	ns_p_data_lock.ptr_new(p_data_lock);
 
-	for (size_t i=p_begin;i<=p_end;i++) {
+	for (size_t i=p_begin; i < p_end; i++) {
 		p_data->get_sample(i, aux_val);
 		for(size_t chan=0; chan<channels; chan++) {
 			aux_val[chan] *= mult;
@@ -327,7 +327,7 @@ void Edit_Effect_Center::process(Sample_Data *p_data,size_t p_begin,size_t p_end
 	ns_p_data_lock.ptr_new(p_data_lock);
 
 	size_t i;
-	for (i=p_begin;i<=p_end;i++) {
+	for (i=p_begin; i < p_end; i++) {
 
 		p_data->get_sample(i, aux_val);
 
@@ -339,7 +339,7 @@ void Edit_Effect_Center::process(Sample_Data *p_data,size_t p_begin,size_t p_end
 
 	diff=(real_max-max)-(((real_max-real_min)-(max-min))/2.0);
 
-	for (i=p_begin;i<=p_end;i++) {
+	for (i=p_begin; i < p_end; i++) {
 		p_data->get_sample(i, aux_val);
 		for(size_t chan=0; chan<channels; chan++) {
 			aux_val[chan] += diff;

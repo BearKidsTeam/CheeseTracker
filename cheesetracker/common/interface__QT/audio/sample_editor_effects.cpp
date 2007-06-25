@@ -26,6 +26,8 @@
 //
 //
 
+#include "Error.h"
+#include "message_box.h"
 #include "sample_editor_effects.h"
 
 
@@ -40,49 +42,55 @@ void Sample_Editor_Effects::set_sample_data(Sample_Data *p_sample) {
 
 void Sample_Editor_Effects::effect_selected_cbk(int p_which) {
 
+	// This function is called by the moc-generated file
+	// moc__sample_editor_effects.cpp.
 
-	selected_effect=p_which;
+	GENERIC_TRY_CATCH(
 
-	if (effect_list.size()==0)
-		return; //nothing to apply
-	if (sample==NULL)
-		return;
-	if (sample->get_size()==0)
-		return;
+		selected_effect=p_which;
 
-	int begin=selection->is_active()?selection->get_begin():0;
-	int end=selection->is_active()?selection->get_end():(sample->get_size()-1);
+		if (effect_list.size()==0)
+			return; //nothing to apply
+		if (sample==NULL)
+			return;
+		if (sample->get_size()==0)
+			return;
 
-	effect_list[selected_effect]->selected_notify(sample,begin,end);
-	bridge_list_edit->set_property_bridge_list( effect_list[selected_effect]->get_property_list() );
+		int begin=selection->is_active()?selection->get_begin():0;
+		int end=selection->is_active()?selection->get_end():(sample->get_size()-1);
 
+		effect_list[selected_effect]->selected_notify(sample,begin,end);
+		bridge_list_edit->set_property_bridge_list( effect_list[selected_effect]->get_property_list() );
+	)
 }
 
 void Sample_Editor_Effects::effect_apply_cbk() {
 
-	if (sample==NULL)
-		return;
-	if (sample->get_size()==0)
-		return;
-	if (effect_list.size()==0)
-		return; //nothing to apply
+	GENERIC_TRY_CATCH(
+		if (sample==NULL)
+			return;
+		if (sample->get_size()==0)
+			return;
+		if (effect_list.size()==0)
+			return; //nothing to apply
 
-	int begin=selection->is_active()?selection->get_begin():0;
-	int end=selection->is_active()?selection->get_end():(sample->get_size()-1);
+		int begin=selection->is_active()?selection->get_begin():0;
+		int end=selection->is_active()?selection->get_end():(sample->get_size()-1);
 
-	if (effect_list[selected_effect]->is_destructive())
-		destructive_operation_begin();
+		if (effect_list[selected_effect]->is_destructive())
+			destructive_operation_begin();
 
-	//remind this!
-	data_modification_begin_notify();
+		//remind this!
+		data_modification_begin_notify();
 
-	effect_list[selected_effect]->process(sample,begin,end);
+		effect_list[selected_effect]->process(sample,begin,end);
 
-	data_modification_end_notify();
+		data_modification_end_notify();
 
-	if (effect_list[selected_effect]->is_destructive())
-		destructive_operation_end();
+		if (effect_list[selected_effect]->is_destructive())
+			destructive_operation_end();
 
+	)
 }
 
 void Sample_Editor_Effects::update_effect_list() {
