@@ -37,7 +37,7 @@ void Sample_Editor_Clipboard::copy_cbk() {
 	if (!sdata || !sdata->get_size())
 		return;
 
-	Mutex_Lock_Container *sdata_lock = sdata->lock();
+	Mutex_Lock_Container *sdata_lock = sdata->lock(__FILE__, __LINE__);
 	ns_autoptr<Mutex_Lock_Container> ns_sdata_lock;
 	ns_sdata_lock.ptr_new(sdata_lock);
 
@@ -67,7 +67,7 @@ void Sample_Editor_Clipboard::cut_cbk() {
 	// Lock the mutex only after copy_cbk(), because copy_cbk()
 	// also locks the mutex.
 
-	Mutex_Lock_Container *sdata_lock = sdata->lock();
+	Mutex_Lock_Container *sdata_lock = sdata->lock(__FILE__, __LINE__);
 	ns_autoptr<Mutex_Lock_Container> ns_sdata_lock;
 	ns_sdata_lock.ptr_new(sdata_lock);
 
@@ -150,7 +150,7 @@ void Sample_Editor_Clipboard::paste_cbk() {
 	if (!clipboard.get_size())
 		return;
 
-	Mutex_Lock_Container *sdata_lock = sdata->lock();
+	Mutex_Lock_Container *sdata_lock = sdata->lock(__FILE__, __LINE__);
 	ns_autoptr<Mutex_Lock_Container> ns_sdata_lock;
 	ns_sdata_lock.ptr_new(sdata_lock);
 	destructive_operation_begin();

@@ -235,7 +235,7 @@ bool Pattern_Edit::event ( QEvent * e  ) {
 
         if (key_value>='a' && key_value<='z') key_value-=('a'-'A');
 
-	if (variables_lock) variables_lock->grab();
+	if (variables_lock) variables_lock->grab(__FILE__, __LINE__);
 
 	aux_instrument=editor->get_instrument_mask_value();
 
@@ -599,7 +599,7 @@ bool Pattern_Edit::event ( QEvent * e  ) {
 
 			if (variables_lock) variables_lock->release();
 			player->play_note(editor->get_cursor_x(),song->get_pattern(editor->get_current_pattern())->get_note(editor->get_cursor_x(),editor->get_cursor_y()));
-			if (variables_lock) variables_lock->grab();
+			if (variables_lock) variables_lock->grab(__FILE__, __LINE__);
 
 			editor->cursor_move_down();
 			must_repaint=true;
@@ -610,7 +610,7 @@ bool Pattern_Edit::event ( QEvent * e  ) {
 			int i;
 			if (variables_lock) variables_lock->release();
 			for (i=0;i<PATTERN_WIDTH;i++) player->play_note(i,song->get_pattern(editor->get_current_pattern())->get_note(i,editor->get_cursor_y()),false);
-			if (variables_lock) variables_lock->grab();
+			if (variables_lock) variables_lock->grab(__FILE__, __LINE__);
 
 			editor->cursor_move_down();
 
@@ -627,7 +627,7 @@ bool Pattern_Edit::event ( QEvent * e  ) {
 
 				if (variables_lock) variables_lock->release();
 				if (key_value!='`') player->play_note(previous_cursor_x,song->get_pattern(editor->get_current_pattern())->get_note(previous_cursor_x,previous_cursor_y));
-				if (variables_lock) variables_lock->grab();
+				if (variables_lock) variables_lock->grab(__FILE__, __LINE__);
 
 			}
 			must_repaint=true;

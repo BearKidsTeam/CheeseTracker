@@ -47,7 +47,7 @@ void Edit_Effect_Reverse::process(Sample_Data *p_data,size_t p_begin,size_t p_en
 	aux_val = new sample_int_t[channels];
 	ns_aux_val.arr_new(aux_val);
 
-	Mutex_Lock_Container *p_data_lock = p_data->lock();
+	Mutex_Lock_Container *p_data_lock = p_data->lock(__FILE__, __LINE__);
 	ns_autoptr<Mutex_Lock_Container> ns_p_data_lock;
 	ns_p_data_lock.ptr_new(p_data_lock);
 
@@ -81,7 +81,7 @@ void Edit_Effect_SelToLoop::process(Sample_Data *p_data,size_t p_begin,size_t p_
 
 	if (!p_data->get_size())
 		return;
-	Mutex_Lock_Container *p_data_lock = p_data->lock();
+	Mutex_Lock_Container *p_data_lock = p_data->lock(__FILE__, __LINE__);
 	ns_autoptr<Mutex_Lock_Container> ns_p_data_lock;
 	ns_p_data_lock.ptr_new(p_data_lock);
 
@@ -96,7 +96,7 @@ void Edit_Effect_Toggle_Sign::process(Sample_Data *p_data,size_t p_begin,size_t 
 	if (!p_data->get_size())
 		return;
 
-	Mutex_Lock_Container *p_data_lock = p_data->lock();
+	Mutex_Lock_Container *p_data_lock = p_data->lock(__FILE__, __LINE__);
 	ns_autoptr<Mutex_Lock_Container> ns_p_data_lock;
 	ns_p_data_lock.ptr_new(p_data_lock);
 
@@ -114,7 +114,7 @@ void Edit_Effect_FadeIn::process(Sample_Data *p_data,size_t p_begin,size_t p_end
 	aux_val = new float[channels];
 	ns_aux_val.arr_new(aux_val);
 
-	Mutex_Lock_Container *p_data_lock = p_data->lock();
+	Mutex_Lock_Container *p_data_lock = p_data->lock(__FILE__, __LINE__);
 	ns_autoptr<Mutex_Lock_Container> ns_p_data_lock;
 	ns_p_data_lock.ptr_new(p_data_lock);
 
@@ -142,7 +142,7 @@ Edit_Effect_FadeOut::process(Sample_Data *p_data,size_t p_begin,size_t p_end) {
 	aux_val = new float[channels];
 	ns_aux_val.arr_new(aux_val);
 
-	Mutex_Lock_Container *p_data_lock = p_data->lock();
+	Mutex_Lock_Container *p_data_lock = p_data->lock(__FILE__, __LINE__);
 	ns_autoptr<Mutex_Lock_Container> ns_p_data_lock;
 	ns_p_data_lock.ptr_new(p_data_lock);
 
@@ -185,7 +185,7 @@ void Edit_Effect_Tunner::process(Sample_Data *p_data,size_t p_begin,size_t p_end
 
 
 
-	Mutex_Lock_Container *p_data_lock = p_data->lock();
+	Mutex_Lock_Container *p_data_lock = p_data->lock(__FILE__, __LINE__);
 	p_data->set_c5_freq(int(cycle_len));
 	delete p_data_lock;
 }
@@ -210,7 +210,7 @@ void Edit_Effect_Normalize::selected_notify(Sample_Data *p_data,size_t p_begin,s
 	ns_aux_val.arr_new(aux_val);
 
 
-	Mutex_Lock_Container *p_data_lock = p_data->lock();
+	Mutex_Lock_Container *p_data_lock = p_data->lock(__FILE__, __LINE__);
 	ns_autoptr<Mutex_Lock_Container> ns_p_data_lock;
 	ns_p_data_lock.ptr_new(p_data_lock);
 
@@ -250,7 +250,7 @@ void Edit_Effect_Normalize::process(Sample_Data *p_data,size_t p_begin,size_t p_
 	ns_aux_val.arr_new(aux_val);
 
 
-	Mutex_Lock_Container *p_data_lock = p_data->lock();
+	Mutex_Lock_Container *p_data_lock = p_data->lock(__FILE__, __LINE__);
 	ns_autoptr<Mutex_Lock_Container> ns_p_data_lock;
 	ns_p_data_lock.ptr_new(p_data_lock);
 
@@ -281,7 +281,7 @@ void Edit_Effect_Toggle_Depth::process(Sample_Data *p_data,size_t p_begin,size_t
 	if (!p_data->get_size())
 		return;
 
-	Mutex_Lock_Container *p_data_lock = p_data->lock();
+	Mutex_Lock_Container *p_data_lock = p_data->lock(__FILE__, __LINE__);
 	ns_autoptr<Mutex_Lock_Container> ns_p_data_lock;
 	ns_p_data_lock.ptr_new(p_data_lock);
 	p_data->toggle_quality();
@@ -296,7 +296,7 @@ void Edit_Effect_PostLoop_Cut::process(Sample_Data *p_data,size_t p_begin,size_t
 	if (p_data->get_loop_end()<=0)
 		return;
 
-	Mutex_Lock_Container *p_data_lock = p_data->lock();
+	Mutex_Lock_Container *p_data_lock = p_data->lock(__FILE__, __LINE__);
 	ns_autoptr<Mutex_Lock_Container> ns_p_data_lock;
 	ns_p_data_lock.ptr_new(p_data_lock);
 	p_data->seek(p_data->get_loop_end()+1);
@@ -322,7 +322,7 @@ void Edit_Effect_Center::process(Sample_Data *p_data,size_t p_begin,size_t p_end
 	aux_val = new float[channels];
 	ns_aux_val.arr_new(aux_val);
 
-	Mutex_Lock_Container *p_data_lock = p_data->lock();
+	Mutex_Lock_Container *p_data_lock = p_data->lock(__FILE__, __LINE__);
 	ns_autoptr<Mutex_Lock_Container> ns_p_data_lock;
 	ns_p_data_lock.ptr_new(p_data_lock);
 
@@ -366,7 +366,7 @@ void Edit_Effect_PreLoop_Cut::process(Sample_Data *p_data,size_t p_begin,size_t 
 	size_t new_size = p_data->get_size() - p_data->get_loop_begin();
 	sample_int_t *new_data = new sample_int_t[new_size*p_data->num_channels()];
 
-	Mutex_Lock_Container *p_data_lock = p_data->lock();
+	Mutex_Lock_Container *p_data_lock = p_data->lock(__FILE__, __LINE__);
 	ns_autoptr<Mutex_Lock_Container> ns_p_data_lock;
 	ns_p_data_lock.ptr_new(p_data_lock);
 

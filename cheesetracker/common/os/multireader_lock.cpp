@@ -55,7 +55,7 @@ multireader_lock::touch()
 {
 	queue.enter();
 #ifdef POSIX_ENABLED
-	mutex->grab();
+	mutex->grab(__FILE__, __LINE__);
 #endif
 	queue.leave();
 	touchers++;
@@ -68,7 +68,7 @@ void
 multireader_lock::let_go()
 {
 #ifdef POSIX_ENABLED
-	mutex->grab();
+	mutex->grab(__FILE__, __LINE__);
 #endif
 	touchers--;
 #ifdef POSIX_ENABLED
@@ -81,10 +81,10 @@ multireader_lock::lock()
 {
 	queue.enter();
 #ifdef POSIX_ENABLED
-	mutex->grab();
+	mutex->grab(__FILE__, __LINE__);
 	while(touchers) {
 		mutex->release();
-		mutex->grab();
+		mutex->grab(__FILE__, __LINE__);
 	}
 #endif
 	queue.leave();

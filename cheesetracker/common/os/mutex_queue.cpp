@@ -49,12 +49,12 @@ void
 Mutex_Queue::enter() {
 #ifdef POSIX_ENABLED
 	// Try to grab the mutex closest to the
-	// front of the queue. We simply use try_grab()
+	// front of the queue. We simply use try_grab(__FILE__, __LINE__)
 	// on each position until it succeeds. However,
 	// we reserve the last position in the line.
 	size_t ix;
 	for(ix=0; ix < QUEUE_LEN-1; ix++) {
-		if(!waiting[ix]->try_grab())
+		if(!waiting[ix]->try_grab(__FILE__, __LINE__))
 			break;
 	}
 	if(ix==(QUEUE_LEN-1)) {
@@ -63,7 +63,7 @@ Mutex_Queue::enter() {
 		// of the queue. Since we can't go any
 		// further back, we must wait for this
 		// spot to become available.
-		waiting[ix]->grab();
+		waiting[ix]->grab(__FILE__, __LINE__);
 	}
 	// We are now in line. Start moving to
 	// the front. We do this by obtaining
@@ -72,7 +72,7 @@ Mutex_Queue::enter() {
 	// current position.
 
 	for(; ix; ix--) {
-		waiting[ix-1]->grab();
+		waiting[ix-1]->grab(__FILE__, __LINE__);
 		waiting[ix]->release();
 	}
 	// We are now at the front of the line.

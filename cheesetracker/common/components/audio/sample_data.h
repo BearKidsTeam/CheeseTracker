@@ -168,7 +168,7 @@ public:
 	// and lock() before writing and before
 	// calling use_fixedpoint(true).
 
-	Mutex_Lock_Container *lock();
+	Mutex_Lock_Container *lock(const char *file, int line);
 
 	// Several methods of getting and setting
 	// data from the sample buffer are supported.

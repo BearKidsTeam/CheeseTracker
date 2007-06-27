@@ -56,7 +56,7 @@ void Player_Data::play_start_song_from_order_and_row(int p_order,int p_row) {
 
 void Player_Data::get_voice_status_info(vector<Player_Data::VoiceStatusInfo>& p_info) {
 
-	if (info_lock) info_lock->grab();
+	if (info_lock) info_lock->grab(__FILE__, __LINE__);
 
 	p_info=voice_status_info_copy;
 
@@ -66,7 +66,7 @@ void Player_Data::get_voice_status_info(vector<Player_Data::VoiceStatusInfo>& p_
 
 void Player_Data::lock_player_variables() {
 
-	if (variables_lock) variables_lock->grab();
+	if (variables_lock) variables_lock->grab(__FILE__, __LINE__);
 }
 void Player_Data::unlock_player_variables() {
 
@@ -97,7 +97,7 @@ void Player_Data::play_start(int p_pattern, int p_order, int p_row) {
 
 	if (control.play_mode!=PLAY_NOTHING) play_stop();
 
-	if (variables_lock) variables_lock->grab();
+	if (variables_lock) variables_lock->grab(__FILE__, __LINE__);
 
 	reset();
 
@@ -128,7 +128,7 @@ void Player_Data::play_stop() {
 
 	int i;
 
-	if (variables_lock) variables_lock->grab();
+	if (variables_lock) variables_lock->grab(__FILE__, __LINE__);
 
 	control.play_mode=PLAY_NOTHING;
 
@@ -146,7 +146,7 @@ void Player_Data::play_stop() {
 void Player_Data::play_note(int p_channel,Note note,bool p_override_def) {
 
 
-	if (variables_lock) variables_lock->grab();
+	if (variables_lock) variables_lock->grab(__FILE__, __LINE__);
 
 	if (control.play_mode==PLAY_NOTHING) {
 
@@ -166,7 +166,7 @@ int Player_Data::get_voice_envelope_pos(int p_voice,Envelope *p_envelope) {
 	i=p_voice;
 
 
-	if (variables_lock) variables_lock->grab();
+	if (variables_lock) variables_lock->grab(__FILE__, __LINE__);
 
 
 	if ((song->variables.use_instruments) && (voice[i]->instrument_ptr!=NULL) && (voice[i]->fadeout_volume>0)) {
@@ -198,7 +198,7 @@ void Player_Data::goto_next_order() {
 
 	if (control.play_mode!=PLAY_SONG) return;
 
-	if (variables_lock) variables_lock->grab();
+	if (variables_lock) variables_lock->grab(__FILE__, __LINE__);
 
 	control.position.current_row=0;
 
@@ -217,7 +217,7 @@ void Player_Data::goto_previous_order() {
 
 	if (control.play_mode!=PLAY_SONG) return;
 
-	if (variables_lock) variables_lock->grab();
+	if (variables_lock) variables_lock->grab(__FILE__, __LINE__);
 
 	int next_order,current_order;
 
@@ -257,7 +257,7 @@ string Player_Data::get_voice_sample_name(int p_voice) {
 
 	string name;
 
-	if (variables_lock) variables_lock->grab();
+	if (variables_lock) variables_lock->grab(__FILE__, __LINE__);
 
 	if (voice[p_voice]->sample_ptr!=NULL) name=voice[p_voice]->sample_ptr->name;
 
@@ -271,7 +271,7 @@ string Player_Data::get_voice_instrument_name(int p_voice) {
 
 	string name;
 
-	if (variables_lock) variables_lock->grab();
+	if (variables_lock) variables_lock->grab(__FILE__, __LINE__);
 
 	if (voice[p_voice]->instrument_ptr!=NULL) name=voice[p_voice]->instrument_ptr->name;
 

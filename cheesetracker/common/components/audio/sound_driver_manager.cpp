@@ -45,8 +45,8 @@ Sound_Driver_Manager * Sound_Driver_Manager::get_singleton_instance() {
 
 void Sound_Driver_Manager::add_mixer(Mixer_Base* p_mixer) {
 
-	if (variables_lock) variables_lock->grab();
-	if (driver_lock) driver_lock->grab(); //we need an extra lock for this
+	if (variables_lock) variables_lock->grab(__FILE__, __LINE__);
+	if (driver_lock) driver_lock->grab(__FILE__, __LINE__); //we need an extra lock for this
 	mixer_list.push_back(p_mixer);
 	if (driver_lock) driver_lock->release();
 	if (variables_lock) variables_lock->release();
@@ -56,8 +56,8 @@ void Sound_Driver_Manager::add_mixer(Mixer_Base* p_mixer) {
 
 void Sound_Driver_Manager::remove_mixer(Mixer_Base* p_mixer) {
 
-	if (variables_lock) variables_lock->grab();
-	if (driver_lock) driver_lock->grab(); //we need an extra lock for this
+	if (variables_lock) variables_lock->grab(__FILE__, __LINE__);
+	if (driver_lock) driver_lock->grab(__FILE__, __LINE__); //we need an extra lock for this
 
 	for (int i=(mixer_list.size()-1);i>=0;i--) {
 
@@ -130,7 +130,7 @@ void Sound_Driver_Manager::set_active_driver(int p_driver_index) {
 	if (p_driver_index==active_driver_index) return;
 	bool driver_was_active=false;
 
-	if (variables_lock) variables_lock->grab();
+	if (variables_lock) variables_lock->grab(__FILE__, __LINE__);
 
 	if (active_driver_index>=0) {
 
@@ -154,7 +154,7 @@ void Sound_Driver_Manager::stop_active_driver(bool p_lock) {
 	if (active_driver_index<0) return;
 
 	if (p_lock)
-		if (variables_lock) variables_lock->grab();
+		if (variables_lock) variables_lock->grab(__FILE__, __LINE__);
 
 	if (driver_list[active_driver_index]->is_active())
 		driver_list[active_driver_index]->finish();
@@ -172,10 +172,10 @@ bool Sound_Driver_Manager::poll_active_driver() {
         Sound_Driver::Status driver_status=Sound_Driver::IDLE;
 
 	if (driver_list[active_driver_index]->accepts_blocking()) {
-		if (variables_lock) variables_lock->grab(); //commenting this out, since the mutex takes the whole thing
+		if (variables_lock) variables_lock->grab(__FILE__, __LINE__); //commenting this out, since the mutex takes the whole thing
         } else {
 		if (variables_lock) {
-			if (variables_lock->try_grab())
+			if (variables_lock->try_grab(__FILE__, __LINE__))
 				return false;
 		}
 	}
@@ -219,7 +219,7 @@ void Sound_Driver_Manager::reset_active_driver() {
 
 	if (active_driver_index<0) return;
 
-	if (variables_lock) variables_lock->grab();
+	if (variables_lock) variables_lock->grab(__FILE__, __LINE__);
 
 	if (driver_list[active_driver_index]->is_active()) {
 
@@ -248,7 +248,7 @@ void Sound_Driver_Manager::request_mix_frequency(int p_mix_frequency) {
 
         bool need_reinit=false;
 
-	if (variables_lock) variables_lock->grab();
+	if (variables_lock) variables_lock->grab(__FILE__, __LINE__);
 
 	if (driver_list[active_driver_index]->is_active()) {
 
@@ -274,7 +274,7 @@ void Sound_Driver_Manager::request_mix_stereo(bool p_mix_stereo) {
 	
         bool need_reinit=false;
 
-	if (variables_lock) variables_lock->grab();
+	if (variables_lock) variables_lock->grab(__FILE__, __LINE__);
 
 	if (driver_list[active_driver_index]->is_active()) {
 
@@ -302,7 +302,7 @@ void Sound_Driver_Manager::request_mix_16bits(bool p_mix_16bits) {
 	
         bool need_reinit=false;
 
-	if (variables_lock) variables_lock->grab();
+	if (variables_lock) variables_lock->grab(__FILE__, __LINE__);
 
 	if (driver_list[active_driver_index]->is_active()) {
 
@@ -328,7 +328,7 @@ void Sound_Driver_Manager::request_buffer_size(int p_buffsize) {
 
         bool need_reinit=false;
 
-	if (variables_lock) variables_lock->grab();
+	if (variables_lock) variables_lock->grab(__FILE__, __LINE__);
 
 	if (driver_list[active_driver_index]->is_active()) {
 
@@ -337,7 +337,7 @@ void Sound_Driver_Manager::request_buffer_size(int p_buffsize) {
 
 	}
 
-	if (driver_lock) driver_lock->grab(); //we need an extra lock for this
+	if (driver_lock) driver_lock->grab(__FILE__, __LINE__); //we need an extra lock for this
 	driver_list[active_driver_index]->request_buffer_size(p_buffsize);
 	if (driver_lock) driver_lock->release();
 

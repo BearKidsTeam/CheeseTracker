@@ -131,7 +131,7 @@ bool Envelope_Point_Editor::event ( QEvent * e ) {
 			if ( ((int)gx!=envelope->get_node_offset(grab.node)) || ((int)gy!=envelope->get_node_height(grab.node)) ) {
 
 				//avoid pointless overdraw
-				if (envelope_lock) envelope_lock->grab();
+				if (envelope_lock) envelope_lock->grab(__FILE__, __LINE__);
 				envelope->set_node_offset(grab.node,(int)gx,(int)gy);
 				if (envelope_lock) envelope_lock->release();
 				if (adjust_zoom_to_window())
@@ -208,7 +208,7 @@ bool Envelope_Point_Editor::event ( QEvent * e ) {
 					gy-=env_normalize;
 
 
-					if (envelope_lock) envelope_lock->grab();
+					if (envelope_lock) envelope_lock->grab(__FILE__, __LINE__);
                                 	int which=envelope->add_node_at_offset((int)gx,(int)gy);
 					if (envelope_lock) envelope_lock->release();
 
@@ -231,7 +231,7 @@ bool Envelope_Point_Editor::event ( QEvent * e ) {
 
         			if (closest_node!=-1) {
 
-					if (envelope_lock) envelope_lock->grab();
+					if (envelope_lock) envelope_lock->grab(__FILE__, __LINE__);
         				envelope->delete_node(closest_node);
 					if (envelope_lock) envelope_lock->release();
 					update();

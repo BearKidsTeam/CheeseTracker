@@ -38,6 +38,7 @@
 #include "os/mutex_lock.h"
 #include <pthread.h>
 #include <errno.h>
+#include <string.h>
 /**
   *@author Juan Linietsky
   */
@@ -52,27 +53,37 @@ pthreads version of mutex locking
 class Mutex_Lock_Pthreads : public Mutex_Lock  {
 
 	pthread_mutex_t internal_mutex;
-#ifndef NDEBUG
-	char *source_file;
-	size_t line_number;
-#endif
 
 public:
 
-	void grab() {
-
-		pthread_mutex_lock(&internal_mutex);
-	};
-	bool try_grab() {
+	void grab(const char *p_file, int p_line) {
 #ifndef NDEBUG
+		pthread_mutex_lock(&internal_mutex);
+		file = strdup(p_file);
+		line=p_line;
+#endif
+	};
+	bool try_grab(const char *p_file, int p_line) {
+#ifndef NDEBUG
+		if(pthread_mutex_trylock(&internal_mutex)==EBUSY) {
+			return true;
+		} else {
+			file = strdup(p_file);
+			line=p_line;
+			return false;
+		}
 #else
 		return (pthread_mutex_trylock(&internal_mutex)==EBUSY);
 #endif
 	};
 
 	void release() {
-
 		pthread_mutex_unlock(&internal_mutex);
+#ifndef NDEBUG
+		free(file);
+		file=NULL;
+		line=0;
+#endif
 	};
 
 	Mutex_Lock* create_mutex_type() {

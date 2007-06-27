@@ -48,15 +48,18 @@ class to abstract mutex locking
 
 
 class Mutex_Lock {
-
-
 public:
+#ifndef NDEBUG
+	char *file;	// The source file where this was grabbed,
+			// for debugging deadlocks.
+	int line;	// The line in the source file.
+#endif
 
 	static Mutex_Lock *default_type;
 	static Mutex_Lock *create_mutex();
 
-	virtual void grab()=0;
-	virtual bool try_grab()=0; //return true if grab failed
+	virtual void grab(const char *p_file, int p_line)=0;
+	virtual bool try_grab(const char *p_file, int p_line)=0; //return true if grab failed
 	virtual void release()=0;
         virtual Mutex_Lock* create_mutex_type()=0;
 
@@ -70,24 +73,18 @@ public:
 
 class Mutex_Lock_Container {
 	private:
-		std::vector<Mutex_Lock *> locks;
+		Mutex_Lock *lock;
 	public:
-		Mutex_Lock_Container (Mutex_Lock *lck) {
-			add(lck);
-		}
-		void add(Mutex_Lock *lck) {
+		Mutex_Lock_Container (Mutex_Lock *lck, const char *file, int line) {
 #ifdef POSIX_ENABLED
-			lck->grab();
-			locks.push_back(lck);
+			lck->grab(file, line);
 #endif
+			lock = lck;
 		}
+		
 		~Mutex_Lock_Container() {
 #ifdef POSIX_ENABLED
-			std::vector<Mutex_Lock*>::iterator ix;
-			for(ix=locks.begin(); ix!=locks.end();
-			    ix++) {
-				(*ix)->release();
-			}
+			lock->release();
 #endif
 		}
 };

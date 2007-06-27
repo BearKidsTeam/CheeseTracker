@@ -913,8 +913,8 @@ Sample_Data::get_sample_for_linear_mixer(sample_t *dest) {
 //
 
 Mutex_Lock_Container *
-Sample_Data::lock() {
-	return new Mutex_Lock_Container(mutex);
+Sample_Data::lock(const char *file, int line) {
+	return new Mutex_Lock_Container(mutex, file, line);
 }
 
 

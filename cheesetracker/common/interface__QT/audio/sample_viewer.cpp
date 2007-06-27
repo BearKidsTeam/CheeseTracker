@@ -302,7 +302,7 @@ void Sample_Viewer::update_sample_cache(size_t p_range_begin,size_t p_range_end)
 
 	int target_size=(p_range_end/factor);
 
-	Mutex_Lock_Container *lock = sample_data->lock();
+	Mutex_Lock_Container *lock = sample_data->lock(__FILE__, __LINE__);
 	ns_autoptr<Mutex_Lock_Container> ns_lock;
 	ns_lock.ptr_new(lock);
 
@@ -423,7 +423,7 @@ void Sample_Viewer::screen_to_sample(int p_int, float *p_max_peak,float *p_min_p
 		sample_next = new float[sample_data->num_channels()];
 		ns_sample_next.arr_new(sample_next);
 
-		Mutex_Lock_Container *lock = sample_data->lock();
+		Mutex_Lock_Container *lock = sample_data->lock(__FILE__, __LINE__);
 		ns_autoptr<Mutex_Lock_Container> ns_lock;
 		ns_lock.ptr_new(lock);
 

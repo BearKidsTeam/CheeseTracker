@@ -65,7 +65,7 @@ int Saver_Raw::save_sample(const char *p_filename,int p_sample_index) {
 	// Samples that don't match this data type will
 	// be silently converted.
 
-	Mutex_Lock_Container *lock = smp->data.lock();
+	Mutex_Lock_Container *lock = smp->data.lock(__FILE__, __LINE__);
 	ns_autoptr<Mutex_Lock_Container> ns_lock;
 	ns_lock.ptr_new(lock);
 	smp->data.seek(0);

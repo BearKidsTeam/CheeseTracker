@@ -442,7 +442,7 @@ void DDS_Helpers::get_sample_data(Sample_Data *p_sample,DDS* p_dds)
 	vector<Uint8> data;
 	data.resize(p_sample->is_16bit() ? (p_sample->get_size() * 2) : p_sample->get_size() );
 
-	Mutex_Lock_Container *lock = p_sample->lock();
+	Mutex_Lock_Container *lock = p_sample->lock(__FILE__, __LINE__);
 	ns_autoptr<Mutex_Lock_Container> ns_lock;
 	ns_lock.ptr_new(lock);
 	p_sample->seek(0);

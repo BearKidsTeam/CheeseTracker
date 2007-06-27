@@ -30,6 +30,7 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <cstdlib>
 #include "mutex_lock.h"
 
 //void * Mutex_Lock::mutex_creation_function=NULL;
@@ -46,6 +47,9 @@ Mutex_Lock* Mutex_Lock::create_mutex() {
 }
 
 Mutex_Lock::Mutex_Lock(){
+	file=NULL;
+	line=0;
 }
 Mutex_Lock::~Mutex_Lock(){
+	free(file);
 }

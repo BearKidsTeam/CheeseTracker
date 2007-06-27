@@ -90,7 +90,7 @@ int Saver_Wav::save_sample(const char *p_filename,int p_sample_index) {
 
 
 
-	Mutex_Lock_Container *lock = smp->data.lock();
+	Mutex_Lock_Container *lock = smp->data.lock(__FILE__, __LINE__);
 	ns_autoptr<Mutex_Lock_Container> ns_lock;
 	ns_lock.ptr_new(lock);
 	smp->data.seek(0);

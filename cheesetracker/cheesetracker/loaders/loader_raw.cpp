@@ -49,7 +49,7 @@ int Loader_RAW::load_sample_func(const char *p_filename, Sample_Data *SD) {
 
 	// Copy the data into the Sample_Data structure.
 
-	Mutex_Lock_Container *lock = SD->lock();
+	Mutex_Lock_Container *lock = SD->lock(__FILE__, __LINE__);
 	ns_autoptr<Mutex_Lock_Container> ns_lock;
 	ns_lock.ptr_new(lock);
 	SD->seek(0);

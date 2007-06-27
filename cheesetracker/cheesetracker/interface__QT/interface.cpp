@@ -426,7 +426,7 @@ void Interface::update_song_widgets() {
 
 Loader::Error Interface::open_song(string p_name) {
 
-	Sound_Driver_Manager::get_singleton_instance()->get_variables_lock()->grab();
+	Sound_Driver_Manager::get_singleton_instance()->get_variables_lock()->grab(__FILE__, __LINE__);
 	Loader::Error res=tracker.format_manager.load_module(p_name.c_str());
 	Sound_Driver_Manager::get_singleton_instance()->get_variables_lock()->release();
 	tracker.song.variables.filename=p_name;

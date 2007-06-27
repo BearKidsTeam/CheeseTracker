@@ -90,7 +90,7 @@ Loader::Error Loader_IT::load_sample_data(IT_Sample *p_sample) {
 		int aux_sample_properties = p_sample->flag & 10; // 2nd and 4th bits only
 
 		file_read.seek(p_sample->sampoffset);
-		Mutex_Lock_Container *lock = p_sample->data.lock();
+		Mutex_Lock_Container *lock = p_sample->data.lock(__FILE__, __LINE__);
 		ns_autoptr<Mutex_Lock_Container> ns_lock;
 		ns_lock.ptr_new(lock);
 		p_sample->data.seek(0);

@@ -260,7 +260,7 @@ void Mixer_Effects_Manager::popup_selected_buffer_slot(int p_which) {
 		return;
 
 	Mutex_Lock * vl=Sound_Driver_Manager::get_singleton_instance()->get_variables_lock();
-	if (vl) vl->grab();
+	if (vl) vl->grab(__FILE__, __LINE__);
 
 	if (vars.selected_buffer<total_chans) {
 
@@ -297,7 +297,7 @@ void Mixer_Effects_Manager::output_remove_slot() {
 		return;
 
 	Mutex_Lock * vl=Sound_Driver_Manager::get_singleton_instance()->get_variables_lock();
-	if (vl) vl->grab();
+	if (vl) vl->grab(__FILE__, __LINE__);
 
 	if (vars.selected_buffer<total_chans) {
 
@@ -397,7 +397,7 @@ void Mixer_Effects_Manager::update_send_parameters() {
 void Mixer_Effects_Manager::create_buffer_slot() {
 
 	Mutex_Lock * vl=Sound_Driver_Manager::get_singleton_instance()->get_variables_lock();
-	if (vl) vl->grab();
+	if (vl) vl->grab(__FILE__, __LINE__);
 	vars.mixer->add_buffer();
 	if (vl) vl->release();
 
@@ -419,7 +419,7 @@ void Mixer_Effects_Manager::erase_selected_buffer_slot() {
 	}
 
 	Mutex_Lock * vl=Sound_Driver_Manager::get_singleton_instance()->get_variables_lock();
-	if (vl) vl->grab();
+	if (vl) vl->grab(__FILE__, __LINE__);
 	vars.mixer->remove_buffer(selected);
 	if (vl) vl->release();
 

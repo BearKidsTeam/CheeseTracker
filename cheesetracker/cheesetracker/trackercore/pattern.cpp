@@ -140,7 +140,7 @@ Note Pattern::get_note(int p_column, int p_row) {
 
 	assert(data_lock == NULL);  // FIXME -- This is really stupid. 
 
-	if (data_lock!=NULL) data_lock->grab(); 
+	if (data_lock!=NULL) data_lock->grab(__FILE__, __LINE__); 
 
 	if ((p_column==storage_note_column) && (p_row==storage_note_row) && last_request_valid) {
 
@@ -156,7 +156,7 @@ Note Pattern::get_note(int p_column, int p_row) {
 
 Note& Pattern::get_note_ref(int p_column, int p_row) {
 
-	if (data_lock!=NULL) data_lock->grab();
+	if (data_lock!=NULL) data_lock->grab(__FILE__, __LINE__);
 
 	Note empty_note;
 
@@ -201,7 +201,7 @@ void Pattern::set_length(Uint8 p_length) {
 	}
 
 
-	if (data_lock!=NULL) data_lock->grab();
+	if (data_lock!=NULL) data_lock->grab(__FILE__, __LINE__);
 		
        	if (length<p_length) {
 
@@ -233,7 +233,7 @@ void Pattern::set_length(Uint8 p_length) {
 void Pattern::clear() {
 
 
-	if (data_lock!=NULL) data_lock->grab();
+	if (data_lock!=NULL) data_lock->grab(__FILE__, __LINE__);
 	
 	empty=true;
 	column.clear();

@@ -52,7 +52,7 @@ struct multi_chunk {
 static int load_chunk( char chunk_id[4],File_Reader& file_read,
                        multi_chunk& Dest, Sample_Data *SD ) {
 
-   Mutex_Lock_Container *SD_lock = SD->lock();
+   Mutex_Lock_Container *SD_lock = SD->lock(__FILE__, __LINE__);
    ns_autoptr<Mutex_Lock_Container> ns_SD_lock;
    ns_SD_lock.ptr_new(SD_lock);
 

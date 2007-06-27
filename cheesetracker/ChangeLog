@@ -1,4 +1,37 @@
-Mon Jun 25 14:01:30 EDT 2007
+Wed Jun 27 10:10:49 EDT 2007 J Phelps <godless@users.sf.net>
+	* loader_raw.cpp
+	* loader_wav.cpp
+	* loader_it_samples.cpp
+	* loader_s3m.cpp
+	* saver_raw.cpp
+	* saver_it.cpp
+	* saver_wav.cpp
+	* interface.cpp
+	* pattern_edit__keys.cpp
+	* player_data_events.cpp
+	* pattern.cpp
+	* player_data_control.cpp
+	* tracker_voice.cpp
+	* simple_edit_effects.cpp
+	* mutex_queue.cpp
+	* mutex_lock.cpp
+	* mutex_lock.h
+	* multireader_lock.cpp
+	* sample_data.h
+	* sample_data.cpp
+	* dds_helpers.cpp
+	* sound_driver_manager.cpp
+	* sample_viewer.cpp
+	* effect_chain_editor.cpp
+	* sample_editor_clipboard.cpp
+	* mixer_effects_manager.cpp
+	* envelope_point_editor.cpp
+	* mutex_lock_pthreads.h: Added __FILE__ and __LINE__ arguments
+	for all mutex-related types except the multireader lock (which
+	is not currently in use). This allows deadlocks to be traced to
+	the source file and line where the mutex was obtained.
+
+Mon Jun 25 14:01:30 EDT 2007 J Phelps <godless@users.sf.net>
 	* voice.control.h(UsedSample): Changed type of
 	Voice_Control::UsedSample::offset to size_t.
 	* channel_control.h: Changed type of

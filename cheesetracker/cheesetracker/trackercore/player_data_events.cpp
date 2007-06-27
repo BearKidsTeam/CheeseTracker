@@ -175,7 +175,7 @@ void Player_Data::update_mixer() {
 		voice_status_info.push_back(new_info);
 	}
 
-        if (info_lock) info_lock->grab();
+        if (info_lock) info_lock->grab(__FILE__, __LINE__);
 
 	voice_status_info_copy=voice_status_info; //copy over
 

@@ -100,7 +100,7 @@ int Loader_S3M::load_header() {
 int Loader_S3M::load_sample(S3M_Sample *p_sample) {
 
 		int real_sample_size;
-		Mutex_Lock_Container *p_sample_lock = p_sample->data.lock();
+		Mutex_Lock_Container *p_sample_lock = p_sample->data.lock(__FILE__, __LINE__);
 		ns_autoptr<Mutex_Lock_Container> ns_p_sample_lock;
 		ns_p_sample_lock.ptr_new(p_sample_lock);
 

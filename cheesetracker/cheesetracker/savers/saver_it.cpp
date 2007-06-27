@@ -202,7 +202,7 @@ void Saver_IT::write_sample_internal(int p_sample_index,bool p_write_data) {
 
 	// Critical section!
 
-	sample_data_lock = song->get_sample(p_sample_index)->data.lock();
+	sample_data_lock = song->get_sample(p_sample_index)->data.lock(__FILE__, __LINE__);
 	writer.store_dword(song->get_sample(p_sample_index)->data.get_size());
 	writer.store_dword(song->get_sample(p_sample_index)->data.get_loop_begin());
 	writer.store_dword(song->get_sample(p_sample_index)->data.get_loop_end());
@@ -233,7 +233,7 @@ void Saver_IT::write_sample_internal(int p_sample_index,bool p_write_data) {
 			// Touch the sample so that we don't access it
 			// while it's being modified or while it's in
 			// use_fixedpoint() mode.
-			Mutex_Lock_Container *read_lock = smp->data.lock();
+			Mutex_Lock_Container *read_lock = smp->data.lock(__FILE__, __LINE__);
 			// Ensure that the touch will be released at the end
 			// of this if-block.
 			ns_autoptr<Mutex_Lock_Container> ns_read_lock;
@@ -801,7 +801,7 @@ int Saver_IT::save_instrument(const char *p_filename,int p_instrument_index) {
      		prev_offset=writer.get_file_pos();
 
 		Sample *smp = song->get_sample(samples_used[i]);
-		Mutex_Lock_Container *lock = smp->data.lock();
+		Mutex_Lock_Container *lock = smp->data.lock(__FILE__, __LINE__);
 		ns_autoptr<Mutex_Lock_Container> ns_lock;
 		ns_lock.ptr_new(lock);
 

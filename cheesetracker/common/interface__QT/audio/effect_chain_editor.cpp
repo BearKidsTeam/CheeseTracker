@@ -24,7 +24,7 @@ void Effect_Chain_Editor::add_effect_slot() {
 		if (new_effect) {
 
 			Mutex_Lock * vl=Sound_Driver_Manager::get_singleton_instance()->get_variables_lock();
-			if (vl) vl->grab();
+			if (vl) vl->grab(__FILE__, __LINE__);
 			vars.chain->add_effect(new_effect);
 			if (vl) vl->release();
 
@@ -41,7 +41,7 @@ void Effect_Chain_Editor::move_up_slot() {
 	if (!vars.chain) return;
 
 	Mutex_Lock * vl=Sound_Driver_Manager::get_singleton_instance()->get_variables_lock();
-	if (vl) vl->grab();
+	if (vl) vl->grab(__FILE__, __LINE__);
 	bool res=vars.chain->move_effect_up(vars.selected_chain);
 	if (vl) vl->release();
 	if (res) {
@@ -61,7 +61,7 @@ void Effect_Chain_Editor::move_down_slot() {
 	if (!vars.chain) return;
 
 	Mutex_Lock * vl=Sound_Driver_Manager::get_singleton_instance()->get_variables_lock();
-	if (vl) vl->grab();
+	if (vl) vl->grab(__FILE__, __LINE__);
 	bool res=vars.chain->move_effect_down(vars.selected_chain);
 	if (vl) vl->release();
 
@@ -92,7 +92,7 @@ void Effect_Chain_Editor::erase_slot() {
 	if (!vars.chain) return;
 
 	Mutex_Lock * vl=Sound_Driver_Manager::get_singleton_instance()->get_variables_lock();
-	if (vl) vl->grab();
+	if (vl) vl->grab(__FILE__, __LINE__);
 	bool res=vars.chain->remove_effect(vars.selected_chain);
 	if (vl) vl->release();
 
