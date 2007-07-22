@@ -39,6 +39,7 @@
 #include "typedefs.h"
 #include "sample_defs.h"
 #include "tables.h"
+#include "bigint.h"
 //#include "tables.h"
 
 /**Sample Data.
@@ -64,11 +65,12 @@ that will make your life easier
 #define IS_16_BIT true
 
 #define SAMPLE_INT_T_TO_FLOAT(x) ((sample_t)(x)/(sample_t)SAMPLE_INT_T_MAX)
-#define FLOAT_TO_SAMPLE_INT_T(x) ((sample_t)SAMPLE_INT_T_MAX*x)
+#define FLOAT_TO_SAMPLE_INT_T(x) (sample_int_t)((sample_t)SAMPLE_INT_T_MAX*x)
 
 DERIVE_EMPTY(Error, Sample_Error);
 DERIVE_EMPTY(Sample_Error, Sample_EOF_Error);
 DERIVE_EMPTY(Sample_Error, Sample_Readonly_Error);
+
 
 class Sample_Data {
 
@@ -121,7 +123,7 @@ class Sample_Data {
 	bool fixedpoint_backwards;
 
 	// The position indicator, used both in fixed-point and normal mode.
-	size_t current_pos;
+	bigint current_pos;
 
 	size_t size; // in samples, not bytes.
 	size_t channels;
@@ -131,15 +133,27 @@ class Sample_Data {
 
 	sample_int_t *data_ptr;
 
+	// An alternate buffer to use when looping through
+	// samples and iterating with a step size >= size.
+	//
+	// This buffer can be swapped with the normal
+	// one.
+
+	struct buffer {
+		sample_int_t *data_ptr;
+		size_t size;
+		size_t loop_begin;
+		size_t loop_end;
+		size_t sustain_loop_begin;
+		size_t sustain_loop_end;
+		size_t fixedpoint_inc;
+		bool swapped_out;
+	} alternate_buffer;
+
+	void dup_main_buffer();
+
 	void sd_realloc(size_t new_size);
 	void correct_loop_pointers();
-
-	// DEPRECATED!!!!
-
-	inline sample_16s_t *get_data_16() const;
-	inline sample_8s_t *get_data_8()  const;
-	void release_data_ptr();
-	void set_data_ptr(void *p_data,int p_size=0,bool p_16bits=true);
 	
 
 public:
@@ -208,6 +222,7 @@ public:
 	void get_sample_for_cosine_mixer(sample_t *dest, bool use_cosine_mode);
 	void do_cubic_mixer_voodoo(sample_t *dest);
 	void get_sample_for_linear_mixer(sample_t *dest);
+	void swap_buffers();
 
 	// }
 
@@ -224,7 +239,7 @@ public:
 			virtual ~resample_functor() { };
 	};
 
-	bool fixedpoint_loop();
+	bool fixedpoint_loop(bool sustaining=false);
 	size_t get_fixedpoint_offset();
 	void set_fixedpoint_offset(size_t new_offset);
 
@@ -242,14 +257,25 @@ public:
 	void set_loop_enabled(bool p_enabled);
 	inline bool is_loop_enabled()  const;
 
+	void set_sustain_loop_enabled(bool p_enabled);
+	inline bool is_sustain_loop_enabled() const;
+
 	void set_loop_ping_pong(bool p_enabled);
 	inline bool is_loop_ping_pong()  const;
 
 	inline int get_loop_begin()  const;
 	inline int get_loop_end()  const;
 
-	void set_loop_begin(int p_idx);
-	void set_loop_end(int p_idx);
+	void set_loop_begin(size_t p_idx);
+	void set_loop_end(size_t p_idx);
+
+	void set_sustain_loop_begin(size_t p_idx);
+	void set_sustain_loop_end(size_t p_idx);
+
+	inline int get_sustain_loop_begin()  const;
+	inline int get_sustain_loop_end()  const;
+
+	void dup_loop(size_t ntimes, bool use_sustain_loop=false);
 
 	void copy_sample_data(const Sample_Data *p_sdata);
 
@@ -293,19 +319,14 @@ inline bool Sample_Data::is_16bit()  const{
 
 	return is_16bits;
 }
-inline sample_16s_t *Sample_Data::get_data_16()  const{
 
-
-		return  data_ptr;
-}
-inline sample_8s_t *Sample_Data::get_data_8()  const{
-
-		return  (sample_8s_t*)data_ptr;
-}
-
-inline bool Sample_Data::is_loop_enabled()  const{
-
+inline bool Sample_Data::is_loop_enabled()  const
+{
 	return loop_on;
+}
+inline bool Sample_Data::is_sustain_loop_enabled() const
+{
+	return sustain_loop_on;
 }
 
 inline bool Sample_Data::is_loop_ping_pong()  const{
@@ -320,6 +341,16 @@ inline int Sample_Data::get_loop_begin()  const{
 inline int Sample_Data::get_loop_end()  const{
 
 	return loop_end;
+
+}
+
+inline int Sample_Data::get_sustain_loop_begin()  const{
+
+	return sustain_loop_begin;
+}
+inline int Sample_Data::get_sustain_loop_end()  const{
+
+	return sustain_loop_end;
 
 }
 

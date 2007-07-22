@@ -1,3 +1,4 @@
+#include <cstring>
 #include "typedefs.h"
 #include "fixedpoint_defs.h"
 
@@ -18,7 +19,7 @@
  *                                                                         *
  ***************************************************************************/
 /***************************************************************************
-                          fixedpoint.h
+                          sample_data_fixedpoint.h
                              -------------------
     begin                : Wed Jun 13 2007
     copyright            : © 2007 by Jeremy Phelps
@@ -37,26 +38,31 @@
 
 COMPILER_ASSERT(IN_SAMPLE_DATA_CPP);
 
-// use_fixedpoint - Set whether or not to use the special fixed-point processing mode.
-// 
-// notes          - Fixed-point mode is a special mode required by the resamplers
-//                  found in common/plugins/resamplers/. In fixed-point mode, a
-//                  channel's position indicator doesn't move when the read/write
-//                  interface is used. This behavior is required because the mixer
-//                  may need to mix the same sample into multiple channels.
+
+// use_fixedpoint - Set whether or not to use the special "fixed-point"
+//                  processing mode.
 //
-//                  Instead, the position indicator is moved explicitly with
-//                  fixedpoint_move_cursor() when all channels at the current position
-//                  have been mixed. 
+// notes          - Fixed-point mode is a special mode required by
+//                  the resamplers found in common/plugins/resamplers/. In
+//                  fixed-point mode, a channel's position indicator
+//                  doesn't move when the read/write interface is
+//                  used. This behavior is required because the mixer may
+//                  need to mix the same sample into multiple channels.
 //
-//                - When the indicator does move, it moves according to the resample
+//                  Instead, the position indicator is moved explicitly
+//                  with fixedpoint_move_cursor() when all channels at
+//                  the current position have been mixed.
+//
+//                - When the indicator does move, it moves according to
+//                  the resample
 //                  ratio calculated by fixedpoint_set_resample_rate().
 //
-//                - Fixed-point mode supports forward and backward cursor movement, whereas
+//                - Fixed-point mode supports forward and backward cursor
+//                  movement, whereas
 //                  normal mode only supports forward movement.
 //
-// see also       - fixedpoint_set_resample_rate, fixedpoint_move_cursor, fixedpoint_aboutface,
-//                  fixedpoint_is_backwards
+// see also       - fixedpoint_set_resample_rate, fixedpoint_move_cursor,
+//                  fixedpoint_aboutface, fixedpoint_is_backwards
 
 void
 Sample_Data::use_fixedpoint(bool yes_or_no)
@@ -81,37 +87,30 @@ Sample_Data::fixedpoint_set_resample_rate(size_t current_freq, size_t mix_freq, 
 
 void
 Sample_Data::fixedpoint_move_cursor() {
-	fixedpoint_offset += fixedpoint_inc;
 
-	size_t int_batch = FIXED_TO_INT(fixedpoint_offset);	// Convert fixed-point to int.
-
-	if(int_batch >= 1) {
-		if(fixedpoint_backwards) {
-			if(current_pos < int_batch) {
-				Sample_EOF_Error E;
-				E.set_error_pfx("fixedpoint_move_cursor");
-				E.set_error("Beginning of sample reached while incrementing backwards");
-				throw E;
+	if(fixedpoint_backwards) {
+		size_t temp_inc = fixedpoint_inc; // Destructive operations follow.
+		if(fixedpoint_offset < temp_inc) {
+			size_t int_temp_inc = FIXED_TO_INT(temp_inc);
+			current_pos -= int_temp_inc;
+			temp_inc -= INT_TO_FIXED(int_temp_inc);
+			if(fixedpoint_offset < temp_inc) {
+				current_pos--;
+				fixedpoint_offset = INT_TO_FIXED(1) - (temp_inc - fixedpoint_offset);
+			} else {
+				fixedpoint_offset -= temp_inc;
 			}
-			current_pos -= int_batch;
+		} else {
+			fixedpoint_offset -= fixedpoint_inc;
 		}
-		else {
-			current_pos += int_batch;
-			if(eof_reached())
-				current_pos = size-1;
+	} else { // Incrementing forward
+		fixedpoint_offset += fixedpoint_inc;
+		if(fixedpoint_offset >= INT_TO_FIXED(1)) {
+			current_pos += FIXED_TO_INT(fixedpoint_offset);
+			fixedpoint_offset -= FIXEDPOINT_FLOOR(fixedpoint_offset);
 		}
-
-		// Though one would naïvely expect
-		// INT_TO_FIXED(FIXED_TO_INT(fixedpoint_offset)) to
-		// equal fixedpoint_offset, FIXED_TO_INT() loses the
-		// data to the right of the decimal point. As a
-		// result, INT_TO_FIXED(int_batch) is equal to
-		// FIXEDPOINT_FLOOR(fixedpoint_offset). The
-		// INT_TO_FIXED() calculation takes fewer
-		// instructions and is therefore preferred.
-
-		fixedpoint_offset -= INT_TO_FIXED(int_batch);
 	}
+
 }
 
 void
@@ -125,43 +124,86 @@ Sample_Data::fixedpoint_is_backwards() {
 }
 
 
+inline sample_int_t * sample_dup(const sample_int_t *buffer, size_t length, size_t channels) {
+	sample_int_t *ret = new sample_int_t[length*channels];
+	memcpy(ret, buffer, length*sizeof(sample_int_t)*channels);
+	return ret;
+}
+
+// fixedpoint_loop - Prepare a sample to loop before mixing a bit of it.
+//
+//                   Modifies the current position indicator and the
+//                   fixedpoint_backwards flag.
+//
+// arguments       - posinfo is allocated with create_position_info()
+//                   and deallocated with destroy_position_info. It holds
+//                   some state information between calls to fixedpoint_loop()
+//                   in a way that can be reasonably expected to be
+//                   thread-safe.
+//
+// return value    - Returns 'true' if the sample should continue playing,
+//                   otherwise returns false.
+//
+// context         - Used in Tracker_Voice::add_to_mix_buffer(), in the
+//                   file tracker_voice.cpp
+
 bool
-Sample_Data::fixedpoint_loop() {
-	int jump_size = FIXED_TO_INT(fixedpoint_offset + fixedpoint_inc);
+Sample_Data::fixedpoint_loop(bool sustaining)
+{
+	size_t jump_size = FIXED_TO_INT(fixedpoint_offset + fixedpoint_inc);
+	bool loop_on_local = false;
+	bool pingpong_local = false;
+	size_t loop_begin_local;
+	size_t loop_end_local;
+
+	printf("LOOP: START %u\n", (size_t)current_pos);
+
+	if(sustaining && sustain_loop_on) {
+		loop_begin_local	= sustain_loop_begin;
+		loop_end_local		= sustain_loop_end;
+		loop_on_local 		= true;
+		pingpong_local		= sustain_pingpong_loop;
+	} else if(loop_on) {
+		pingpong_local		= pingpong_loop;
+		loop_begin_local	= loop_begin;
+		loop_end_local		= loop_end;
+		loop_on_local 		= true;
+	}
+
+	// current_pos + jump_size is the expected value of
+	// current_pos after the next call to fixedpoint_move_cursor().
+	//
+	// The following if-block checks where current_pos WOULD BE
+	// after the next call to fixedpoint_move_cursor(), if
+	// fixedpoint_move_cursor() did not check for EOF.
+
 	if(fixedpoint_backwards) {
-		// Check if the sample will reach the loop-begin
-		// on the next increment, because it will never
-		// actually be at the loop beginning if the loop
-		// begins at the beginning of the sample.
-		if(!loop_on) {
-			return (current_pos >= jump_size);
-		}
-		if(current_pos - jump_size <= loop_begin) {
-			if (pingpong_loop) {
-				fixedpoint_backwards = false;
-				// current_pos -= (2*(current_pos-loop_begin)-jump_size);
+		if(loop_on_local && current_pos < bigint(loop_begin_local)) {
+			if(pingpong_local) {
+				current_pos = loop_begin_local+(size_t)(bigint(loop_begin_local)-current_pos);
+				fixedpoint_aboutface();
 			} else {
-				// Normal looping.
-				current_pos = loop_end - (jump_size-(current_pos-loop_begin));
+				current_pos = loop_end_local - (size_t)(bigint(loop_begin_local) - current_pos);
 			}
-			// Sample should continue playing, unless it reaches
-			// the opposite boundary in a single jump.
-			return !eof_reached() && current_pos <= loop_end && current_pos > loop_begin;
+		} else {
+			if(current_pos < bigint((size_t)0)) {
+				current_pos = (size_t) 0;
+				return false;
+			}
 		}
-	} else {
-		if(!loop_on) {
-			return (current_pos+jump_size < size);
-		}
-		if(current_pos + jump_size >= loop_end) {
-			if (pingpong_loop) {
-				fixedpoint_backwards = true;
-				// current_pos += ((2*loop_end-current_pos)-jump_size);
+	} else { /* The sample is playing forward */
+		if(loop_on_local && current_pos >= bigint(loop_end_local)) {
+			/* The sample is looping */
+			if(pingpong_local) {
+				fixedpoint_aboutface();
+				current_pos = loop_end_local - (size_t)(current_pos - loop_end_local);
 			} else {
-				current_pos = loop_begin + (jump_size-(loop_end-current_pos));
+				/* The sample is not looping. */
+				return (current_pos < bigint(size));
 			}
-			return !eof_reached() && current_pos < loop_end && current_pos >= loop_begin;
 		}
 	}
+	printf("LOOP: END %u\n", (size_t)current_pos);
 	return true;
 }
 

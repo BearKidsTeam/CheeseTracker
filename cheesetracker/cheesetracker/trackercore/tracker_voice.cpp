@@ -21,6 +21,7 @@
 #endif
 #include "tracker_voice.h"
 #include "ns_autoptr.h"
+#include "bigint.h"
 #include "common/defines/fixedpoint_defs.h"
 
 
@@ -153,6 +154,7 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer)
 	/* PRECALCULATE RAMP */
 
 	bool loop_active=info.sample_data_ptr->is_loop_enabled() && (loop_end>loop_begin);
+	// bool sustain_loop_active = info.sample_data_ptr->is_sustain_loop_enabled();
 
 	if (p_amount==0) return;
 	ramp_tangent_l=(float)(info.lvolsel-info.oldlvol)/(float)p_amount;
@@ -163,8 +165,9 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer)
 	size_t left_end=loop_active?loop_begin:0;
 	size_t right_end=loop_active?loop_end:idxsize;
 
-	// We keep a local copy of the position indicator
-	// in sample_data_ptr. This is because the
+	// We keep a local copy of the integer and "fixed-point"
+	// position indicators of sample_data_ptr in other
+	// parts of the "info" structure. This is because the
 	// same sample's position indicator might be
 	// iterated by other voices, or by the editor.
 	//
@@ -185,7 +188,9 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer)
 	// with p_amount stereo samples. But, if the sample is looping,
 	// we can still fill the buffer by making multiple
 	// passes until {todo} samples have been put into the
-	// mixing buffer.
+	// mixing buffer. If the sample is not looping, it is
+	// possible for some frames of the mixing buffer to be
+	// left untouched.
 
 	while(todo>0) {
 		// Implement looping behavior and check boundaries. 
@@ -228,13 +233,16 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer)
 		// by the lack of fractional precision. To counteract
 		// this, it is necessary to multiply a certain factor
 		// into the expression so that the integers behave
-		// like fixed-point numbers. (see fixedpoint.h for
+		// like fixed-point numbers. (see fixedpoint_defs.h for
 		// a complete explanation...). 
 
 		// If total_samples is large enough, the extra factor
 		// would result in an integer overflow. On 64-bit
 		// systems, there is no larger integer that can
-		// be used. Therefore, we use GMP on 64-bit platforms.
+		// be used. Therefore, we use GMP on 64-bit platforms
+		// (we actually use GMP on all platforms because
+		// another piece of code needed a number that could
+		// store the full range of size_t and still be signed).
 
 		// Let "done" be the lesser of either the number of
 		// virtual samples that would be extracted from the
@@ -255,7 +263,7 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer)
 		// And now we calculate the value of "done":
 
 		if (info.current_frequency != mixfreq) {
-#ifdef NEED_GMP
+/* #ifdef NEED_GMP
 			mpz_t gmp_mixfreq;
 			mpz_t gmp_current_freq;
 			mpz_t gmp_total_samples;
@@ -283,6 +291,7 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer)
 			mpz_div(gmp_total_samples, gmp_total_samples, F);
 
 			size_t virtual_samples = mpz_get_ui(gmp_total_samples);
+
 			
 			done=std::min<size_t>(virtual_samples, todo);
 
@@ -292,11 +301,14 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer)
 			mpz_clear(gmp_total_samples);
 #else
 			done=std::min<size_t>((size_t)FIXED_TO_INT((Uint64)total_samples * (Uint64)(INT_TO_FIXED((Uint64)mixfreq)/(Uint64)info.current_frequency)), todo);
-#endif
+#endif */
+			done=(size_t)std::min(bigint(total_samples) * (bigint(mixfreq*2048)/bigint(info.current_frequency))/bigint((size_t)2048), bigint(todo));
+			printf("%d * %d/%d = (%d:%d)\n", total_samples, mixfreq, info.current_frequency, done,todo);
 		} else {
 			// Mixing frequency and sample frequency are equal
 			done = std::min<size_t>(total_samples, todo);
 		}
+
 
 		if ( done==0 ) {
 			// Either no (whole) virtual samples can be extracted, or
@@ -452,7 +464,6 @@ void Tracker_Voice::reset()
 Tracker_Voice::Tracker_Voice()
   : Voice()
 {
-
 	preamp=1;
 	mixfreq=1;
 	current_prio=0;

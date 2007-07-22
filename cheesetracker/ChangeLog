@@ -1,3 +1,25 @@
+Sun Jul 22 19:37:19 EDT 2007 J Phelps <godless@users.sf.net>
+	* detect.py: GMP is now required for all systems.
+	* sample_data_fixedpoint.h: Removed argument
+	to fixedpoint_loop().
+	* bigint.cpp: New class
+	* sample_data.h
+	* sample_data.cpp: Member "current_pos" is now of type
+	"bigint". "bigint" or other operands must be cast to
+	the same type for operations involving more than one
+	type. "bigint" must be cast to size_t before using
+	it to dereference an array.
+	* tracker_voice.h: Removed all references to
+	"struct position_info"
+	* tracker_voice.cpp: Adjusted the call to fixedpoint_loop()
+	to omit the no-longer-accepted argument.
+	* fixedpoint_defs.h: Revised the comments.
+	* cheesetracker_qt.cpp: New unit tests-- Macro
+	UNIT_TEST is defined.
+Wed Jul  4 22:33:47 EDT 2007 J Phelps <godless@users.sf.net>
+	* sample_data.h,
+	* sample_data.cpp: Added the appropriate interface to
+	access the dormant sustain-loop fields.
 Wed Jun 27 10:10:49 EDT 2007 J Phelps <godless@users.sf.net>
 	* loader_raw.cpp
 	* loader_wav.cpp

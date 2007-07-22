@@ -41,6 +41,10 @@ class Tracker_Voice : public Voice
 
 		size_t start_index;             /* start index */
 		size_t fixedpoint_offset;	// An offset expressed in 1/2048th of a sample.
+						// It's here only so we can save the value
+						// from class Sample_Data between calls to
+						// mix(). Therefore, its meaning is free
+						// to change within Sample_Data.cpp.
 		Uint32 current_frequency;  //frq;               /* current frequency */
 
 		float volume;               /* current volume */

@@ -1,14 +1,14 @@
 #ifndef FIXEDPOINT_DEFS_H
 #define FIXEDPOINT_DEFS_H
 
-/* What follows is an explanation of fixed-point math, as it is used
- * in this program.
-
+/* What follows is an explanation of fake "fixed-point" math, as it is
+ * used in this program.
+ *
  * A "fixed-point" number is an integer that represents a non-integer
  * number. Unlike floating-point numbers, which contain a "mantissa"
  * that indicates where the decimal point is at the moment, fixed-point
  * numbers have a set number of bits after the decimal point.
-
+ *
  * Any integer can be converted into a fixed-point number with a simple
  * bit shift:
  *
@@ -19,7 +19,9 @@
  *
  *    int my_int = my_fixedpoint >> FIXED_POINT_INT_PART_BITS
  *
- * We define two convenient macros for performing these operations:
+ * We define two convenient macros for performing these operations,
+ * while allowing the programmer to think of "conversion" instead of
+ * "bit shifting":
  *
  *    int my_fixedpoint = INT_TO_FIXED(my_int);
  *
@@ -34,12 +36,15 @@
  *
  * The arguments to the IP_ prefixed macros must be lvalues.
  *
- * Doing math on fixed-point numbers is tricky because bit-shifting
- * by FIXEDPOINT_INT_PART_BITS is equivalent to multiplying by (1 <<
- * FIXDPOINT_INT_PART_BITS).  As a result, sometimes the result of an
- * operation involving fixed-point numbers will be a normal integer.
+ * Doing math on these so-called "fixed-point" numbers is tricky because
+ * bit-shifting by FIXEDPOINT_INT_PART_BITS is equivalent to multiplying by
+ * (1 << * FIXDPOINT_INT_PART_BITS).  Because the fixed-point bitshift
+ * behaves like a factor, some operations will cancel out the bitshift,
+ * resulting in a normal integer.
  *
- * For example, let F equal (1 << FIXEDPOINT_INT_PART_BITS):
+ * For example:
+ *
+ * #define F (1 << FIXEDPOINT_INT_PART_BITS)
  *
  *   int result = 20*F / 10*F;
  *
@@ -57,8 +62,10 @@
  *
  *   int result = 10*F * 2*F;
  *
- * The result is 20*F*F, which is neither fixed-point nor integer.
- * Therefore, the result is considered to be meaningless. 
+ * The result is 20*F*F, which is neither "fixed-point" nor integer.
+ * Therefore, the result is considered to be meaningless, because
+ * it is not possible to convert it with a single use of the
+ * conversion macro. 
  *
  * While it is possible to convert such an expression to integer:
  *
@@ -68,9 +75,10 @@
  * bit-shifting by 22 bits (only 10 bits of precision left for a 32-bit
  * int!).
  *
- * The following list shows all possible ways in which integers and
- * fixed-point numbers can be used with the four basic math operators,
- * and whether the results will be fixed-point, integer, or meaningless:
+ * The following list shows all possible ways in which integers and our
+ * so-called "fixed-point" numbers can be used with the four basic math
+ * operators, and whether the results will be fixed-point, integer, or
+ * "meaningless":
  * 
  * fixed / fixed 	= int
  * fixed / int		= fixed
