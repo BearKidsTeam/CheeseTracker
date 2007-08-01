@@ -1,0 +1,5 @@
+
+Import('env');
+env2=env.Copy();
+
+env2.make_targets(env.common_objects)

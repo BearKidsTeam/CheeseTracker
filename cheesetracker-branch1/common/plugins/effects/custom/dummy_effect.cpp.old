@@ -1,0 +1,52 @@
+//
+// C++ Implementation: dummy_effect
+//
+// Description:
+//
+//
+// Author: Juan Linietsky <coding@reduz.com.ar>, (C) 2003
+//
+// Copyright: See COPYING file that comes with this distribution
+//
+//
+#include "dummy_effect.h"
+
+
+void Dummy_Effect::reset() {
+
+
+}
+
+void Dummy_Effect::process_buffer(sample_t* p_buffer,int p_length, bool p_stereo_samples,int p_freq) {
+
+
+}
+
+string Dummy_Effect::get_name() {
+
+	return "Dummy (testing only)";
+}
+
+string Dummy_Effect::get_display_name() {
+
+	return "dummy";
+}
+list<Property_Bridge*> Dummy_Effect::get_properties() {
+
+	list<Property_Bridge*> meh;
+	meh.push_back(&int1);
+	meh.push_back(&int2);
+	return meh;
+}
+
+Dummy_Effect::Dummy_Effect() : int1("Nothing",&a,0,127,"nothing"), int2("Nothing Also",&b,0,501,"nothing_also") {
+
+	a=b=0;
+}
+
+
+Dummy_Effect::~Dummy_Effect()
+{
+}
+
+

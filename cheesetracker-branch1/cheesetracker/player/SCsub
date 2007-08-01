@@ -1,0 +1,27 @@
+#-*-python-*-
+
+import os
+import string
+import sys
+
+Import('env')
+env2 = env.Copy()
+
+#env2.Append(CPPPATH = '#/client/lib/tools/mesh_editor')
+
+cheese_libs = [
+		'#/interface_binds/lib_interface_binds.a',
+		'#/loaders/lib_loaders.a',
+		'#/savers/lib_savers.a',
+		'#/trackercore/lib_trackercore.a',
+	      ];
+
+
+libs = cheese_libs;
+libs += env2.common_libs;
+
+env2.Append(LINKFLAGS=env2.sigc_link_flags);
+env2.Append(LIBS=env2.sigc_libs);
+
+env2.Program('cheeseplayer', ['cheeseplayer.cpp'] + libs);
+

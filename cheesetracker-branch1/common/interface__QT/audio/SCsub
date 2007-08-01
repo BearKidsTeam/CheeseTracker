@@ -1,0 +1,25 @@
+
+Import('env');
+env2=env.Copy();
+env2.Append(CXXFLAGS = ['-Icommon/components/data']);
+env2.Append(CXXFLAGS = env2.qt_flags);
+
+moc_list=[\
+'audio_config.h',\
+'sample_editor.h',\
+'sample_editor_format.h',\
+'sample_viewer.h',\
+'sample_viewer_zoom.h',\
+'envelope_point_editor.h',\
+'envelope_editor.h',\
+'resampler_config.h',\
+'note_bridge.h',\
+'sample_editor_clipboard.h',\
+'sample_editor_effects.h',\
+'mixer_effects_manager.h',\
+'effect_chain_editor.h',\
+]
+
+env2.process_moc_list(moc_list);
+
+env2.make_targets(env.qt_objects)

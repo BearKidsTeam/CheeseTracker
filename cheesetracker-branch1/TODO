@@ -1,0 +1,64 @@
+Mon Jun  4 01:16:06 EDT 2007
+	A new bug has been discovered today, and I introduced it at some
+	point since I took over the project. CheeseTracker 0.9.9 could
+	load all the files in the cheesetracker/examples directory,
+	but this version cannot load the XM file, complaining that
+	"It wants a note from x,y", where x and y are invalid
+	row and column numbers.
+
+	The cause of this bug must be tracked down. 
+Sun Jun  3 04:57:43 EDT 2007
+	Stereo sample support is still missing! Theoretically, the
+	mixer now supports it, and so do the loaders for many of the
+	file formats. However, the saver for the CheeseTracker module
+	format does NOT support stereo samples, and requires extensive
+	modification (perhaps even more extensive than what the mixer
+	needed) to achieve the desired functionality.
+
+	It may even be necessary to design a whole new CheeseTracker
+	format.
+
+	The data structure that represents samples in CheeseTracker is
+	still mono only, despite having an interface that would lead
+	one to believe that it supports many channels. For performance
+	reasons, this interface may need to be changed. The interface
+	suggests that there should be a separate stream for each channel.
+	If this is how it's actually implemented, it will run more slowly
+	than if the channels are interleaved, as is traditionally done.
+
+	Interleaving the channels removes the possibility of the channels
+	having different lengths, and also removes the possibility of
+	iterating through them separately.
+
+	The handlers for CheeseTracker format (both loading and saving)
+	use an insidious monstrosity called a "dynamic data structure",
+	whose sole purpose is to completely bypass the C++ type
+	system. This is just evil.
+
+	CheeseTracker will eventually begin loading its samples with
+	libaudiofile, which will increase the number of supported
+	sample formats.
+
+	CheeseTracker will eventually support both OGG and FLAC formats,
+	both as sample types, and as song output formats.
+
+Here's the TODO list from the ChangeLog:
+
+Since the code has changed hands, so have the plans. Here they are:
+
+- A return to per-channel effect buffers, instead of the "two kinds
+  of channels" system that is currently implemented.
+- Implementation of the above will enable the effect buffers to be
+  controllable from the pattern editor, just as the old-fashioned
+  DOS-era effects are. The control column will widen to accommodate
+  all the parameters of all the effects in use on a channel. Tooltips
+  will assist in associating a control column in the Pattern Editor
+  with the corresponding effect parameter in the Buffer screen.
+- Fix all the really obvious bugs
+- Support for multi-channel samples.
+- Support for samples with greater than 16-bit precision
+- Support for simultaneous output to multiple, multi-channel sound devices.
+- Proper error handling
+- WAV and OGG exporting
+
+No longer planned for 1.0.0: Porting to Windows or Mac OS.

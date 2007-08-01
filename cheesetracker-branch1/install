@@ -1,0 +1,14 @@
+#!/bin/sh
+
+PROGRAM=cheesetracker/program__QT/cheesetracker_qt
+
+if [ "$1" = "strip" ]; then
+	strip $PROGRAM
+fi
+
+if [ -e "$PROGRAM" ]; then
+	install -m 755 "$PROGRAM" /usr/local/bin
+else
+	echo "$PROGRAM" not found 1>&2
+	exit 1;
+fi
