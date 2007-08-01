@@ -284,14 +284,14 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer)
 
 			size_t virtual_samples = mpz_get_ui(gmp_total_samples);
 			
-			done=std::min<size_t>(virtual_samples, todo);
+			done=std::min<size_t>(virtual_samples, todo)+1;
 
 			// CLEANUP
 			mpz_clear(gmp_mixfreq);
 			mpz_clear(gmp_current_freq);
 			mpz_clear(gmp_total_samples);
 #else
-			done=std::min<size_t>((size_t)FIXED_TO_INT((Uint64)total_samples * (Uint64)(INT_TO_FIXED((Uint64)mixfreq)/(Uint64)info.current_frequency)), todo);
+			done=std::min<size_t>((size_t)FIXED_TO_INT((Uint64)total_samples * (Uint64)(INT_TO_FIXED((Uint64)mixfreq)/(Uint64)info.current_frequency)), todo)+1;
 #endif
 		} else {
 			// Mixing frequency and sample frequency are equal

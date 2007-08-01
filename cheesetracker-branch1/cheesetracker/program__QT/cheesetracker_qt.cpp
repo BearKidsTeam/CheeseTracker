@@ -128,21 +128,33 @@ void display_help() {
 	printf("\t--schedfifo runs at schedfifo priority (suid root needed)\n");
 }
 
-// #define UNIT_TEST
+#define UNIT_TEST
 #ifdef UNIT_TEST
 #include <cstring>
 #include <cassert>
 #include <algorithm>
 #include <vector>
 #include "common/components/audio/sample_data.h"
+#include "cheesetracker/trackercore/tracker_voice.h"
 #include "Error.h"
 using std::max;
 using std::min;
 
-#define APPROX(x,y) (max(x,y)-min(x,y) < 0.0001)
+FATAL_ERROR(Test_Failure);
+#define APPROX(x,y, maxdiff) (max(x,y)-min(x,y) < (maxdiff))
+#define ASSERT_THROW(exp, mesg) if(!(exp)) throw Test_Failure(__FILE__, __LINE__, mesg)
+#define ASSERT_EQUAL_UNI(expected, gotten, exp, err_pfx, fmt)				\
+	if(!(exp)) {					\
+		Error F;							\
+		F.set_error_pfx(err_pfx);						\
+		F.eprintf(fmt, __FILE__, __LINE__, expected, gotten); \
+		throw F;							\
+	}
+#define ASSERT_EQUAL(expected, gotten, err_pfx) ASSERT_EQUAL_UNI(expected, gotten, (expected)==(gotten), err_pfx, "%s:%i: Expected %i got %i")
+#define ASSERT_EQUAL_FLOAT(expected, gotten, err_pfx) ASSERT_EQUAL_UNI(expected, gotten, APPROX(expected,gotten,0.00001),err_pfx, "%s:%i: Expected %f got %f")
 
-void test_sample_data()
-{
+	// This buffer is used in more than one test.
+
 	const sample_int_t in_buffer[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
 	                                   14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
                                            26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37,
@@ -170,6 +182,9 @@ void test_sample_data()
                                            223, 224, 225, 226, 227, 228, 229, 230, 231,
                                            232, 233, 234, 235, 236, 237, 238, 239, 240 };
 
+void test_sample_data()
+{
+
 	sample_int_t out_buffer[480];
 	Sample_Data test;
 	size_t channels=0;
@@ -183,7 +198,7 @@ void test_sample_data()
 
 	for(channels=1; channels<=20; channels++) {
 		// Initialize the local buffer.
-		printf("Testing with %d channels...\n", channels);
+		printf("test_sample_data: Testing with %d channels...\n", channels);
 
 
 		// Go to the beginning for each test except the first.
@@ -585,7 +600,7 @@ void test_sample_data()
 				// Converting 32-bit float into 16-bit sample_int_t results
 				// in loss of precision.
 
-				if(!APPROX(buffer[jx], expected)) {
+				if(!APPROX(buffer[jx], expected, 0.0001)) {
 					E.set_error_pfx("get_f_sample");
 					E.eprintf("%s:%i: Expected %f got %f", __FILE__, __LINE__, expected, buffer[jx]);
 					throw E;
@@ -605,7 +620,7 @@ void test_sample_data()
 				float fjx = jx;
 				float expected = BOUND((fx + 1.0/fjx), -1.0, 1.0);
 
-				if(!APPROX(buffer[jx], expected)) {
+				if(!APPROX(buffer[jx], expected, 0.0001)) {
 					E.set_error_pfx("get_sample");
 					E.eprintf("%s:%i: Expected %f got %f", __FILE__, __LINE__, expected, buffer[jx]);
 					throw E;
@@ -649,6 +664,111 @@ void test_sample_data()
 			v_samples.push_back(smpl_to_vector);
 		}
 	}
+
+}
+
+void
+test_tracker_voice()
+{
+	printf("test_tracker_voice STARTING\n");
+	Resampler_Manager resampler_manager;
+	Resampler_Raw resampler_raw;
+	Resampler_Linear resampler_linear;
+	Resampler_Cosine resampler_cosine(Resampler_Cosine::COSINE);
+	Resampler_Cosine resampler_fm(Resampler_Cosine::FM);
+	Resampler_Cubic resampler_cubic;
+	Resampler_Dummy resampler_dummy;
+	//resampler_manager.register_resampler(&resampler_dummy);
+	resampler_manager.register_resampler(&resampler_raw);
+	// resampler_manager.register_resampler(&resampler_fm);
+	// resampler_manager.register_resampler(&resampler_cosine);
+	//resampler_manager.register_resampler(&resampler_linear);
+	// resampler_manager.register_resampler(&resampler_cubic);
+
+	Tracker_Voice Test;
+	Voice *Test_Voice = &Test;
+	IIR_SVF::Coeffs coeffs;
+	size_t gotten;
+	sample_t output_buffer[20];
+	Sample_Data test_sample;
+	test_sample.set_num_channels(1);
+	test_sample.put_sample_array(in_buffer, sizeof(in_buffer)/sizeof(typeof(in_buffer[0])));
+	
+	coeffs.a1 = coeffs.a2 = coeffs.b0 = coeffs.b1 = coeffs.b2 = 1.0;
+
+	for(size_t ix=0; ix<sizeof(output_buffer)/sizeof(sample_t); ix++) {
+		output_buffer[ix] = 0.0;
+	}
+
+	// Test if various parameters can be set and retrieved.
+
+	Test.set_frequency(22050);
+	Test.set_panning(127);
+
+	// 512 is the maximum volume, and 0.008 is a multiplier that
+	// must be cancelled out so that the volume is set by
+	// multiplying by 1.0.
+	Test.set_volume(512.0/0.008);
+
+	Test.set_filter(coeffs, false);
+	Test.set_channel(0);
+	Test.set_priority(Voice::VERY_HIGH);
+	Test_Voice->set_mix_frequency(44100);
+	Test_Voice->set_preamp(1.0);
+	Test.setup_sample(&test_sample, 0);
+	ASSERT_THROW(Test.is_active(), "Inactive!");
+	
+	gotten = Test_Voice->get_priority();
+	ASSERT_EQUAL(Voice::VERY_HIGH, gotten, "get_priority");
+	gotten = Test.get_current_freq();
+	ASSERT_EQUAL(22050, gotten, "get_current_freq");
+	gotten = Test.get_current_sample_pos();
+	ASSERT_EQUAL(0, gotten, "get_current_sample_pos");
+	gotten = Test_Voice->get_channel();
+	ASSERT_EQUAL(0, gotten, "get_channel");
+	ASSERT_THROW(Test_Voice->can_mix(), "Can't mix!");
+	
+	Test_Voice->mix(10, output_buffer);
+
+	for(size_t ix=0; ix<5; ix++) {
+		for(size_t jx=0; jx<4; jx++) {
+			ASSERT_EQUAL_FLOAT(SAMPLE_INT_T_TO_FLOAT(ix), output_buffer[ix*4+jx], "mix");
+		}
+	}
+
+	for(size_t ix=0; ix<20; ix++) {
+		output_buffer[ix] = 0.0;
+	}
+
+	printf("SECOND MIX\n");
+
+	test_sample.set_size(5);
+	test_sample.set_loop_enabled(true);
+	test_sample.set_loop_begin(0);
+	test_sample.set_loop_end(3);
+	// Test.reset();
+	Test.setup_sample(&test_sample, 0);
+	Test.set_volume(512.0/0.008);
+	Test.set_frequency(44100*3);
+	gotten = Test.get_current_freq();
+	ASSERT_EQUAL(44100*3, gotten, "get_current_freq");
+	ASSERT_THROW(Test.is_active(), "Isn't active!");
+	Test_Voice->mix(10, output_buffer);
+
+	printf("Output buffer:\n");
+	for(size_t ix=0; ix<10; ix++) {
+		printf("%f %f\n", output_buffer[ix*2], output_buffer[ix*2+1]);
+	}
+
+	// Sample should skip by threes-- Sample is 5 long, output
+	// is stereo.
+
+	ASSERT_EQUAL_FLOAT(SAMPLE_INT_T_TO_FLOAT(0), output_buffer[0], "mix");
+	ASSERT_EQUAL_FLOAT(SAMPLE_INT_T_TO_FLOAT(3), output_buffer[2], "mix");
+	// Expect it to loop here.
+	ASSERT_EQUAL_FLOAT(SAMPLE_INT_T_TO_FLOAT(2), output_buffer[4], "mix");
+	printf("CURRENT POS:%u\n", test_sample.get_current_pos());
+	ASSERT_THROW(Test.has_stopped(), "Hasn't stopped!");
 }
 
 int main( int argc, char **argv )
@@ -656,6 +776,7 @@ int main( int argc, char **argv )
 
 	try {
 		test_sample_data();
+		test_tracker_voice();
 	} catch(Error E) {
 		printf("%s\n", E.what());
 		return 1;

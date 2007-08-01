@@ -1,3 +1,13 @@
+Mon Jul 30 12:32:46 EDT 2007 J Phelps <godless@users.sf.net>
+	* tracker_voice.cpp (add_to_mix_buffer): Added 1 to
+	calculation of the number of "virtual samples", as in
+	cheesetracker-0.9.9. This was thought to be an off-by-one
+	bug, but it is now known that this is required for looping
+	to work properly.
+Mon Jul 30 03:37:11 EDT 2007 J Phelps <godless@users.sf.net>
+	* sample_data.cpp (Copy constructor): Fixed a bug where
+	copy-constructed Sample_Data structures don't allocate
+	a new mutex, and therefore crash upon deletion.
 Wed Jun 27 10:10:49 EDT 2007 J Phelps <godless@users.sf.net>
 	* loader_raw.cpp
 	* loader_wav.cpp

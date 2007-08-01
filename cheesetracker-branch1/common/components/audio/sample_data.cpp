@@ -207,6 +207,12 @@ Sample_Data::reset()
 
 Sample_Data::Sample_Data(const Sample_Data &rhs) {
 	reset();
+	
+#ifdef POSIX_ENABLED
+	mutex = new Mutex_Lock_Pthreads;
+#else
+	mutex = NULL;
+#endif
 	// Just use operator=.
 	*this = rhs;
 }
