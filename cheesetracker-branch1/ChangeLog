@@ -1,3 +1,7 @@
+Fri Aug 3 01:54:44 EDT 2007 J Phelps <godless@users.sf.net>
+	* sample_viewer.cpp (paintEvent): Fixed fencepost bug
+	that was causing the GNU vector class's array bounds
+	checking to trip.
 Wed Aug 1 02:02:12 EDT 2007 J Phelps <godless@users.sf.net>
 	* sample_data_fixedpoint.h (fixedpoint_loop): Copied in
 	the version of fixedpoint_loop() from Revision 57.

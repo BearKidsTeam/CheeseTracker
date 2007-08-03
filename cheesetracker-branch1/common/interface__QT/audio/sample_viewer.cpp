@@ -373,7 +373,7 @@ void Sample_Viewer::screen_to_sample(int p_int, float *p_max_peak,float *p_min_p
 	float factor=1;
 
 	if (sample_cache_idx!=-1) { //have cache
-		size=size/sample_cache[sample_cache_idx].factor;
+		size/=size/sample_cache[sample_cache_idx].factor;
 		factor=sample_cache[sample_cache_idx].factor;
 	}
 
@@ -629,7 +629,13 @@ void Sample_Viewer::paintEvent( QPaintEvent * p_event ) {
 
 		int factor=get_factor();
 
-		for (int i=0;i<cur_width;i++) {
+		// (cur_width-1) is correct. Using cur_width instead
+		// will result in an abort() in versions of the vector
+		// template that do bounds checking. This is a workaround.
+		// The actual bug is in the floating-point math that is
+		// performed on "i" before dereferencing the vector.
+
+		for (int i=0;i<(cur_width-1);i++) {
 
 			draw_screen_pos(i,painter,factor);
 		}
