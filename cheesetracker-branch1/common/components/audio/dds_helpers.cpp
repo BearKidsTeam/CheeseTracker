@@ -159,8 +159,11 @@ void DDS_Helpers::set_envelope(DDS* p_dds,Envelope *p_envelope)
 
 void DDS_Helpers::set_sample_data(DDS* p_dds,Sample_Data *p_sample)
 {
-
-
+	size_t channels = p_dds->get_int_var("channels");
+	if(channels == 0) {
+		channels=1;
+	}
+	p_sample->set_num_channels(channels);
 	p_sample->set_c5_freq( p_dds->get_int_var("c5_freq") );
 	p_sample->set_loop_enabled( p_dds->get_int_var("has_loop") );
 	p_sample->set_loop_ping_pong( p_dds->get_int_var("has_pingpong_loop") );
@@ -169,6 +172,7 @@ void DDS_Helpers::set_sample_data(DDS* p_dds,Sample_Data *p_sample)
 	p_sample->set_loop_end( p_dds->get_int_var("loop_end") );
 
 	bool is16=p_dds->get_int_var("is_16bits");
+	size_t sample_size = is16 ? 2 : 1;
 
 	string compression=p_dds->get_str_var("compression_type");
 	if (compression!="none") {
@@ -180,37 +184,24 @@ void DDS_Helpers::set_sample_data(DDS* p_dds,Sample_Data *p_sample)
 	Uint8 *data=(Uint8*)p_dds->get_data_var("data");
 
 	int datasize=p_dds->get_data_var_size("data");
-	Uint8 *new_data= (Uint8*)malloc(datasize);
-	if (is16)
-		datasize/=2;
 
-	p_sample->set_num_channels(1);
+	p_sample->set_size(datasize/channels/sample_size);
+	p_sample->seek(0);
+	sample_int_t *temp_buf = new sample_int_t[channels];
+	ns_autoptr<sample_int_t> ns_temp_buf;
+	ns_temp_buf.arr_new(temp_buf);
 
-	if (is16) {
+	COMPILER_ASSERT(sizeof(sample_int_t) == 2);
 
-		// This must be rewritten when sample_int_t is widened 
-		// to 32 bits.
-
-		COMPILER_ASSERT(sizeof(Uint16) == sizeof(sample_int_t));
-
-		sample_int_t *new_data16=(sample_int_t*)new_data;
-		for (size_t i=0;i<datasize;i++) {
-
-			new_data16[i]=data[i*2];
-			new_data16[i]<<=8;
-			new_data16[i]|=data[i*2+1];
+	for(size_t ix=0; ix<p_sample->get_size(); ix++) {
+		for(size_t chan=0; chan<channels; chan++) {
+			temp_buf[chan] = data[ix*channels*sample_size+chan*sample_size] << BITS_PER_BYTE;
+			if(is16) {
+				temp_buf[chan] |= data[ix*channels*sample_size+chan*sample_size+1];
+			}
 		}
-		p_sample->put_sample_array(new_data16, datasize);
-		free(new_data);
-
-	} else {
-
-		for(size_t ix=0; ix<datasize; ix++) {
-			sample_int_t buffer = CONVERT_FROM_TYPE(Uint8, data[ix]);
-			p_sample->put_sample(&buffer);
-		}
+		p_sample->put_sample(temp_buf);
 	}
-
 }
 
 void DDS_Helpers::set_mixer_data(DDS* p_dds,Mixer *p_mixer)
@@ -429,7 +420,7 @@ void DDS_Helpers::get_mixer_data(Mixer *p_mixer,DDS* p_dds)
 
 void DDS_Helpers::get_sample_data(Sample_Data *p_sample,DDS* p_dds)
 {
-
+	size_t channels = p_sample->num_channels();
 
 	p_dds->set_int_var("c5_freq",p_sample->get_c5_freq());
 	p_dds->set_int_var("has_loop",p_sample->is_loop_enabled());
@@ -437,40 +428,28 @@ void DDS_Helpers::get_sample_data(Sample_Data *p_sample,DDS* p_dds)
 	p_dds->set_int_var("loop_begin",p_sample->get_loop_begin());
 	p_dds->set_int_var("loop_end",p_sample->get_loop_end());
 	p_dds->set_int_var("is_16bits",p_sample->is_16bit());
+	p_dds->set_int_var("channels", channels);
 	p_dds->set_str_var("compression_type","none");
 
 	vector<Uint8> data;
-	data.resize(p_sample->is_16bit() ? (p_sample->get_size() * 2) : p_sample->get_size() );
+	data.resize(p_sample->get_size() * channels * 2);
 
 	Mutex_Lock_Container *lock = p_sample->lock(__FILE__, __LINE__);
 	ns_autoptr<Mutex_Lock_Container> ns_lock;
 	ns_lock.ptr_new(lock);
 	p_sample->seek(0);
 
-	if (p_sample->is_16bit()) {
+	for(size_t ix=0; ix<p_sample->get_size(); ix++) {
+		const sample_int_t *current_frame = p_sample->get_int_sample();
+		for(size_t chan=0; chan<channels; chan++) {
+			// Convert the data to 16-bit big-endian.
+			Uint16 raw_twoscomp_data = CONVERT_TO_TYPE(Uint16, current_frame[chan]);
 
-		// Convert a 16-bit sample into little-endian
-		// format.
-		//
-		// Since the only purpose of this function is
-		// to save CheeseTracker samples, and CheeseTracker
-		// 0.9.13 format (and below) does not support stereo,
-		// we can drop all channels except channel 0.
-		//
-
-		for (size_t i=0;i<p_sample->get_size();i++) {
-			Uint16 raw_twoscomp_data = CONVERT_TO_TYPE(Uint16, *p_sample->get_int_sample());
-
-			data[i*2]=raw_twoscomp_data >> BITS_PER_BYTE;
-			data[i*2+1]=raw_twoscomp_data & 0xFF;
-		}
-
-	} else {
-
-		for(size_t ix=0; ix < p_sample->get_size(); ix++) {
-			data[ix]=CONVERT_TO_TYPE(Uint8, *p_sample->get_int_sample());
+			data[ix*channels*sizeof(Uint16)+chan*sizeof(Uint16)] = raw_twoscomp_data >> BITS_PER_BYTE;
+			data[ix*channels*sizeof(Uint16)+chan*sizeof(Uint16)+1] = raw_twoscomp_data & 0xff;
 		}
 	}
+
 
 	p_dds->set_data_var("data",&data[0],data.size());
 }

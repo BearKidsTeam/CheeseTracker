@@ -6,8 +6,22 @@ godless@users.sf.net
 
 0.9.13
 ------
--Stereo WAVs can now be loaded. However, they cannot be saved in
- modules.
+-Multi-channel samples can now be loaded and saved (either in
+ WAV format, or within *.ct modules). Stereo samples can be
+ played back. (Samples with more than two channels will be
+ mixed down to stereo before playback).
+
+ Stereo samples saved within modules saved with this version
+ of CheeseTracker cannot be loaded by previous versions of
+ CheeseTracker.
+
+ *.ct modules that only contain mono samples are saved in
+ a format compatible with old versions of CheeseTracker-- IOW,
+ the format change only affects multi-channel samples.
+
+-Greater-than-16-bit samples can be loaded, but all saving
+ of samples causes them to be downgraded to 16 bits. 8-bit
+ samples are promoted to 16 bits upon loading.
 -Looping bug introduced in 0.9.10 has been fixed. Consequently,
  the demo songs that come with CheeseTracker now sound the same
  when played in 0.9.13 as they did in version 0.9.9.

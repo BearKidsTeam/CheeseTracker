@@ -1,26 +1,4 @@
 Sun Jun  3 04:57:43 EDT 2007
-	Stereo sample support is still missing! Theoretically, the
-	mixer now supports it, and so do the loaders for many of the
-	file formats. However, the saver for the CheeseTracker module
-	format does NOT support stereo samples, and requires extensive
-	modification (perhaps even more extensive than what the mixer
-	needed) to achieve the desired functionality.
-
-	It may even be necessary to design a whole new CheeseTracker
-	format.
-
-	The data structure that represents samples in CheeseTracker is
-	still mono only, despite having an interface that would lead
-	one to believe that it supports many channels. For performance
-	reasons, this interface may need to be changed. The interface
-	suggests that there should be a separate stream for each channel.
-	If this is how it's actually implemented, it will run more slowly
-	than if the channels are interleaved, as is traditionally done.
-
-	Interleaving the channels removes the possibility of the channels
-	having different lengths, and also removes the possibility of
-	iterating through them separately.
-
 	The handlers for CheeseTracker format (both loading and saving)
 	use an insidious monstrosity called a "dynamic data structure",
 	whose sole purpose is to completely bypass the C++ type
@@ -46,7 +24,6 @@ Since the code has changed hands, so have the plans. Here they are:
   will assist in associating a control column in the Pattern Editor
   with the corresponding effect parameter in the Buffer screen.
 - Fix all the really obvious bugs
-- Support for multi-channel samples.
 - Support for samples with greater than 16-bit precision
 - Support for simultaneous output to multiple, multi-channel sound devices.
 - Proper error handling
