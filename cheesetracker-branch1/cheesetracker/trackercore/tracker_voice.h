@@ -50,7 +50,7 @@ class Tracker_Voice : public Voice
 		float lvolsel,rvolsel;
 		float oldlvol,oldrvol;
 
-		size_t current_index;           /* current index in the sample */
+		ptrdiff_t current_index;           /* current index in the sample */
 		
 		Uint16 reverb_send;
   		Uint16 chorus_send;

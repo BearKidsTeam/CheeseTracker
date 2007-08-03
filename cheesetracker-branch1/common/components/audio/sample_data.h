@@ -162,7 +162,7 @@ public:
 
 	size_t num_channels() const;
 	void set_num_channels(size_t num);
-	size_t get_current_pos() const;
+	ptrdiff_t get_current_pos() const;
 
 	// Threads should touch() before reading
 	// and lock() before writing and before

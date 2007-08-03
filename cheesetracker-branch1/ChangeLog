@@ -1,3 +1,9 @@
+Fri Aug 3 02:44:54 EDT 2007 J Phelps <godless@users.sf.net>
+	* sample_data.h
+	  sample_data.cpp (get_current_pos): Changed return type
+	from size_t to ptrdiff_t.
+	* tracker_voice.h: Changed type of Tracker_Voice::current_index
+	from size_t to ptrdiff_t.
 Fri Aug 3 01:54:44 EDT 2007 J Phelps <godless@users.sf.net>
 	* sample_viewer.cpp (paintEvent): Fixed fencepost bug
 	that was causing the GNU vector class's array bounds
@@ -6,7 +12,8 @@ Fri Aug 3 01:54:44 EDT 2007 J Phelps <godless@users.sf.net>
 Wed Aug 1 02:02:12 EDT 2007 J Phelps <godless@users.sf.net>
 	* sample_data_fixedpoint.h (fixedpoint_loop): Copied in
 	the version of fixedpoint_loop() from Revision 57.
-	* sample_data.h
+	* sample_data.h: Changed type of current_pos from size_t
+	to ptrdiff_t.
 	* sample_data_fixedpoint.h (fixedpoint_loop): Restored the
 	"sustaining" argument.
 	* tracker_voice.cpp (add_to_mix_buffer): fixedpoint_loop() is

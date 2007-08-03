@@ -530,7 +530,7 @@ Sample_Data::seek(size_t new_pos) {
 
 // get_current_pos - Get the position indicator of the specified channel.
 
-size_t
+ptrdiff_t
 Sample_Data::get_current_pos() const {
 	return current_pos;
 }
