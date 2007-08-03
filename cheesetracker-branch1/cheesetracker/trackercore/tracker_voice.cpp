@@ -190,7 +190,7 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer)
 	while(todo>0) {
 		// Implement looping behavior and check boundaries. 
 
-		info.active = info.sample_data_ptr->fixedpoint_loop();
+		info.active = info.sample_data_ptr->fixedpoint_loop(false);
 		info.current_index=info.sample_data_ptr->get_current_pos();
 
 		// Time to calculate how much of p_buffer we'll
@@ -284,18 +284,18 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer)
 
 			size_t virtual_samples = mpz_get_ui(gmp_total_samples);
 			
-			done=std::min<size_t>(virtual_samples, todo)+1;
+			done=std::min<size_t>(virtual_samples+1, todo);
 
 			// CLEANUP
 			mpz_clear(gmp_mixfreq);
 			mpz_clear(gmp_current_freq);
 			mpz_clear(gmp_total_samples);
 #else
-			done=std::min<size_t>((size_t)FIXED_TO_INT((Uint64)total_samples * (Uint64)(INT_TO_FIXED((Uint64)mixfreq)/(Uint64)info.current_frequency)), todo)+1;
+			done=std::min((size_t)FIXED_TO_INT((Uint64)total_samples * (Uint64)(INT_TO_FIXED((Uint64)mixfreq)/(Uint64)info.current_frequency))+1, todo);
 #endif
 		} else {
 			// Mixing frequency and sample frequency are equal
-			done = std::min<size_t>(total_samples, todo);
+			done = std::min<size_t>(total_samples+1, todo);
 		}
 
 		if ( done==0 ) {

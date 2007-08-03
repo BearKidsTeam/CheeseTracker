@@ -80,7 +80,8 @@ Sample_Data::fixedpoint_set_resample_rate(size_t current_freq, size_t mix_freq, 
 // see also               - use_fixedpoint
 
 void
-Sample_Data::fixedpoint_move_cursor() {
+Sample_Data::fixedpoint_move_cursor()
+{
 	fixedpoint_offset += fixedpoint_inc;
 
 	size_t int_batch = FIXED_TO_INT(fixedpoint_offset);	// Convert fixed-point to int.
@@ -125,41 +126,81 @@ Sample_Data::fixedpoint_is_backwards() {
 }
 
 
+// fixedpoint_loop - Prepare a sample to loop before mixing a bit of it.
+//
+//                   Modifies the current position indicator and the
+//                   fixedpoint_backwards flag.
+//
+// arguments       - posinfo is allocated with create_position_info()
+//                   and deallocated with destroy_position_info. It holds
+//                   some state information between calls to fixedpoint_loop()
+//                   in a way that can be reasonably expected to be
+//                   thread-safe.
+//
+// return value    - Returns 'true' if the sample should continue playing,
+//                   otherwise returns false.
+//
+// context         - Used in Tracker_Voice::add_to_mix_buffer(), in the
+//                   file tracker_voice.cpp
+
 bool
-Sample_Data::fixedpoint_loop() {
-	int jump_size = FIXED_TO_INT(fixedpoint_offset + fixedpoint_inc);
+Sample_Data::fixedpoint_loop(bool sustaining)
+{
+	size_t jump_size = FIXED_TO_INT(fixedpoint_offset + fixedpoint_inc);
+	bool loop_on_local = false;
+	bool pingpong_local = false;
+	size_t loop_begin_local = 0;
+	size_t loop_end_local = 0;
+
+
+	if(sustaining && sustain_loop_on) {
+		loop_begin_local	= sustain_loop_begin;
+		loop_end_local		= sustain_loop_end;
+		loop_on_local 		= true;
+		pingpong_local		= sustain_pingpong_loop;
+	} else if(loop_on) {
+		pingpong_local		= pingpong_loop;
+		loop_begin_local	= loop_begin;
+		loop_end_local		= loop_end;
+		loop_on_local 		= true;
+	}
+
+
+	// current_pos + jump_size is the expected value of
+	// current_pos after the next call to fixedpoint_move_cursor().
+	//
+	// The following if-block checks where current_pos WOULD BE
+	// after the next call to fixedpoint_move_cursor(), if
+	// fixedpoint_move_cursor() did not check for EOF.
+
 	if(fixedpoint_backwards) {
-		// Check if the sample will reach the loop-begin
-		// on the next increment, because it will never
-		// actually be at the loop beginning if the loop
-		// begins at the beginning of the sample.
-		if(!loop_on) {
-			return (current_pos >= jump_size);
-		}
-		if(current_pos - jump_size <= loop_begin) {
-			if (pingpong_loop) {
-				fixedpoint_backwards = false;
-				// current_pos -= (2*(current_pos-loop_begin)-jump_size);
+		// Check if the cursor is before the loop begin point
+		// (which may be zero).
+		if(loop_on_local && current_pos < loop_begin_local) {
+			if(pingpong_local) {
+				current_pos = loop_begin_local+(loop_begin_local-current_pos);
+				fixedpoint_aboutface();
 			} else {
-				// Normal looping.
-				current_pos = loop_end - (jump_size-(current_pos-loop_begin));
+				current_pos = loop_end_local - (loop_begin_local - current_pos);
 			}
-			// Sample should continue playing, unless it reaches
-			// the opposite boundary in a single jump.
-			return !eof_reached() && current_pos <= loop_end && current_pos > loop_begin;
-		}
-	} else {
-		if(!loop_on) {
-			return (current_pos+jump_size < size);
-		}
-		if(current_pos + jump_size >= loop_end) {
-			if (pingpong_loop) {
-				fixedpoint_backwards = true;
-				// current_pos += ((2*loop_end-current_pos)-jump_size);
-			} else {
-				current_pos = loop_begin + (jump_size-(loop_end-current_pos));
+		} else {
+			if(current_pos < 0) {
+				current_pos = 0;
+				return false;
 			}
-			return !eof_reached() && current_pos < loop_end && current_pos >= loop_begin;
+		}
+	} else { /* The sample is playing forward */
+		if(loop_on_local && current_pos >= loop_end_local) {
+			/* The sample is looping */
+			if(pingpong_local) {
+				fixedpoint_aboutface();
+				current_pos = loop_end_local - current_pos - loop_end_local;
+			} else { /* Forward loop */
+				current_pos = loop_begin_local+(current_pos-loop_end_local);
+			}
+		} else {
+				/* The sample is not looping. */
+				return (current_pos < size);
 		}
 	}
 	return true;

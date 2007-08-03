@@ -121,7 +121,7 @@ class Sample_Data {
 	bool fixedpoint_backwards;
 
 	// The position indicator, used both in fixed-point and normal mode.
-	size_t current_pos;
+	ptrdiff_t current_pos;
 
 	size_t size; // in samples, not bytes.
 	size_t channels;
@@ -224,7 +224,7 @@ public:
 			virtual ~resample_functor() { };
 	};
 
-	bool fixedpoint_loop();
+	bool fixedpoint_loop(bool sustaining);
 	size_t get_fixedpoint_offset();
 	void set_fixedpoint_offset(size_t new_offset);
 

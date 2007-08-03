@@ -1,3 +1,12 @@
+Wed Aug 1 02:02:12 EDT 2007 J Phelps <godless@users.sf.net>
+	* sample_data_fixedpoint.h (fixedpoint_loop): Copied in
+	the version of fixedpoint_loop() from Revision 57.
+	* sample_data.h
+	* sample_data_fixedpoint.h (fixedpoint_loop): Restored the
+	"sustaining" argument.
+	* tracker_voice.cpp (add_to_mix_buffer): fixedpoint_loop() is
+	called with "false" as the argument, until the code to load
+	sustain loops from files is implemented.
 Mon Jul 30 12:32:46 EDT 2007 J Phelps <godless@users.sf.net>
 	* tracker_voice.cpp (add_to_mix_buffer): Added 1 to
 	calculation of the number of "virtual samples", as in
