@@ -30,11 +30,11 @@
 //
 
 #define APP_NAME_ "CheeseTracker "
-#define APP_VERSION_ "Unofficial Release 0.9.13"
+#define APP_VERSION_ "0.9.13"
 #define APP_AUTHOR_ "(c) 1999,2004 Juan Linietsky"
 #define APP_RELEASE_DATE_ "Sun Apr  8 09:42:45 EDT 2007"
-#define APP_MAINTAINER_ "Godless Infidel <godless@users.sf.net>"
-#define APP_WEBSITE_ "http://www.geocities.com/godlessinfidelus/"
+#define APP_MAINTAINER_ "J Phelps <godless@users.sf.net>"
+#define APP_WEBSITE_ "http://cheesetracker.sf.net/"
 
 #include "mdi_main_window.h"
 #include "interface__QT/icons/control_play_prev.xpm"

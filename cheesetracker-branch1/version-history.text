@@ -4,8 +4,14 @@ CHEESETRACKER!
 Mail me your patches.
 godless@users.sf.net
 
-Unofficial Release 0.9.13
+0.9.13
 ------
+-Stereo samples now work.
+-Looping bug introduced in 0.9.10 has been fixed. Consequently,
+ the demo songs that come with CheeseTracker now sound the same
+ when played in 0.9.13 as they did in version 0.9.9.
+-Totally restructured the "resampler" classes. There is now only
+ one copy of the main resampling algorithm.
 -CheeseTracker now compiles with G++ 4.1.2, thanks to patches originally
  submitted to the Debian project and sent to me by Wesley J. Landaker
  <wjl@icecavern.net>
