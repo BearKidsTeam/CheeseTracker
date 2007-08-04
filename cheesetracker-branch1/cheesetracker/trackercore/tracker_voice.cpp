@@ -112,7 +112,7 @@ void Tracker_Voice::mix(size_t p_amount,sample_t* p_where) {
 	info.oldlvol=info.lvolsel;
 	info.oldrvol=info.rvolsel;
 
-	info.lvolsel=vol;
+	info.lvolsel=vol/2.0;
 
 	if (info.first_mix) {
 

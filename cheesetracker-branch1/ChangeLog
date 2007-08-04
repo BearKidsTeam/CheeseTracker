@@ -1,3 +1,9 @@
+Sat Aug 4 19:37:45 EDT 2007 J Phelps <godless@users.sf.net>
+	* tracker_voice.cpp(add_to_mix_buffer): Changed
+	"info.lvolsel=vol" to "info.lvolsel=vol/2.0". I don't
+	remember why this was changed, and it caused a bug. The
+	change happened before I started keeping this ChangeLog,
+	and before I started using SVN.
 Sat Aug 4 18:51:28 EDT 2007 J Phelps <godless@users.sf.net>
 	* sample_data.cpp(get_sample_for_cosine_mixer,
 	do_cubic_mixer_voodoo, get_sample_for_linear_mixer):
