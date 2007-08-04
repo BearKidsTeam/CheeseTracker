@@ -10,6 +10,6 @@ rm -f detect_cache.py;
 rm -f *.pyc;
 rm -f cscope.out
 rm -f config_errors.log
-rm -f test.c a.out
+rm -f test.c a.out test
 rm -f core*
 rm -f common/stuZBDWW
