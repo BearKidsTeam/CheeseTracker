@@ -192,6 +192,8 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer)
 
 		info.active = info.sample_data_ptr->fixedpoint_loop(false);
 		info.current_index=info.sample_data_ptr->get_current_pos();
+		if(!info.active)
+			break;
 
 		// Time to calculate how much of p_buffer we'll
 		// use during this iteration of the loop.
@@ -212,7 +214,6 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer)
 		// segment).
 
 		if(end > info.current_index) {
-			printf("End(%d) - pos(%d) = %d\n", end,info.current_index, end-info.current_index);
 			total_samples = end-info.current_index;
 		} else {
 			total_samples = info.current_index - end;
@@ -293,7 +294,6 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer)
 			mpz_clear(gmp_total_samples);
 #else
 			done=std::min((size_t)FIXED_TO_INT((Uint64)total_samples * (Uint64)(INT_TO_FIXED((Uint64)mixfreq)/(Uint64)info.current_frequency))+1, todo);
-			printf("DONE: %d TODO: %d\n", done, todo);
 #endif
 		} else {
 			// Mixing frequency and sample frequency are equal
@@ -443,7 +443,11 @@ void Tracker_Voice::reset()
 	info.clear();
 	clear_status();
 	channel_index=0;
-
+	// Ensure forward playback.
+	if(info.sample_data_ptr &&
+	   info.sample_data_ptr->fixedpoint_is_backwards()) {
+		info.sample_data_ptr->fixedpoint_aboutface();
+	}
 }
 
 

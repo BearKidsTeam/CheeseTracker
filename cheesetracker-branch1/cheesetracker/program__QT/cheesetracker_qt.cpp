@@ -769,6 +769,7 @@ test_tracker_voice()
 	ASSERT_EQUAL_FLOAT(SAMPLE_INT_T_TO_FLOAT(2), output_buffer[4], "mix");
 
 	test_sample.seek(0);
+	test_sample.set_loop_enabled(false);
 	Test.setup_sample(&test_sample, 0);
 	Test.set_volume(512.0/0.008);
 	Test.set_frequency(44100*3);

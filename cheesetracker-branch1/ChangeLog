@@ -1,3 +1,6 @@
+Sat Aug 4 18:26:52 EDT 2007 J Phelps <godless@users.sf.net>
+	* tracker_voice.cpp(add_to_mix_buffer): Samples no longer
+	continue playing past the end.
 Sat Aug 4 18:08:08 EDT 2007 J Phelps <godless@users.sf.net>
 	* sample_data_fixedpoint.h(fixedpoint_move_cursor): Removed bounds checking, as
 	this is handled in fixedpoint_loop.
