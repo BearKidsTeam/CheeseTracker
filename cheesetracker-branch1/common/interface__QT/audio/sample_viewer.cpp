@@ -373,7 +373,7 @@ void Sample_Viewer::screen_to_sample(int p_int, float *p_max_peak,float *p_min_p
 	float factor=1;
 
 	if (sample_cache_idx!=-1) { //have cache
-		size/=size/sample_cache[sample_cache_idx].factor;
+		size=size/sample_cache[sample_cache_idx].factor;
 		factor=sample_cache[sample_cache_idx].factor;
 	}
 
