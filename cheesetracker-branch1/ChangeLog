@@ -1,9 +1,21 @@
+Sat Aug 4 18:51:28 EDT 2007 J Phelps <godless@users.sf.net>
+	* sample_data.cpp(get_sample_for_cosine_mixer,
+	do_cubic_mixer_voodoo, get_sample_for_linear_mixer):
+	Reintroduced blank-sample generation when these are called
+	with Sample_Data::eof_reached() == true. Necessary now that
+	fixedpoint_move_cursor no longer ensures that the cursor will
+	stay within bounds.
+
+	* sample_data.cpp(blank_sample): Changed "zero" from being a
+	template argument to a function argument, because GCC 4.1.2
+	can't compile this template if TYPE==float.
+	
 Sat Aug 4 18:26:52 EDT 2007 J Phelps <godless@users.sf.net>
 	* tracker_voice.cpp(add_to_mix_buffer): Samples no longer
 	continue playing past the end.
 Sat Aug 4 18:08:08 EDT 2007 J Phelps <godless@users.sf.net>
-	* sample_data_fixedpoint.h(fixedpoint_move_cursor): Removed bounds checking, as
-	this is handled in fixedpoint_loop.
+	* sample_data_fixedpoint.h(fixedpoint_move_cursor): Removed
+	bounds checking, as this is handled in fixedpoint_loop.
 Sat Aug 4 15:21:40 EDT 2007 J Phelps <godless@users.sf.net>
 	* resample_kernel.cpp (mix_sample): Fixed a math bug that caused
 	pitch envelopes to sound like shit if they were used as filters.

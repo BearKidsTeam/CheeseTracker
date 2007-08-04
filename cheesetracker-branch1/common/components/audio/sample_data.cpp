@@ -124,15 +124,17 @@ class init_lookup_tables {
 } init_lut_object;
 
 
-void Sample_Data::release_data_ptr() {
-
+void Sample_Data::release_data_ptr()
+{
+	if(data_ptr != NULL) printf("Generating a memory leak on purpose...\n");
 	data_ptr=NULL;
 	size=0;
 	is_16bits=true;
 }
 
 
-void Sample_Data::set_data_ptr(void *p_data,int p_size,bool p_16bits) {
+void Sample_Data::set_data_ptr(void *p_data,int p_size,bool p_16bits)
+{
 
 	if(!p_size)
 		assert(p_size == 0 && p_data == NULL);
@@ -145,20 +147,21 @@ void Sample_Data::set_data_ptr(void *p_data,int p_size,bool p_16bits) {
 
 }
 
-void Sample_Data::copy_sample_data(const Sample_Data *p_sdata) {
-
+void Sample_Data::copy_sample_data(const Sample_Data *p_sdata)
+{
 	ASSERT_NOTFIXEDPOINT("copy_sample_data");
 
 	*this = *p_sdata;
 
 }
 
-void Sample_Data::set_c5_freq(int p_c5_freq) {
-
+void Sample_Data::set_c5_freq(int p_c5_freq)
+{
 	c5_freq=p_c5_freq;
 }
 
-Sample_Data::Sample_Data() {
+Sample_Data::Sample_Data()
+{
 #ifdef POSIX_ENABLED
 	mutex = new Mutex_Lock_Pthreads;
 #else
@@ -205,7 +208,8 @@ Sample_Data::reset()
  	size=0;
 }
 
-Sample_Data::Sample_Data(const Sample_Data &rhs) {
+Sample_Data::Sample_Data(const Sample_Data &rhs)
+{
 	reset();
 	
 #ifdef POSIX_ENABLED
@@ -217,7 +221,8 @@ Sample_Data::Sample_Data(const Sample_Data &rhs) {
 	*this = rhs;
 }
 
-Sample_Data::~Sample_Data(){
+Sample_Data::~Sample_Data()
+{
 #ifdef POSIX_ENABLED
 	delete mutex;
 #endif
@@ -226,7 +231,8 @@ Sample_Data::~Sample_Data(){
 }
 
 
-void Sample_Data::get_sample(size_t p_index, sample_t *dest)  const{
+void Sample_Data::get_sample(size_t p_index, sample_t *dest)  const
+{
 
 	if(p_index >= size) {
 		throw Out_Of_Bounds(__FILE__, __LINE__);
@@ -239,7 +245,8 @@ void Sample_Data::get_sample(size_t p_index, sample_t *dest)  const{
 	
 }
 
-void Sample_Data::set_sample(size_t p_idx, const sample_t *p_val) {
+void Sample_Data::set_sample(size_t p_idx, const sample_t *p_val)
+{
 	ASSERT_NOTFIXEDPOINT("set_sample");
 	assert(is_16bits);
 
@@ -251,19 +258,20 @@ void Sample_Data::set_sample(size_t p_idx, const sample_t *p_val) {
 	}
 }
 
-void Sample_Data::set_loop_enabled(bool p_enabled) {
+void Sample_Data::set_loop_enabled(bool p_enabled)
+{
 
 	loop_on=p_enabled;
 }
 
-void Sample_Data::set_loop_ping_pong(bool p_enabled) {
-
+void Sample_Data::set_loop_ping_pong(bool p_enabled)
+{
 	pingpong_loop=p_enabled;
-
 }
 
 
-void Sample_Data::set_loop_begin(int p_idx) {
+void Sample_Data::set_loop_begin(int p_idx)
+{
 
 	loop_begin=p_idx;
 	if(size == 0)
@@ -271,8 +279,8 @@ void Sample_Data::set_loop_begin(int p_idx) {
 	else if(loop_begin >= size)
 		loop_begin = size-1;
 }
-void Sample_Data::set_loop_end(int p_idx) {
-
+void Sample_Data::set_loop_end(int p_idx)
+{
 	loop_end=p_idx;
 	if(size == 0)
 		loop_begin = 0;
@@ -281,7 +289,8 @@ void Sample_Data::set_loop_end(int p_idx) {
 
 }
 
-void Sample_Data::change_sign() {
+void Sample_Data::change_sign()
+{
 	ASSERT_NOTFIXEDPOINT("change_sign");
 	assert(is_16bits);
 
@@ -299,8 +308,8 @@ void Sample_Data::change_sign() {
 
 
 /* Misc internal Editing Utils */
-const sample_int_t *Sample_Data::get_data_value(size_t p_pos) {
-
+const sample_int_t *Sample_Data::get_data_value(size_t p_pos)
+{
 	if (p_pos >= size || data_ptr == NULL) {
 		throw Out_Of_Bounds(__FILE__, __LINE__);
 	}
@@ -310,7 +319,8 @@ const sample_int_t *Sample_Data::get_data_value(size_t p_pos) {
 
 }
 
-void Sample_Data::put_data_value(size_t p_pos, const sample_int_t *p_val) {
+void Sample_Data::put_data_value(size_t p_pos, const sample_int_t *p_val)
+{
 	ASSERT_NOTFIXEDPOINT("put_data_value");
 	assert(is_16bits);
 
@@ -391,7 +401,8 @@ void Sample_Data::amplify(int p_percent) {
 
 */
 
-void Sample_Data::toggle_quality() {
+void Sample_Data::toggle_quality()
+{
 	ASSERT_NOTFIXEDPOINT("toggle_quality");
 
 	if (data_ptr==NULL) return;
@@ -422,7 +433,8 @@ void Sample_Data::toggle_quality() {
 //                        seek, fixedpoint_move_cursor
 
 const sample_int_t *
-Sample_Data::get_int_sample() {
+Sample_Data::get_int_sample()
+{
 	const sample_int_t *retval;
 
 	assert(is_16bits);
@@ -444,7 +456,8 @@ Sample_Data::get_int_sample() {
 
 
 void 
-Sample_Data::sd_realloc(size_t new_size) {
+Sample_Data::sd_realloc(size_t new_size)
+{
         sample_int_t *new_data;
 	assert(is_16bits);
 
@@ -476,7 +489,8 @@ Sample_Data::sd_realloc(size_t new_size) {
 //               backwards).
 
 bool
-Sample_Data::eof_reached() {
+Sample_Data::eof_reached()
+{
 	if(fixedpoint_mode && fixedpoint_backwards) {
 		return (get_current_pos() > 0);
 	} else {
@@ -492,7 +506,8 @@ Sample_Data::eof_reached() {
 // see also   - set_size, get_size
 
 void
-Sample_Data::put_sample(const sample_int_t *smp) {
+Sample_Data::put_sample(const sample_int_t *smp)
+{
 	ASSERT_NOTFIXEDPOINT("put_sample");
 	assert(is_16bits);
 
@@ -519,7 +534,8 @@ Sample_Data::put_sample(const sample_int_t *smp) {
 // see also - get_size
 
 size_t
-Sample_Data::seek(size_t new_pos) {
+Sample_Data::seek(size_t new_pos)
+{
 	if(new_pos > get_size())
 		new_pos = get_size();
 	current_pos = new_pos;
@@ -531,7 +547,8 @@ Sample_Data::seek(size_t new_pos) {
 // get_current_pos - Get the position indicator of the specified channel.
 
 ptrdiff_t
-Sample_Data::get_current_pos() const {
+Sample_Data::get_current_pos() const
+{
 	return current_pos;
 }
 
@@ -547,7 +564,8 @@ Sample_Data::get_current_pos() const {
 // see also         - get_size, get_int_sample
 
 size_t
-Sample_Data::get_sample_array(sample_int_t *dest, size_t len) {
+Sample_Data::get_sample_array(sample_int_t *dest, size_t len)
+{
 	assert(is_16bits);
 
         if(get_current_pos()+len > get_size()) {
@@ -567,7 +585,8 @@ Sample_Data::get_sample_array(sample_int_t *dest, size_t len) {
 //                  - Extends the buffer as necessary.
 
 void
-Sample_Data::put_sample_array(const sample_int_t *src, size_t len) {
+Sample_Data::put_sample_array(const sample_int_t *src, size_t len)
+{
 	ASSERT_NOTFIXEDPOINT("put_sample_array");
 	assert(is_16bits);
 
@@ -589,7 +608,8 @@ Sample_Data::put_sample_array(const sample_int_t *src, size_t len) {
 //          - Reallocates memory.
 
 void
-Sample_Data::truncate() {
+Sample_Data::truncate()
+{
 	ASSERT_NOTFIXEDPOINT("truncate");
 	assert(is_16bits);
 	if(current_pos==0) {
@@ -620,7 +640,8 @@ Sample_Data::truncate() {
 //                In normal mode, 0.0 is 
 //                returned continuously after eof_reached(),
 
-void Sample_Data::get_f_sample(sample_t *dest) {
+void Sample_Data::get_f_sample(sample_t *dest)
+{
 	assert(is_16bits);
 	if(eof_reached()) {
 		for(size_t chan=0; chan<channels; chan++)
@@ -644,7 +665,8 @@ void Sample_Data::get_f_sample(sample_t *dest) {
 //
 // see also     - set_size
 
-void Sample_Data::put_f_sample(const sample_t *p_val) {
+void Sample_Data::put_f_sample(const sample_t *p_val)
+{
 	ASSERT_NOTFIXEDPOINT("put_f_sample");
 	assert(is_16bits);
 
@@ -671,7 +693,8 @@ void Sample_Data::put_f_sample(const sample_t *p_val) {
 //          - set_size(0) deletes the buffer.
 
 void
-Sample_Data::set_size(size_t new_size) {
+Sample_Data::set_size(size_t new_size)
+{
 	ASSERT_NOTFIXEDPOINT("set_size");
 	if(size == new_size)
 		return;
@@ -688,7 +711,8 @@ Sample_Data::set_size(size_t new_size) {
 // num_channels - Return the number of channels contained in the sample.
 
 size_t
-Sample_Data::num_channels() const {
+Sample_Data::num_channels() const
+{
 	return channels;
 }
 
@@ -706,7 +730,8 @@ Sample_Data::num_channels() const {
 // see also	  - set_size
 
 void
-Sample_Data::set_num_channels(size_t num) {
+Sample_Data::set_num_channels(size_t num)
+{
 	ASSERT_NOTFIXEDPOINT("set_num_channels");
 	sample_int_t *new_data;
 
@@ -734,12 +759,14 @@ Sample_Data::set_num_channels(size_t num) {
 }
 
 bool
-Sample_Data::is_empty() {
+Sample_Data::is_empty()
+{
 	return(data_ptr == NULL || size == 0);
 }
 
 const Sample_Data &
-Sample_Data::operator=(const Sample_Data &r_data) {
+Sample_Data::operator=(const Sample_Data &r_data)
+{
 	ASSERT_NOTFIXEDPOINT("operator=");
 	set_num_channels(r_data.num_channels());
 	assert(r_data.is_16bit());
@@ -778,7 +805,8 @@ Sample_Data::operator=(const Sample_Data &r_data) {
 
 
 void
-Sample_Data::correct_loop_pointers() {
+Sample_Data::correct_loop_pointers()
+{
 	if(loop_begin > size)
 		loop_begin = size-1;
 	if(sustain_loop_begin > size)
@@ -791,19 +819,21 @@ Sample_Data::correct_loop_pointers() {
 }
 
 
-template<class TYPE, TYPE zero> void
-blank_sample(TYPE *dest, size_t channels) {
+template<class TYPE> void
+blank_sample(TYPE *dest, TYPE zero, size_t channels)
+{
 	for(size_t chan=0; chan<channels; chan++) {
 		dest[chan]=zero;
 	}
 }
 
 void
-Sample_Data::get_sample_for_cosine_mixer(sample_t *dest, bool use_cosine_mode) {
-	/* if(eof_reached()) {
-		blank_sample<sample_t, 0.0>(dest, channels);
+Sample_Data::get_sample_for_cosine_mixer(sample_t *dest, bool use_cosine_mode)
+{
+	if(eof_reached()) {
+		blank_sample<sample_t>(dest, 0.0, channels);
 		return;
-	} */
+	}
 	const sample_int_t *current_frame = get_data_value(get_current_pos());
 	const sample_int_t *next_frame;
 	ns_autoptr<sample_int_t> ns_temp;
@@ -816,7 +846,7 @@ Sample_Data::get_sample_for_cosine_mixer(sample_t *dest, bool use_cosine_mode) {
 		ns_temp.arr_new(temp);
 		next_frame = temp;
 
-		blank_sample<sample_int_t, 0>(temp, channels);
+		blank_sample<sample_int_t>(temp, 0, channels);
 	} else {
 		next_frame = get_data_value(get_current_pos()+1);
 	}
@@ -850,11 +880,12 @@ Sample_Data::get_sample_for_cosine_mixer(sample_t *dest, bool use_cosine_mode) {
 
 
 void
-Sample_Data::do_cubic_mixer_voodoo(sample_t *dest) {
-	/* if(eof_reached()) {
-		blank_sample<sample_t, 0.0>(dest, channels);
+Sample_Data::do_cubic_mixer_voodoo(sample_t *dest)
+{
+	if(eof_reached()) {
+		blank_sample<sample_t>(dest, 0.0, channels);
 		return;
-	} */
+	}
 
 	size_t poshi = get_current_pos();
 	size_t poslo_fixed = INT_TO_FIXED(get_current_pos()) + fixedpoint_offset;
@@ -874,12 +905,13 @@ Sample_Data::do_cubic_mixer_voodoo(sample_t *dest) {
 }
 
 void
-Sample_Data::get_sample_for_linear_mixer(sample_t *dest) {
+Sample_Data::get_sample_for_linear_mixer(sample_t *dest)
+{
 
-	/* if(eof_reached()) {
-		blank_sample<sample_t, 0.0>(dest, channels);
+	if(eof_reached()) {
+		blank_sample<sample_t>(dest, 0.0, channels);
 		return;
-	} */
+	}
 
 	size_t pos = get_current_pos();
 	const sample_int_t *current_frame = get_int_sample();
@@ -890,7 +922,7 @@ Sample_Data::get_sample_for_linear_mixer(sample_t *dest) {
 		sample_int_t *temp = new sample_int_t[num_channels()];
 		ns_temp.arr_new(temp);
 		next_frame=temp;
-		blank_sample<sample_int_t, 0>(temp, channels);
+		blank_sample<sample_int_t>(temp, 0, channels);
 	} else {
 		next_frame = get_data_value(pos+1);
 	}
@@ -919,7 +951,8 @@ Sample_Data::get_sample_for_linear_mixer(sample_t *dest) {
 //
 
 Mutex_Lock_Container *
-Sample_Data::lock(const char *file, int line) {
+Sample_Data::lock(const char *file, int line)
+{
 	return new Mutex_Lock_Container(mutex, file, line);
 }
 
