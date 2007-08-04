@@ -5,7 +5,8 @@
 #define CURRENT_CHANNEL (chan % channels)
 #define HARD_CODED_MIXER_CHANNELS 2
 
-void mix_sample(Resampler::Mix_Data *mixdata, sample_getter *get_sample, bool perform_filtering) {
+void mix_sample(Resampler::Mix_Data *mixdata, sample_getter *get_sample, bool perform_filtering)
+{
 	// Copy certain values from {mixdata} onto the stack,
 	// where access will be faster.
 	//
@@ -93,7 +94,7 @@ void mix_sample(Resampler::Mix_Data *mixdata, sample_getter *get_sample, bool pe
 			// FIXME: mixdata->filter should really be an array of
 			// length HARD_CODED_MIXER_CHANNELS.
 			for(size_t chan=0; chan<HARD_CODED_MIXER_CHANNELS; chan++) {
-				final_float[chan] *= mixdata->filter.coeffs.b0
+				final_float[chan] = final_float[chan] * mixdata->filter.coeffs.b0
 					+ mixdata->filter.hist_b1 * mixdata->filter.coeffs.b1
 					+ mixdata->filter.hist_b2 * mixdata->filter.coeffs.b2
 					+ mixdata->filter.hist_a1 * mixdata->filter.coeffs.a1

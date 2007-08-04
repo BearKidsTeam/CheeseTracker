@@ -1,3 +1,6 @@
+Sat Aug 4 15:21:40 EDT 2007 J Phelps <godless@users.sf.net>
+	* resample_kernel.cpp (mix_sample): Fixed a math bug that caused
+	pitch envelopes to sound like shit if they were used as filters.
 Fri Aug 3 04:54:44 EDT 2007 J Phelps <godless@users.sf.net>
 	* dds_helpers.cpp (get_sample_data,set_sample_data):
 	Added support for multi-channel samples, at last!!!!
