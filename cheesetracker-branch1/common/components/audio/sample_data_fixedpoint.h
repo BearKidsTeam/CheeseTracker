@@ -88,18 +88,10 @@ Sample_Data::fixedpoint_move_cursor()
 
 	if(int_batch >= 1) {
 		if(fixedpoint_backwards) {
-			if(current_pos < int_batch) {
-				Sample_EOF_Error E;
-				E.set_error_pfx("fixedpoint_move_cursor");
-				E.set_error("Beginning of sample reached while incrementing backwards");
-				throw E;
-			}
 			current_pos -= int_batch;
 		}
 		else {
 			current_pos += int_batch;
-			if(eof_reached())
-				current_pos = size-1;
 		}
 
 		// Though one would naïvely expect

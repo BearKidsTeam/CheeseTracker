@@ -1,3 +1,6 @@
+Sat Aug 4 18:08:08 EDT 2007 J Phelps <godless@users.sf.net>
+	* sample_data_fixedpoint.h(fixedpoint_move_cursor): Removed bounds checking, as
+	this is handled in fixedpoint_loop.
 Sat Aug 4 15:21:40 EDT 2007 J Phelps <godless@users.sf.net>
 	* resample_kernel.cpp (mix_sample): Fixed a math bug that caused
 	pitch envelopes to sound like shit if they were used as filters.

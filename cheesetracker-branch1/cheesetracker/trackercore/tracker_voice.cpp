@@ -187,7 +187,7 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer)
 	// passes until {todo} samples have been put into the
 	// mixing buffer.
 
-	while(todo>0) {
+	while(todo>0){
 		// Implement looping behavior and check boundaries. 
 
 		info.active = info.sample_data_ptr->fixedpoint_loop(false);
@@ -212,6 +212,7 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer)
 		// segment).
 
 		if(end > info.current_index) {
+			printf("End(%d) - pos(%d) = %d\n", end,info.current_index, end-info.current_index);
 			total_samples = end-info.current_index;
 		} else {
 			total_samples = info.current_index - end;
@@ -292,6 +293,7 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer)
 			mpz_clear(gmp_total_samples);
 #else
 			done=std::min((size_t)FIXED_TO_INT((Uint64)total_samples * (Uint64)(INT_TO_FIXED((Uint64)mixfreq)/(Uint64)info.current_frequency))+1, todo);
+			printf("DONE: %d TODO: %d\n", done, todo);
 #endif
 		} else {
 			// Mixing frequency and sample frequency are equal
@@ -299,9 +301,7 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer)
 		}
 
 		if ( done==0 ) {
-			// Either no (whole) virtual samples can be extracted, or
 			// p_buffer is full.
-			info.active = 0;
 			break;
 		}
 
@@ -431,8 +431,6 @@ void Tracker_Voice::set_filter(const IIR_SVF::Coeffs& p_coeffs,bool p_enabled)
 
 bool Tracker_Voice::has_stopped()
 {
-
-
  	return was_removed_from_mixer();
 }
 

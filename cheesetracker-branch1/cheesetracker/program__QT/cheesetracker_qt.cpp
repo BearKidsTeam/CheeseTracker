@@ -766,8 +766,15 @@ test_tracker_voice()
 	ASSERT_EQUAL_FLOAT(SAMPLE_INT_T_TO_FLOAT(0), output_buffer[0], "mix");
 	ASSERT_EQUAL_FLOAT(SAMPLE_INT_T_TO_FLOAT(3), output_buffer[2], "mix");
 	// Expect it to loop here.
-	ASSERT_EQUAL_FLOAT(SAMPLE_INT_T_TO_FLOAT(0), output_buffer[4], "mix");
-	// ASSERT_THROW(Test.has_stopped(), "Hasn't stopped!");
+	ASSERT_EQUAL_FLOAT(SAMPLE_INT_T_TO_FLOAT(2), output_buffer[4], "mix");
+
+	test_sample.seek(0);
+	Test.setup_sample(&test_sample, 0);
+	Test.set_volume(512.0/0.008);
+	Test.set_frequency(44100*3);
+
+	Test_Voice->mix(10, output_buffer);
+	ASSERT_THROW(Test.has_stopped(), "Hasn't stopped!");
 }
 
 int main( int argc, char **argv )
