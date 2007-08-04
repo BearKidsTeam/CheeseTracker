@@ -4,6 +4,13 @@ CHEESETRACKER!
 Mail me your patches.
 godless@users.sf.net
 
+0.9.14
+------
+Fixed two bugs that made the release of 0.9.13 unacceptable. 0.9.13
+didn't display samples correctly in the Sample Editor, and it completely
+distorted instruments whose Pitch Envelope had the "Use As Filter"
+option enabled.
+
 0.9.13
 ------
 -Multi-channel samples can now be loaded and saved (either in
