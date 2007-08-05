@@ -1,3 +1,11 @@
+Sat Aug 4 21:01:54 EDT 2007 J Phelps <godless@users.sf.net>
+	* player_rt_keyboard.cpp
+	(find_empty_channel,find_note_in_channel,instrument_stop_all):
+	Reversed the order of "for" loops here, so that notes played
+	with the "live" keyboard occupy the last channels, instead of
+	the first. This way, the live keyboard does not get trampled on
+	by the notes in a song, therefore making it possible to play
+	the live keyboard alongside a song.
 Sat Aug 4 19:37:45 EDT 2007 J Phelps <godless@users.sf.net>
 	* tracker_voice.cpp(add_to_mix_buffer): Changed
 	"info.lvolsel=vol" to "info.lvolsel=vol/2.0". I don't

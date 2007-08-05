@@ -33,49 +33,48 @@
 #include "player_rt_keyboard.h"
 #include <stdio.h>
 
-int Player_Realtime_Keyboard::find_empty_channel() {
-
+int Player_Realtime_Keyboard::find_empty_channel()
+{
 	int i;
 
-	for (i=0;i<PATTERN_WIDTH;i++) {
-
+	for (i=PATTERN_WIDTH-1;i>=0;i--) {
          	if (channel_per_note[i]==-1) return i;
 	}
 
 	return 0; // let's empty channel 0
 }
 
-int Player_Realtime_Keyboard::find_note_in_channel(int p_note) {
+int Player_Realtime_Keyboard::find_note_in_channel(int p_note)
+{
 
 	int i;
 
-	for (i=0;i<PATTERN_WIDTH;i++) {
-
+	for (i=PATTERN_WIDTH-1;i>=0;i--) {
          	if (channel_per_note[i]==p_note) return i;
 	}
 
 	return -1;
 }
 
-Sample_Data* Player_Realtime_Keyboard::sample_get() {
-
+Sample_Data* Player_Realtime_Keyboard::sample_get()
+{
 	if (sample_playing)
 		return current_sample;
 	else
 		return NULL;
 }
-int Player_Realtime_Keyboard::sample_pos_get() {
-
+int Player_Realtime_Keyboard::sample_pos_get()
+{
 	return voice.get_current_sample_pos();
 }
 
-void Player_Realtime_Keyboard::instrument_set(int p_instrument_index) {
-
+void Player_Realtime_Keyboard::instrument_set(int p_instrument_index)
+{
 	current_instrument=p_instrument_index;
 }
 
-void Player_Realtime_Keyboard::instrument_press_key(int p_note,int p_volume) {
-
+void Player_Realtime_Keyboard::instrument_press_key(int p_note,int p_volume)
+{
 	if ((p_note>=Note::NOTES) || (p_note<0)) return;
 
         if (key_pressed[p_note]) return; // avoid extra keypresses
@@ -98,11 +97,10 @@ void Player_Realtime_Keyboard::instrument_press_key(int p_note,int p_volume) {
 	channel_per_note[channel]=p_note;
 
 	player->play_note(channel,note);
-
 }
 
-void Player_Realtime_Keyboard::instrument_stop_key(int p_note) {
-
+void Player_Realtime_Keyboard::instrument_stop_key(int p_note)
+{
 	if ((p_note>=Note::NOTES) || (p_note<0)) return;
 
 	int channel;
@@ -120,11 +118,11 @@ void Player_Realtime_Keyboard::instrument_stop_key(int p_note) {
 	}
 }
 
-void Player_Realtime_Keyboard::instrument_stop_all() {
-
+void Player_Realtime_Keyboard::instrument_stop_all()
+{
 	int i;
 
-	for (i=0;i<PATTERN_WIDTH;i++) {
+	for (i=PATTERN_WIDTH-1;i>=0;i--) {
 
 		if (channel_per_note[i]!=-1) {
 
@@ -141,7 +139,8 @@ void Player_Realtime_Keyboard::instrument_stop_all() {
        	for (i=0;i<Note::NOTES;i++) key_pressed[i]=false;
 }
 
-void Player_Realtime_Keyboard::sample_set(Sample_Data *p_sample_data) {
+void Player_Realtime_Keyboard::sample_set(Sample_Data *p_sample_data)
+{
 
 	//if (current_sample!=NULL) {
 
@@ -158,9 +157,8 @@ void Player_Realtime_Keyboard::sample_set(Sample_Data *p_sample_data) {
 	current_sample=p_sample_data;
 }
 
-void Player_Realtime_Keyboard::sample_press_key(int p_note) {
-
-
+void Player_Realtime_Keyboard::sample_press_key(int p_note)
+{
        if (key_pressed[p_note]) return; // avoid extra keypresses
 
 	key_pressed[p_note]=true;
@@ -192,7 +190,8 @@ void Player_Realtime_Keyboard::sample_press_key(int p_note) {
 
 }
 
-void Player_Realtime_Keyboard::sample_adjust_latest_key() {
+void Player_Realtime_Keyboard::sample_adjust_latest_key()
+{
 
 
 	if (latest_key_pressed==-1) return;
@@ -213,7 +212,8 @@ void Player_Realtime_Keyboard::sample_adjust_latest_key() {
 
 }
 
-void Player_Realtime_Keyboard::sample_stop_key(int p_note) {
+void Player_Realtime_Keyboard::sample_stop_key(int p_note)
+{
 
 	key_pressed[p_note]=false;
 
@@ -229,8 +229,8 @@ void Player_Realtime_Keyboard::sample_stop_key(int p_note) {
 
 }
 
-void Player_Realtime_Keyboard::sample_stop_all() {
-
+void Player_Realtime_Keyboard::sample_stop_all()
+{
 	int i;
 
 	player->lock_player_variables();
@@ -244,31 +244,28 @@ void Player_Realtime_Keyboard::sample_stop_all() {
         latest_key_pressed=-1;
 }
 
-void Player_Realtime_Keyboard::sample_set_multichannel(bool p_multichannel) {
-
-
+void Player_Realtime_Keyboard::sample_set_multichannel(bool p_multichannel)
+{
 }
 
-bool Player_Realtime_Keyboard::is_multichannel_set() {
-
+bool Player_Realtime_Keyboard::is_multichannel_set()
+{
 	return multichannel_set;
-
 }
 
-void Player_Realtime_Keyboard::link_to_player(Player_Data *p_player) {
-
+void Player_Realtime_Keyboard::link_to_player(Player_Data *p_player)
+{
 	player=p_player;
 	//player->set_reserved_voices(1);
-
 }
 
-void Player_Realtime_Keyboard::link_to_mixer(Mixer_Base *p_mixer) {
-
+void Player_Realtime_Keyboard::link_to_mixer(Mixer_Base *p_mixer)
+{
 	mixer=p_mixer;
 }
 
-Player_Realtime_Keyboard::Player_Realtime_Keyboard(){
-
+Player_Realtime_Keyboard::Player_Realtime_Keyboard()
+{
 	int i;
 
 	for (i=0;i<PATTERN_WIDTH;i++) channel_per_note[i]=-1;
@@ -277,5 +274,6 @@ Player_Realtime_Keyboard::Player_Realtime_Keyboard(){
 	latest_key_pressed=-1;
 	sample_playing=false;
 }
-Player_Realtime_Keyboard::~Player_Realtime_Keyboard(){
+Player_Realtime_Keyboard::~Player_Realtime_Keyboard()
+{
 }
