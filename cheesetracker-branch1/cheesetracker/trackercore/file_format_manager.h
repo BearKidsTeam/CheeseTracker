@@ -38,8 +38,12 @@
 
 #include <list>
 	using std::list;
+#include "Error.h"
 #include "loader.h"
 #include "saver.h"
+
+GENERIC_ERROR(File_Error);
+DERIVE_EMPTY(File_Error, File_Corrupt);
 
 /**Collection of loaders/savers/etc
   *@author Juan Linietsky

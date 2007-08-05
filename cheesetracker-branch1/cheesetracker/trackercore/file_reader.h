@@ -91,6 +91,10 @@ class File_Reader {
 	bool eof_reached();
 	bool error_loading();
 
+	inline const char *get_filename() {
+		return filename.c_str();
+	}
+
 	// FIXME: Undefined return value if eof_reached() is true.
 	// This comes from the total lack of error handling in this
 	// program.

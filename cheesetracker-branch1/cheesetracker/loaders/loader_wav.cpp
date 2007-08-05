@@ -19,7 +19,8 @@
 
 #include <iostream>
 
-struct format_chunk {
+struct format_chunk
+{
 
    Uint16 channels;
    Uint32 sample_rate;
@@ -27,17 +28,20 @@ struct format_chunk {
    Uint16 bits_per_sample;
 };
 
-struct data_chunk {
+struct data_chunk
+{
 
    Uint32 length;
 };
 
-struct smpl_chunk {
+struct smpl_chunk
+{
 
    Uint32 rate;
 };
 
-struct multi_chunk {
+struct multi_chunk
+{
 
    multi_chunk() : has_riff(0), has_format(0), has_data(0), has_smpl(0) {};
 
@@ -50,7 +54,8 @@ struct multi_chunk {
 
 // a little mac to make the code a bit cleaner <-- I don't know what the fuck this comment means.
 static int load_chunk( char chunk_id[4],File_Reader& file_read,
-                       multi_chunk& Dest, Sample_Data *SD ) {
+                       multi_chunk& Dest, Sample_Data *SD )
+{
 
    Mutex_Lock_Container *SD_lock = SD->lock(__FILE__, __LINE__);
    ns_autoptr<Mutex_Lock_Container> ns_SD_lock;
@@ -74,7 +79,7 @@ static int load_chunk( char chunk_id[4],File_Reader& file_read,
       file_read.get_byte_array((Uint8*)WAVE,4);
 
       if( memcmp( WAVE, "WAVE", 4 ) )
-         ERROR("load chunk ERRORing: WAVE != WAVE, this sample might be from another universe, please zip it and send 10 times to godless@users.sf.net");
+         THROWF(File_Corrupt, file_read.get_filename(), "load chunk ERRORing: WAVE != WAVE, this sample might be from another universe, please zip it and send 10 times to godless@users.sf.net", NULL);
 
 
       Dest.has_riff = 1;
@@ -92,13 +97,13 @@ static int load_chunk( char chunk_id[4],File_Reader& file_read,
       int length;
       length=file_read.get_dword();
 
-      if( length != 0x10 ) ERROR("load chunk fatal: format chunk length ain't right");
+      if( length != 0x10 ) THROWF(File_Corrupt, file_read.get_filename, "load chunk fatal: format chunk length ain't right", NULL);
 
       Uint16 compression_code;
       compression_code=file_read.get_word();
 
       if(compression_code != 1) {
-          ERROR("load chunk ERROR: Compressed samples are not supported");
+	  THROWF(File_Corrupt, file_read.get_filename(), "load chunk ERROR: Compressed samples are not supported", NULL);
           return 0;
       }
 
@@ -249,7 +254,8 @@ static int load_chunk( char chunk_id[4],File_Reader& file_read,
 // function, but now there is only one. The differences are in separate
 // functions that call this one.
 
-Loader::Error Loader_WAV::load_sample_func(const char *p_filename, Sample_Data *SD) {
+Loader::Error Loader_WAV::load_sample_func(const char *p_filename, Sample_Data *SD)
+{
 	// FIXME: try and open the file. If it fails, stupidly
 	// discard the system-level error message, which will
 	// make it difficult to determine the cause of the problem.
@@ -320,7 +326,8 @@ Loader::Error Loader_WAV::load_sample_func(const char *p_filename, Sample_Data *
 }
 
 
-Sample_Data* Loader_WAV::load_sample(const char *p_filename) {
+Sample_Data* Loader_WAV::load_sample(const char *p_filename)
+{
 	Sample_Data *SD = new Sample_Data;
 	Error status;
 
@@ -334,7 +341,8 @@ Sample_Data* Loader_WAV::load_sample(const char *p_filename) {
 }
 
 
-Loader::Error Loader_WAV::load_sample(const char *p_filename, int p_dest_index) {
+Loader::Error Loader_WAV::load_sample(const char *p_filename, int p_dest_index)
+{
 	Sample *sample = song->get_sample(p_dest_index);
 	Loader::Error status;
 
@@ -356,7 +364,8 @@ Loader::Error Loader_WAV::load_sample(const char *p_filename, int p_dest_index) 
 
 }
 
-bool Loader_WAV::test(const char *p_filename) {
+bool Loader_WAV::test(const char *p_filename)
+{
 
    return false;
 };
@@ -364,63 +373,65 @@ bool Loader_WAV::test(const char *p_filename) {
 // the following methods shouldn't be called since this is just a sample loader
 // (test returns false letting the tracker know that we don't load songs)
 
-Loader::Error Loader_WAV::load(const char *p_filename,bool p_load_patterns) {
+Loader::Error Loader_WAV::load(const char *p_filename,bool p_load_patterns)
+{
 
    ERROR("load: unexpected method invocation");
    return FILE_FORMAT_NOT_RECOGNIZED; // not valid to load a song file as a sample
 };
 
-int Loader_WAV::get_amount_of_samples() {
-
+int Loader_WAV::get_amount_of_samples()
+{
    ERROR("get_amount_of_samples: unexpected method invocation");
    return 0;
 };
 
-Sample_Data *Loader_WAV::get_sample_data(int p_sample_index) {
-
+Sample_Data *Loader_WAV::get_sample_data(int p_sample_index)
+{
    ERROR("get_sample_data: unexpected method invocation");
    return NULL;
 };
 
-string Loader_WAV::get_sample_name(int p_sample_index) {
-
+string Loader_WAV::get_sample_name(int p_sample_index)
+{
    ERROR("get_sample_name: unexpected method invocation");
    return "";
 };
 
-void Loader_WAV::add_sample_to_song(int p_sample_index,int p_dest_index,bool create_instrument) {
-
+void Loader_WAV::add_sample_to_song(int p_sample_index,int p_dest_index,bool create_instrument)
+{
    ERROR("add_sample_to_song: unexpected method invocation");
 };
 
-Loader::Error Loader_WAV::load_samples_from_instrument(const char *p_filename) {
-
+Loader::Error Loader_WAV::load_samples_from_instrument(const char *p_filename)
+{
    ERROR("load_samples_from_instrument: unexpected method invocation");
    return FILE_ERROR;
 };
 
-Loader::Error Loader_WAV::load_instrument(const char *p_filename,int p_dest_index) {
-
+Loader::Error Loader_WAV::load_instrument(const char *p_filename,int p_dest_index)
+{
    ERROR("load_instrument: unexpected method invocation");
    return FILE_ERROR;
 };
 
-void Loader_WAV::transfer_data_to_song() {
-
+void Loader_WAV::transfer_data_to_song()
+{
    ERROR("transfer_data_to_song: unexpected method invocation");
 };
 
-void Loader_WAV::free_info(bool free_sampledata) {
-
+void Loader_WAV::free_info(bool free_sampledata)
+{
    ERROR("free_info: unexpected method invocation");
 };
 
-Loader_WAV::Loader_WAV() {
-
+Loader_WAV::Loader_WAV()
+{
 	format_name="Microsoft WAV";
 
 }
-Loader_WAV::~Loader_WAV() {
+Loader_WAV::~Loader_WAV()
+{
 
 }
 

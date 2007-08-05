@@ -179,11 +179,25 @@ Sample_Data* File_Format_Manager::load_sample(const char *p_filename) {
 	for (I=loader_list.begin();I!=loader_list.end();I++) {
 
 		Sample_Data *sd;
-		sd=(*I)->load_sample(p_filename);
-		if (sd!=NULL) {
-
-			return sd;
-
+		try {
+			sd=(*I)->load_sample(p_filename);
+			if (sd!=NULL) {
+				return sd;
+			}
+		} catch (File_Corrupt E) {
+			ERROR(E.what());
+			// A file in one format may appear
+			// "corrupt" to a loader designed for
+			// another format. Fall through and
+			// try the next loader.
+		}
+		catch (File_Error E) {
+			ERROR(E.what());
+			// Errors other than file corruption
+			// signify problems such as nonexistent
+			// files and directories specified instead
+			// of regular files.
+			return NULL;
 		}
 	}
 	

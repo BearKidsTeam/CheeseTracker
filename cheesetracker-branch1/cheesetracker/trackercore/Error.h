@@ -50,6 +50,11 @@ using std::string;
 			}									\
 	}
 
+#define THROWF(type, pfx, format, args...) { \
+	type E;				\
+	E.set_error_pfx(pfx);		\
+	E.eprintf(format , ##args);\
+}
 
 class Error : public exception
 {

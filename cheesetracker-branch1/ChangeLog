@@ -1,3 +1,15 @@
+Sun Aug 5 17:47:10 EDT 2007 J Phelps <godless@users.sf.net>
+	* Error.h: New macro THROWF makes it easier to throw
+	Error exceptions with eprintf'd error messages. It
+	uses the GNU implementation of variadic macros rather
+	than C99 variadic macros.
+	* file_format_manager.h: New Error exception types File_Error
+	and File_Corrupt.
+	* file_reader.h: Added a new method get_filename(), which
+	returns the internally-held filename string for use in error
+	messages.
+	* loader_wav.cpp: Throws an exception if an error occurs,
+	to prevent an infinite loop.
 Sun Aug 5 05:37:54 EDT 2007 J Phelps <godless@users.sf.net>
 	* editor_selection.cpp: Changed the '<' operators in
 	for-loops in this file back to <=, which they were
