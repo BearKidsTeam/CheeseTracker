@@ -1,3 +1,11 @@
+Sun Aug 5 18:09:37 EDT 2007 J Phelps <godless@users.sf.net>
+	* file_format_manager.h, Error.h: Moved definitions of
+	File_Error and File_Corrupt from the former to the latter.
+	* file_format_manager.cpp: #included Error.h to allow
+	code in this file to catch the File_Corrupt and File_Error
+	exceptions.
+	* Error.h: Fixed a bug in the THROWF macro: The exception
+	was declared, set up, but not actually thrown!
 Sun Aug 5 17:47:10 EDT 2007 J Phelps <godless@users.sf.net>
 	* Error.h: New macro THROWF makes it easier to throw
 	Error exceptions with eprintf'd error messages. It
@@ -10,11 +18,13 @@ Sun Aug 5 17:47:10 EDT 2007 J Phelps <godless@users.sf.net>
 	messages.
 	* loader_wav.cpp: Throws an exception if an error occurs,
 	to prevent an infinite loop.
+
 Sun Aug 5 05:37:54 EDT 2007 J Phelps <godless@users.sf.net>
 	* editor_selection.cpp: Changed the '<' operators in
 	for-loops in this file back to <=, which they were
 	previously, to correct a bug with selections in the
 	Pattern Editor.
+
 Sat Aug 4 21:01:54 EDT 2007 J Phelps <godless@users.sf.net>
 	* player_rt_keyboard.cpp
 	(find_empty_channel,find_note_in_channel,instrument_stop_all):
@@ -23,12 +33,14 @@ Sat Aug 4 21:01:54 EDT 2007 J Phelps <godless@users.sf.net>
 	the first. This way, the live keyboard does not get trampled on
 	by the notes in a song, therefore making it possible to play
 	the live keyboard alongside a song.
+
 Sat Aug 4 19:37:45 EDT 2007 J Phelps <godless@users.sf.net>
 	* tracker_voice.cpp(add_to_mix_buffer): Changed
 	"info.lvolsel=vol" to "info.lvolsel=vol/2.0". I don't
 	remember why this was changed, and it caused a bug. The
 	change happened before I started keeping this ChangeLog,
 	and before I started using SVN.
+
 Sat Aug 4 18:51:28 EDT 2007 J Phelps <godless@users.sf.net>
 	* sample_data.cpp(get_sample_for_cosine_mixer,
 	do_cubic_mixer_voodoo, get_sample_for_linear_mixer):

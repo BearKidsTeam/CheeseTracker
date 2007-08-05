@@ -97,7 +97,7 @@ static int load_chunk( char chunk_id[4],File_Reader& file_read,
       int length;
       length=file_read.get_dword();
 
-      if( length != 0x10 ) THROWF(File_Corrupt, file_read.get_filename, "load chunk fatal: format chunk length ain't right", NULL);
+      if( length != 0x10 ) THROWF(File_Corrupt, file_read.get_filename(), "load chunk fatal: format chunk length ain't right", NULL);
 
       Uint16 compression_code;
       compression_code=file_read.get_word();

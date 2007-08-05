@@ -54,6 +54,7 @@ using std::string;
 	type E;				\
 	E.set_error_pfx(pfx);		\
 	E.eprintf(format , ##args);\
+	throw E;			\
 }
 
 class Error : public exception
@@ -107,4 +108,6 @@ class bug : public Error
 };
 
 FATAL_ERROR(Out_Of_Bounds);
+GENERIC_ERROR(File_Error);
+DERIVE_EMPTY(File_Error, File_Corrupt);
 #endif

@@ -47,6 +47,7 @@ Some file read operations, abstracted
 in a class for ease of use.
 ********************************/
 
+
 class File_Reader {
 
 #ifdef HAVE_MMAP
