@@ -4,16 +4,21 @@ CHEESETRACKER!
 Mail me your patches.
 godless@users.sf.net
 
+0.9.14.2
+------
+Fixed a long-standing bug with the live keyboard feature. Notes
+played with the live keyboard no longer get cut off by notes from
+the song if it is played at the same time that a song is playing.
+
+Also fixed a bug which makes operations on selections in the
+Pattern Editor fail.
+
 0.9.14.1
 ------
 Fixed some bugs that made the release of 0.9.13 unacceptable. 0.9.13
 didn't display samples correctly in the Sample Editor, and it completely
 distorted instruments whose Pitch Envelope had the "Use As Filter"
 option enabled.
-
-Also fixed a long-standing bug with the live keyboard feature. Notes
-played with the live keyboard no longer get cut off by notes from
-the song if it is played at the same time that a song is playing.
 
 0.9.13
 ------
