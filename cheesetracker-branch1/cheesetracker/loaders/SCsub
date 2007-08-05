@@ -16,4 +16,6 @@ file_list=[\
 'loader_raw.cpp',\
 ]
 
+if (env2.detect.have_libaudiofile) :
+	file_list.append('loader_libaudiofile.cpp');
 env2.Library('lib_loaders.a', file_list);

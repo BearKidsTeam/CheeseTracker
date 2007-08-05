@@ -206,6 +206,22 @@ def check_madvise(libdata):
 	libdata.have_madvise=1;
 	return 1;
 
+def check_libaudiofile(libdata):
+	print "Checking for libaudiofile...",
+	res = check_cpp_compile(
+		"#include <audiofile.h>\n" +
+		"int main() {\n" +
+		"	afNewFileSetup();\n" +
+		"	return 0;\n" +
+		"}\n", "-laudiofile -lm");
+	if(res == 0):
+		print " no. Access to lots of file formats is lost.";
+		libdata.have_libaudiofile=0;
+		return 0;
+	print "Yes.";
+	libdata.have_libaudiofile=1;
+	return 1;
+
 def check_mmap(libdata):
 	print "Checking for mmap...",
 	res=check_cpp_compile(
@@ -214,6 +230,7 @@ def check_mmap(libdata):
 		"#include <sys/mman.h>\n"	+
 		"int main() {\n"		+
 		"	mmap(NULL, 0, 0, 0, 0, 0);\n" +
+		"	return 0;" +
 		"}\n", "");
 	if (res == 0):
 		print " no. Files won't load as quickly.";
@@ -641,6 +658,7 @@ def check_dependences(libdata):
 
 	check_stdc_limit_macros(libdata);
 	check_need_gmp(libdata);
+	check_libaudiofile(libdata);
 
 	check_oss(libdata);
 	print "Dependency check successful, writing cache";
