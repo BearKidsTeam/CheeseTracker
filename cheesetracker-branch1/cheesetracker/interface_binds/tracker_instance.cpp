@@ -172,6 +172,7 @@ Tracker_Instance::Tracker_Instance()
 	format_manager.register_loader(&loader_it);
 	format_manager.register_loader(&loader_xm);
 	format_manager.register_loader(&loader_s3m);
+	format_manager.register_loader(&loader_libaudiofile);
 	format_manager.register_loader(&loader_wav);
 	format_manager.register_loader(&loader_raw);
 

@@ -4,7 +4,12 @@ CHEESETRACKER!
 Mail me your patches.
 godless@users.sf.net
 
-0.9.14.2
+0.9.15
+------
+Added libaudiofile support. Many new sample formats will load, including
+compressed and floating-point WAV files.
+
+0.9.14.3
 ------
 Fixed a long-standing bug with the live keyboard feature. Notes
 played with the live keyboard no longer get cut off by notes from

@@ -22,6 +22,7 @@
 #include "loaders/loader_wav.h"
 #include "loaders/loader_ct.h"
 #include "loaders/loader_raw.h"
+#include "loaders/loader_libaudiofile.h"
 #include "savers/saver_it.h"
 #include "savers/saver_ct.h"
 #include "savers/saver_raw.h"
@@ -98,6 +99,7 @@ class Tracker_Instance
 	Loader_S3M loader_s3m;
 	Loader_WAV loader_wav;
 	Loader_RAW loader_raw;
+	Loader_libaudiofile loader_libaudiofile;
 
 
 	Saver_IT saver_it;

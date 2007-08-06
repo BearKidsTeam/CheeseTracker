@@ -1,3 +1,11 @@
+Mon Aug 6 07:50:14 EDT 2007 J Phelps <godless@users.sf.net>
+	* loader_libaudiofile.cpp(load_sample_func): Implemented the
+	function.
+	* tracker_instance.h,tracker_instance.cpp: Added the code to
+	register the libaudiofile loader with the format manager.
+	* mdi_main_window.cpp: Changed version string to 0.9.15 and
+	updated release date.
+	* version-history.text: Updated.
 Sun Aug 5 19:21:02 EDT 2007 J Phelps <godless@users.sf.net>
 	* loader_libaudiofile.cpp, loader_libaudiofile.h:
 	New loaders added. Currently empty.
