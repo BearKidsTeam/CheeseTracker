@@ -1,3 +1,10 @@
+Mon Aug 6 19:42:31 EDT 2007 J Phelps <godless@users.sf.net>
+	* interface_binds/tracker_instance.cpp: Libaudiofile
+	is registered first, because CheeseTracker calls each
+	loader in succession to open a file, and the larger
+	samples are likely to be the ones that are recognized
+	by Libaudiofile. Loading them with libaudiofile first
+	will therefore result in shorter load times.
 Mon Aug 6 19:32:14 EDT 2007 J Phelps <godless@users.sf.net>
 	* interface_binds/tracker_instance.cpp: #ifdef'd around
 	references to Loader_WAV so that the program will compile
