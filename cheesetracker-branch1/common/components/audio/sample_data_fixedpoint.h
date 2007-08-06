@@ -1,3 +1,4 @@
+#include <cassert>
 #include "typedefs.h"
 #include "fixedpoint_defs.h"
 
@@ -138,7 +139,6 @@ Sample_Data::fixedpoint_is_backwards() {
 bool
 Sample_Data::fixedpoint_loop(bool sustaining)
 {
-	size_t jump_size = FIXED_TO_INT(fixedpoint_offset + fixedpoint_inc);
 	bool loop_on_local = false;
 	bool pingpong_local = false;
 	size_t loop_begin_local = 0;
@@ -157,13 +157,6 @@ Sample_Data::fixedpoint_loop(bool sustaining)
 		loop_on_local 		= true;
 	}
 
-
-	// current_pos + jump_size is the expected value of
-	// current_pos after the next call to fixedpoint_move_cursor().
-	//
-	// The following if-block checks where current_pos WOULD BE
-	// after the next call to fixedpoint_move_cursor(), if
-	// fixedpoint_move_cursor() did not check for EOF.
 
 	if(fixedpoint_backwards) {
 		// Check if the cursor is before the loop begin point
@@ -186,7 +179,7 @@ Sample_Data::fixedpoint_loop(bool sustaining)
 			/* The sample is looping */
 			if(pingpong_local) {
 				fixedpoint_aboutface();
-				current_pos = loop_end_local - current_pos - loop_end_local;
+				current_pos = loop_end_local - (current_pos - loop_end_local);
 			} else { /* Forward loop */
 				current_pos = loop_begin_local+(current_pos-loop_end_local);
 			}
@@ -195,6 +188,7 @@ Sample_Data::fixedpoint_loop(bool sustaining)
 				return (current_pos < size);
 		}
 	}
+	assert(current_pos >= 0 && current_pos < size);
 	return true;
 }
 

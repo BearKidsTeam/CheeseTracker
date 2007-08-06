@@ -533,14 +533,16 @@ Sample_Data::put_sample(const sample_int_t *smp)
 //
 // see also - get_size
 
-size_t
-Sample_Data::seek(size_t new_pos)
+ptrdiff_t
+Sample_Data::seek(ptrdiff_t new_pos)
 {
-	if(new_pos > get_size())
-		new_pos = get_size();
-	current_pos = new_pos;
-	if(fixedpoint_mode)
+	if(fixedpoint_mode) {
 		fixedpoint_offset=0;
+	}
+	else if(new_pos > get_size()) {
+		new_pos = get_size();
+	}
+	current_pos = new_pos;
 	return current_pos;
 }
 

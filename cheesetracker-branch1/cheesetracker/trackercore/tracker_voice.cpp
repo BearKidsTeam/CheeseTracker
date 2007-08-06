@@ -175,9 +175,7 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer)
 	// right now, no other threads will iterate
 	// the sample until after this function returns.
 
-	info.sample_data_ptr->use_fixedpoint(false);
 	info.sample_data_ptr->seek(info.current_index);
-	info.sample_data_ptr->use_fixedpoint(true);
 	info.sample_data_ptr->set_fixedpoint_offset(info.fixedpoint_offset);
 
 	// This while-loop is here because the sample might

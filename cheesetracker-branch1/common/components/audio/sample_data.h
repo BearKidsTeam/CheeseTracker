@@ -198,7 +198,7 @@ public:
 	void set_size(size_t new_size);
 	inline size_t get_size()  const;
 
-        size_t seek(size_t new_pos);
+        ptrdiff_t seek(ptrdiff_t new_pos);
 	void truncate();
         bool eof_reached();
 	bool is_empty();

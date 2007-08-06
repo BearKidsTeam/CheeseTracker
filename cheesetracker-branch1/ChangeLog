@@ -1,3 +1,25 @@
+Mon Aug 6 08:08:25 EDT 2007 J Phelps <godless@users.sf.net>
+	* sample_data_fixedpoint.h(fixedpoint_loop): Attempted to Fix a bug,
+	but failed: In pingpong loops, the cursor is placed far into the
+	negative when it reaches the end of the sample in the positive
+	direction. This results in an Out_Of_Bounds error. 
+
+	Now, instead, an Out_Of_Bounds error can be made to occur
+	with current_pos == -1, without the assert() meant to
+	catch this condition being triggered.
+
+	Removed obsolete comments and variables from this function.
+	* loader_libaudiofile.cpp(load_sample_func): Fixed a bug:
+	The call to SD->put_sample() was inside the channel loop
+	instead of outside it, resulting in the sample getting
+	size*channels frames stored in it.
+	* sample_data.h,sample_data.cpp(seek): Changed parameter and
+	return type from size_t to ptrdiff_t, to allow restoration
+	of negative values from add_to_mix_buffer().
+	* tracker_voice.cpp(add_to_mix_buffer): No longer turns off
+	fixedpoint_mode() in the sample before using seek(). This
+	allows seek() to enable seeks to negative locations for
+	add_to_mix_buffer() but not for other functions.
 Mon Aug 6 07:50:14 EDT 2007 J Phelps <godless@users.sf.net>
 	* loader_libaudiofile.cpp(load_sample_func): Implemented the
 	function.

@@ -98,8 +98,8 @@ int Loader_libaudiofile::load_sample_func(const char *p_filename, Sample_Data *S
 			// data, so now it must be converted to the host byte-order.
 			one_frame[chan] = buffer[ix*num_channels*sizeof(sample_int_t)+chan*sizeof(sample_int_t)] |
 			                  buffer[ix*num_channels*sizeof(sample_int_t)+chan*sizeof(sample_int_t)+1] << BITS_PER_BYTE;
-			SD->put_sample(one_frame);
 		}
+		SD->put_sample(one_frame);
 	}
 
 	afCloseFile(file_handle);
