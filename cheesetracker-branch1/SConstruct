@@ -88,6 +88,7 @@ if (env.detect.need_gmp):
 	env.Append(LIBS=['-lgmp']);
 if (env.detect.have_libaudiofile):
 	env.Append(LIBS=['-laudiofile']);
+	env.Append(CXXFLAGS=['-DHAVE_LIBAUDIOFILE']);
 if (env.detect.need_limit_macros_define) :
 	env.Append(CXXFLAGS=['-D__STDC_LIMIT_MACROS']);
 if (env.detect.have_gnu_basename) :

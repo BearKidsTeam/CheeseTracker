@@ -173,7 +173,9 @@ Tracker_Instance::Tracker_Instance()
 	format_manager.register_loader(&loader_xm);
 	format_manager.register_loader(&loader_s3m);
 	format_manager.register_loader(&loader_libaudiofile);
+#ifndef HAVE_LIBAUDIOFILE
 	format_manager.register_loader(&loader_wav);
+#endif
 	format_manager.register_loader(&loader_raw);
 
 	saver_ct.set_mixer(&mixer);

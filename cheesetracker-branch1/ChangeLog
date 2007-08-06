@@ -1,3 +1,11 @@
+Mon Aug 6 19:32:14 EDT 2007 J Phelps <godless@users.sf.net>
+	* interface_binds/tracker_instance.cpp: #ifdef'd around
+	references to Loader_WAV so that the program will compile
+	when libaudiofile is present.
+Mon Aug 6 17:59:32 EDT 2007 J Phelps <godless@users.sf.net>
+	* cheesetracker/loaders/SCsub: Our own WAV loader is no longer
+	compiled if libaudiofile and its superior WAV loader is
+	available.
 Mon Aug 6 15:26:42 EDT 2007 J Phelps <godless@users.sf.net>
 	* sample_data.cpp(eof_reached): In certain cases, eof_reached()
 	returned an incorrect value. Fixed.

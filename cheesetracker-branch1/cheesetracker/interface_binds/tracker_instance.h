@@ -97,7 +97,9 @@ class Tracker_Instance
 	Loader_CT loader_ct;
 	Loader_XM loader_xm;
 	Loader_S3M loader_s3m;
+#ifndef HAVE_LIBAUDIOFILE
 	Loader_WAV loader_wav;
+#endif
 	Loader_RAW loader_raw;
 	Loader_libaudiofile loader_libaudiofile;
 
