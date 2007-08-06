@@ -39,7 +39,7 @@ void Sample_Edit::destructive_operation_begin_cbk() {
 		return;
 
 	rt_keyboard->sample_stop_all();
-        player->lock_player_variables();
+        player->lock_player_variables(__FILE__, __LINE__);
 	player->erase_voices_using_sample(dst_sample);
 
 }
@@ -79,7 +79,7 @@ void Sample_Edit::load_sample() {
 		return;
 
 	rt_keyboard->sample_stop_all();
-        player->lock_player_variables();
+        player->lock_player_variables(__FILE__, __LINE__);
 	player->erase_voices_using_sample(dst_sample);
 
 	file_manager->load_sample( fn.ascii() , selected_sample );
@@ -281,7 +281,7 @@ void Sample_Edit::paste_sample() {
 		return;
 
 	rt_keyboard->sample_stop_all();
-        player->lock_player_variables();
+        player->lock_player_variables(__FILE__, __LINE__);
 
 	player->erase_voices_using_sample(dst_sample);
 
@@ -308,7 +308,7 @@ void Sample_Edit::delete_sample() {
 		return;
 
 	rt_keyboard->sample_stop_all();
-        player->lock_player_variables();
+        player->lock_player_variables(__FILE__, __LINE__);
 	player->erase_voices_using_sample(dst_sample);
 
 

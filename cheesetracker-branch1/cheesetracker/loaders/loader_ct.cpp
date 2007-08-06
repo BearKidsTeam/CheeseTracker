@@ -20,7 +20,7 @@
 
 void Loader_CT::set_dds_to_sample(DDS *p_dds,Sample *p_sample) {
 
-	p_sample->prop_name.set( p_dds->get_str_var("name") );
+	p_sample->prop_name.set( basename(p_dds->get_str_var("name").c_str()) );
 	p_sample->prop_def_volume.set( p_dds->get_int_var("def_volume") );
 	p_sample->prop_glb_volume.set( p_dds->get_int_var("glb_volume") );
 	p_sample->prop_def_panning_on .set( p_dds->get_int_var("def_panning_active") );
@@ -432,7 +432,7 @@ Loader::Error Loader_CT::load_sample(const char *p_filename,int p_dest_index) {
 	set_dds_to_sample(&base,song->get_sample(p_dest_index));
 	
         
-	return FILE_ERROR;
+	return SUCCESS;
 }
 
 Sample_Data *Loader_CT::load_sample(const char *p_filename) {

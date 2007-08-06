@@ -134,7 +134,7 @@ void Instrument_Edit::delete_instrument_with_samples() {
 				continue;
 			if (samp->in_use) {
 
-				player->lock_player_variables();
+				player->lock_player_variables(__FILE__, __LINE__);
 				player->erase_voices_using_sample(samp);
 
 				samp->reset(true);

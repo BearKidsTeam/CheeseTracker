@@ -264,7 +264,7 @@ public:
          	variables_lock=p_variables_lock;
 	}
 
-	void lock_player_variables();
+	void lock_player_variables(const char *file, int line);
 	void unlock_player_variables();
 
 	void link_info_lock(Mutex_Lock *p_info_lock) {

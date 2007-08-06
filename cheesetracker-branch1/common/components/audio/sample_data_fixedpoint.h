@@ -141,9 +141,11 @@ Sample_Data::fixedpoint_loop(bool sustaining)
 {
 	bool loop_on_local = false;
 	bool pingpong_local = false;
-	size_t loop_begin_local = 0;
-	size_t loop_end_local = 0;
+	ptrdiff_t loop_begin_local = 0;
+	ptrdiff_t loop_end_local = 0;
 
+	ptrdiff_t initial_pos = current_pos;
+	bool initial_backwards = fixedpoint_backwards;
 
 	if(sustaining && sustain_loop_on) {
 		loop_begin_local	= sustain_loop_begin;
@@ -165,6 +167,7 @@ Sample_Data::fixedpoint_loop(bool sustaining)
 			if(pingpong_local) {
 				current_pos = loop_begin_local+(loop_begin_local-current_pos);
 				fixedpoint_aboutface();
+				fixedpoint_offset = INT_TO_FIXED(1) - fixedpoint_offset;
 			} else {
 				current_pos = loop_end_local - (loop_begin_local - current_pos);
 			}
@@ -179,6 +182,7 @@ Sample_Data::fixedpoint_loop(bool sustaining)
 			/* The sample is looping */
 			if(pingpong_local) {
 				fixedpoint_aboutface();
+				fixedpoint_offset = INT_TO_FIXED(1) - fixedpoint_offset;
 				current_pos = loop_end_local - (current_pos - loop_end_local);
 			} else { /* Forward loop */
 				current_pos = loop_begin_local+(current_pos-loop_end_local);

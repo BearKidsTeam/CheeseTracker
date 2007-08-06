@@ -110,7 +110,8 @@ throwAFError:
 	THROWF(File_Corrupt, p_filename, "%s (Audiofile error number %i)", _loader_audiofile_error, _loader_audiofile_errnum)
 throwOpenError:
 	{
-		File_Error E;
+		THROWF(File_Corrupt, p_filename, "%s (Audiofile error number %i)", _loader_audiofile_error, _loader_audiofile_errnum);
+		File_Corrupt E;
 		E.set_error_pfx(p_filename);
 		E.report_errno(errno);
 		throw E;

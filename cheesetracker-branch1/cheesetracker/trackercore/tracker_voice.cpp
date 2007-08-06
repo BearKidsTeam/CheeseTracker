@@ -190,6 +190,7 @@ void Tracker_Voice::add_to_mix_buffer(size_t p_amount,sample_t *p_buffer)
 
 		info.active = info.sample_data_ptr->fixedpoint_loop(false);
 		info.current_index=info.sample_data_ptr->get_current_pos();
+		info.playing_backwards = info.sample_data_ptr->fixedpoint_is_backwards();
 		if(!info.active)
 			break;
 
@@ -445,6 +446,7 @@ void Tracker_Voice::reset()
 	if(info.sample_data_ptr &&
 	   info.sample_data_ptr->fixedpoint_is_backwards()) {
 		info.sample_data_ptr->fixedpoint_aboutface();
+		info.playing_backwards = false;
 	}
 }
 

@@ -1,3 +1,23 @@
+Mon Aug 6 15:26:42 EDT 2007 J Phelps <godless@users.sf.net>
+	* sample_data.cpp(eof_reached): In certain cases, eof_reached()
+	returned an incorrect value. Fixed.
+	* player_data_control.cpp(lock_player_variables): Added __FILE__
+	and __LINE__ parameters and corrected usage throughout the
+	program.
+	* sample_edit.cpp(load_sample): Added a try..catch to ensure
+	that a mutex gets unlocked here.
+	* loader_ct.cpp(load_sample): Now returns SUCCESS instead of
+	FILE_ERROR.
+
+	Now uses the basename of the sample for the name.
+	* tracker_voice.cpp(add_to_mix_buffer): Now updates the variable
+	that determines if the sample is playing backward.
+	* sample_data_fixedpoint.h(fixedpoint_loop): Local loop-position
+	variables converted from unsigned size_t to signed ptrdiff_t,
+	because comparisons against the signed current_pos were treating
+	the latter as an unsigned int. Also, a small adjustment to the
+	math has been made.
+	
 Mon Aug 6 08:08:25 EDT 2007 J Phelps <godless@users.sf.net>
 	* sample_data_fixedpoint.h(fixedpoint_loop): Attempted to Fix a bug,
 	but failed: In pingpong loops, the cursor is placed far into the

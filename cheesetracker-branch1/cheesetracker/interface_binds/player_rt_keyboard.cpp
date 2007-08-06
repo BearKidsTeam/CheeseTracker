@@ -144,7 +144,7 @@ void Player_Realtime_Keyboard::sample_set(Sample_Data *p_sample_data)
 
 	//if (current_sample!=NULL) {
 
-	player->lock_player_variables();
+	player->lock_player_variables(__FILE__, __LINE__);
 	mixer->eliminate_voice(&voice);
 	voice.reset();
 	voice.setup_sample(p_sample_data,0);
@@ -171,7 +171,7 @@ void Player_Realtime_Keyboard::sample_press_key(int p_note)
 		return;
 	}
 	sample_playing=true;
-	player->lock_player_variables();
+	player->lock_player_variables(__FILE__, __LINE__);
 
 	mixer->allocate_voice(&voice);
 	//player->reserved_voice_start_sample(0,current_sample,player->get_frequency(player->get_period((p_note+current_sample->note_offset) << 1,current_sample->finetune)));
@@ -196,7 +196,7 @@ void Player_Realtime_Keyboard::sample_adjust_latest_key()
 
 	if (latest_key_pressed==-1) return;
 
-	player->lock_player_variables();
+	player->lock_player_variables(__FILE__, __LINE__);
 
 	Uint64 freq=Tables::get_linear_frequency(Tables::get_linear_period(latest_key_pressed<<1,0));
 	Uint64 tracker_c5=Tables::get_linear_frequency(Tables::get_linear_period(60<<1,0));
@@ -219,7 +219,7 @@ void Player_Realtime_Keyboard::sample_stop_key(int p_note)
 
 	if (latest_key_pressed!=p_note) return;
 
-	player->lock_player_variables();
+	player->lock_player_variables(__FILE__, __LINE__);
 	voice.remove_from_mixer();
 	player->unlock_player_variables();
 	sample_playing=false;
@@ -233,7 +233,7 @@ void Player_Realtime_Keyboard::sample_stop_all()
 {
 	int i;
 
-	player->lock_player_variables();
+	player->lock_player_variables(__FILE__, __LINE__);
 
 	if (current_sample!=NULL)
 		mixer->eliminate_voice(&voice);

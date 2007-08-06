@@ -492,7 +492,7 @@ bool
 Sample_Data::eof_reached()
 {
 	if(fixedpoint_mode && fixedpoint_backwards) {
-		return (get_current_pos() > 0);
+		return !(get_current_pos() >= 0);
 	} else {
 		return !(get_current_pos() < get_size());
 	}

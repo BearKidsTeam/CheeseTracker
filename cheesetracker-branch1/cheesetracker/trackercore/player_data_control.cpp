@@ -64,9 +64,9 @@ void Player_Data::get_voice_status_info(vector<Player_Data::VoiceStatusInfo>& p_
 
 }
 
-void Player_Data::lock_player_variables() {
+void Player_Data::lock_player_variables(const char *file, int line) {
 
-	if (variables_lock) variables_lock->grab(__FILE__, __LINE__);
+	if (variables_lock) variables_lock->grab(file, line);
 }
 void Player_Data::unlock_player_variables() {
 
