@@ -38,7 +38,8 @@
 Note Pattern::empty_note;
 Mutex_Lock *Pattern::data_lock=NULL;
 
-Pattern::Pattern(){
+Pattern::Pattern()
+{
 
 	note_count=0;
 	last_request_valid=false;
@@ -48,11 +49,13 @@ Pattern::Pattern(){
 	clear();
 }
 
-Pattern::~Pattern(){
+Pattern::~Pattern()
+{
 
 
 }
-bool Pattern::check_for_empty_pattern() {
+bool Pattern::check_for_empty_pattern()
+{
 
 	int i;
 
@@ -69,7 +72,8 @@ bool Pattern::check_for_empty_pattern() {
 	return true;
 }
 
-void Pattern::process_insert_request(int p_column,int p_row,Note p_note) {
+void Pattern::process_insert_request(int p_column,int p_row,Note p_note)
+{
 
 //	Column::const_iterator I;
 
@@ -100,10 +104,11 @@ void Pattern::process_insert_request(int p_column,int p_row,Note p_note) {
 
 }
 
-Note Pattern::process_retrieve_request(int p_column,int p_row) {
+Note Pattern::process_retrieve_request(int p_column,int p_row)
+{
 
 	Note tmp_result;
-	if(!(p_column < column.size())) {
+	if(!((size_t)p_column < column.size())) {
 		return empty_note;
 	}
 
@@ -134,7 +139,8 @@ Note Pattern::process_retrieve_request(int p_column,int p_row) {
 
 	return tmp_result;
 }
-Note Pattern::get_note(int p_column, int p_row) {
+Note Pattern::get_note(int p_column, int p_row)
+{
 
 	Note tmp_result;
 
@@ -154,7 +160,8 @@ Note Pattern::get_note(int p_column, int p_row) {
 	return tmp_result;
 }
 
-Note& Pattern::get_note_ref(int p_column, int p_row) {
+Note& Pattern::get_note_ref(int p_column, int p_row)
+{
 
 	if (data_lock!=NULL) data_lock->grab(__FILE__, __LINE__);
 
@@ -186,10 +193,12 @@ Note& Pattern::get_note_ref(int p_column, int p_row) {
 	return aux_storage_note;
 }
 
-void Pattern::set_length(Uint8 p_length) {
+void Pattern::set_length(Uint8 p_length)
+{
 
 	int i;
 	Column::iterator I;		
+	Column::iterator J;
 
 
 	if ( (p_length<1) || (p_length>MAX_PATTERN_LENGTH) ) return;
@@ -206,23 +215,31 @@ void Pattern::set_length(Uint8 p_length) {
        	if (length<p_length) {
 
        		for (i=0;i<PATTERN_WIDTH;i++) {
-
-       			for (I=column[i].begin();
-			     I!=column[i].end();
-			     I++) {
-
-
-       				if (I->first>=length) column[i].erase(I->first);
+			if(column[i].begin() != column[i].end())
+       			for (I=column[i].begin();;
+			     ) {
+				J=I;
+				// I must be incremented before the call to
+				// erase(), because erase(I->first) would
+				// invalidate I.
+				I++;
+				if(I == column[i].end()) break;
+       				if (J->first>=length) column[i].erase(J->first);
        			}
        		}
        	} else if (length>p_length) {
 
        		for (i=0;i<PATTERN_WIDTH;i++) {
-
-       			for (I=column[i].begin();
-			     I!=column[i].end();
-			     I++) {
-       				if (I->first>=p_length) column[i].erase(I->first);
+			if(column[i].begin() != column[i].end())
+       			for (I=column[i].begin();;
+			     ) {
+				J = I;
+				// I must be incremented before the call to
+				// erase(), because erase(I->first) would
+				// invalidate I.
+				I++;
+				if(I == column[i].end()) break;
+       				if (J->first>=p_length) column[i].erase(J->first);
        			}
        		}
        	}
@@ -232,7 +249,8 @@ void Pattern::set_length(Uint8 p_length) {
 	if (data_lock!=NULL) data_lock->release();
 
 }
-void Pattern::clear() {
+void Pattern::clear()
+{
 
 
 	if (data_lock!=NULL) data_lock->grab(__FILE__, __LINE__);
@@ -247,12 +265,14 @@ void Pattern::clear() {
 
 }
 
-Uint8 Pattern::get_length() {
+Uint8 Pattern::get_length()
+{
 
 	return length;
 }
 
-int Pattern::get_note_count() {
+int Pattern::get_note_count()
+{
 
 	return note_count;
 }

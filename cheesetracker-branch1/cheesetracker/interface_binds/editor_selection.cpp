@@ -126,8 +126,10 @@ void Editor::selection_release()
 void Editor::mark_column_sixteen()
 {
 	selection_begin_x = selection_end_x = cursor_x;
+	selection_begin_y = cursor_y;
 	selection_end_y	= cursor_y + 15;
 	selection_active= true;
+	normalize_selection();
 }
 
 void Editor::mark_column_all()

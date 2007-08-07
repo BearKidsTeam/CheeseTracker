@@ -1,3 +1,32 @@
+Tue Aug 7 15:11:07 EDT 2007 J Phelps <godless@users.sf.net>
+	* pattern.cpp (set_length): Added a new iterator J. This
+	function had a habit of calling map::erase() on a map
+	element pointed to by the iterator I. Following this,
+	it would increment I. erase() invalidates I, but it has
+	gone unnoticed because I++ was still able to access the
+	deallocated memory. But, when this is done with
+	_GLIBCXX_DEBUG defined, the program aborts().
+
+	Now, the new iterator J becomes a copy of I, then I
+	is incremented, and then J is erased. 
+
+	Because I is incremented in the middle of the for-loop,
+	the end condition had to be moved into the loop, as well.
+
+	An additional test is placed above the loop to handle
+	the case in which column[i].begin() == column[i].end(),
+	which would cause I to be "past-the-end" prior to the
+	incrementation.
+	* pattern.cpp (process_retrieve_request): Cast the
+	signed int p_column to size_t to prevent a warning.
+	* pattern.cpp: Changed the indentation style.
+	* editor_selection.cpp(mark_column_sixteen): Added
+	call to normalize_selection() and set selection_begin_y,
+	which was previously neglected.
+
+	* mdi_main_window.cpp: Updated the APP_VERSION_ string
+	to 0.9.15.1 and updated the release date.
+	* version_history.text: Updated.
 Tue Aug 7 04:34:46 EDT 2007 J Phelps <godless@users.sf.net>
 	* pattern_edit__keys.cpp(event): Added keybinding for
 	Alt+D (select block of 16).

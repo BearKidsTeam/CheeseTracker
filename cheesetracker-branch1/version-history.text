@@ -4,6 +4,13 @@ CHEESETRACKER!
 Mail me your patches.
 godless@users.sf.net
 
+0.9.15.1
+------
+Added the Ctrl+D (Select 16 notes) keystroke to the Pattern Editor (F2).
+
+Fixed some bugs that caused CheeseTracker to crash when copying a
+selection.
+
 0.9.15
 ------
 Added libaudiofile support. Many new sample formats will load, including
