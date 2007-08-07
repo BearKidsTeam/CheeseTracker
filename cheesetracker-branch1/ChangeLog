@@ -1,3 +1,14 @@
+Mon Aug 6 21:28:16 EDT 2007 J Phelps <godless@users.sf.net>
+	* sample_data_fixedpoint.h(fixedpoint_loop): More
+	minor math adjustments.
+	* trackercore/player_rt_keyboard.cpp: Some functions
+	here are copied in the identically-named
+	interface_binds/player_rt_keyboard.cpp. A bug was fixed
+	in the latter copy which remained in the former. Both
+	copies are fixed now.
+
+	The two copies are subly different, and therefore can't
+	be merged until I better understand them.
 Mon Aug 6 19:42:31 EDT 2007 J Phelps <godless@users.sf.net>
 	* interface_binds/tracker_instance.cpp: Libaudiofile
 	is registered first, because CheeseTracker calls each

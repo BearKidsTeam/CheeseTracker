@@ -169,7 +169,8 @@ Sample_Data::fixedpoint_loop(bool sustaining)
 				fixedpoint_aboutface();
 				fixedpoint_offset = INT_TO_FIXED(1) - fixedpoint_offset;
 			} else {
-				current_pos = loop_end_local - (loop_begin_local - current_pos);
+				current_pos = loop_end_local - ((loop_begin_local - current_pos) %
+				                                 (loop_end_local - loop_begin_local));
 			}
 		} else {
 			if(current_pos < 0) {
@@ -185,7 +186,12 @@ Sample_Data::fixedpoint_loop(bool sustaining)
 				fixedpoint_offset = INT_TO_FIXED(1) - fixedpoint_offset;
 				current_pos = loop_end_local - (current_pos - loop_end_local);
 			} else { /* Forward loop */
-				current_pos = loop_begin_local+(current_pos-loop_end_local);
+				// Place the cursor the same distance past loop_begin_local
+				// as it was past loop_end_local. In the event that this distance
+				// is > the length of the loop itself, the % operator places the
+				// cursor where it should be.
+				current_pos = loop_begin_local+((current_pos-loop_end_local) %
+				                                (loop_end_local - loop_begin_local));
 			}
 		} else {
 				/* The sample is not looping. */

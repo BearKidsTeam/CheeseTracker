@@ -32,30 +32,29 @@
 
 #include "player_rt_keyboard.h"
 
-int Player_Realtime_Keyboard::find_empty_channel() {
 
+int Player_Realtime_Keyboard::find_empty_channel()
+{
 	int i;
 
-	for (i=0;i<PATTERN_WIDTH;i++) {
-
+	for (i=PATTERN_WIDTH-1;i>=0;i--) {
          	if (channel_per_note[i]==-1) return i;
 	}
 
 	return 0; // let's empty channel 0
 }
 
-int Player_Realtime_Keyboard::find_note_in_channel(int p_note) {
+int Player_Realtime_Keyboard::find_note_in_channel(int p_note)
+{
 
 	int i;
 
-	for (i=0;i<PATTERN_WIDTH;i++) {
-
+	for (i=PATTERN_WIDTH-1;i>=0;i--) {
          	if (channel_per_note[i]==p_note) return i;
 	}
 
 	return -1;
 }
-
 
 void Player_Realtime_Keyboard::instrument_set(int p_instrument_index) {
 
@@ -67,7 +66,7 @@ void Player_Realtime_Keyboard::instrument_press_key(int p_note,int p_volume) {
 	if ((p_note>=Note::NOTES) || (p_note<0)) return;
 
         if (key_pressed[p_note]) return; // avoid extra keypresses
-	
+
 	key_pressed[p_note]=true;
 	
 	int channel;
