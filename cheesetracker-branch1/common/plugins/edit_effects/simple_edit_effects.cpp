@@ -36,7 +36,8 @@
 
 
 /* Processing */
-void Edit_Effect_Reverse::process(Sample_Data *p_data,size_t p_begin,size_t p_end) {
+void Edit_Effect_Reverse::process(Sample_Data *p_data,ptrdiff_t p_begin,ptrdiff_t p_end)
+{
 	size_t i;
 	size_t size=p_end-p_begin;
 	size_t channels = p_data->num_channels();
@@ -76,7 +77,8 @@ void Edit_Effect_Reverse::process(Sample_Data *p_data,size_t p_begin,size_t p_en
 
 }
 
-void Edit_Effect_SelToLoop::process(Sample_Data *p_data,size_t p_begin,size_t p_end) {
+void Edit_Effect_SelToLoop::process(Sample_Data *p_data,ptrdiff_t p_begin,ptrdiff_t p_end)
+{
 
 
 	if (!p_data->get_size())
@@ -90,7 +92,8 @@ void Edit_Effect_SelToLoop::process(Sample_Data *p_data,size_t p_begin,size_t p_
 	p_data->set_loop_end(p_end);
 }
 
-void Edit_Effect_Toggle_Sign::process(Sample_Data *p_data,size_t p_begin,size_t p_end) {
+void Edit_Effect_Toggle_Sign::process(Sample_Data *p_data,ptrdiff_t p_begin,ptrdiff_t p_end)
+{
 
 
 	if (!p_data->get_size())
@@ -103,7 +106,8 @@ void Edit_Effect_Toggle_Sign::process(Sample_Data *p_data,size_t p_begin,size_t 
 	p_data->change_sign();
 }
 
-void Edit_Effect_FadeIn::process(Sample_Data *p_data,size_t p_begin,size_t p_end) {
+void Edit_Effect_FadeIn::process(Sample_Data *p_data,ptrdiff_t p_begin,ptrdiff_t p_end)
+{
 	if (!p_data->get_size())
 		return;
 
@@ -118,7 +122,7 @@ void Edit_Effect_FadeIn::process(Sample_Data *p_data,size_t p_begin,size_t p_end
 	ns_autoptr<Mutex_Lock_Container> ns_p_data_lock;
 	ns_p_data_lock.ptr_new(p_data_lock);
 
-	for (size_t i=p_begin; i < p_end; i++) {
+	for (ptrdiff_t i=p_begin; i < p_end; i++) {
 		p_data->get_sample(i, aux_val);
 		for(size_t chan=0; chan<channels; chan++) {
 			aux_val[chan] *= (float)(i-p_begin)/(float)(p_end-p_begin) ;
@@ -130,7 +134,8 @@ void Edit_Effect_FadeIn::process(Sample_Data *p_data,size_t p_begin,size_t p_end
 }
 
 void
-Edit_Effect_FadeOut::process(Sample_Data *p_data,size_t p_begin,size_t p_end) {
+Edit_Effect_FadeOut::process(Sample_Data *p_data,ptrdiff_t p_begin,ptrdiff_t p_end)
+{
 
 	if (!p_data->get_size())
 		return;
@@ -146,7 +151,7 @@ Edit_Effect_FadeOut::process(Sample_Data *p_data,size_t p_begin,size_t p_end) {
 	ns_autoptr<Mutex_Lock_Container> ns_p_data_lock;
 	ns_p_data_lock.ptr_new(p_data_lock);
 
-	for (size_t i=p_begin; i < p_end; i++) {
+	for (ptrdiff_t i=p_begin; i < p_end; i++) {
 		p_data->get_sample(i, aux_val);
 		for(size_t chan=0; chan<channels; chan++) {
 			aux_val[chan] *=  (float)(p_end-i)/(float)(p_end-p_begin) ;
@@ -157,7 +162,8 @@ Edit_Effect_FadeOut::process(Sample_Data *p_data,size_t p_begin,size_t p_end) {
 
 }
 
-list<Property_Bridge*> Edit_Effect_Tunner::get_property_list() {
+list<Property_Bridge*> Edit_Effect_Tunner::get_property_list()
+{
 
  	list<Property_Bridge*> props;
 	props.push_back(&cycle_prop);
@@ -165,7 +171,8 @@ list<Property_Bridge*> Edit_Effect_Tunner::get_property_list() {
 
 }
 
-void Edit_Effect_Tunner::process(Sample_Data *p_data,size_t p_begin,size_t p_end) {
+void Edit_Effect_Tunner::process(Sample_Data *p_data,ptrdiff_t p_begin,ptrdiff_t p_end)
+{
 
 
 	if (!p_data->get_size())
@@ -190,17 +197,19 @@ void Edit_Effect_Tunner::process(Sample_Data *p_data,size_t p_begin,size_t p_end
 	delete p_data_lock;
 }
 
-Edit_Effect_Tunner::Edit_Effect_Tunner() : cycle_prop("Cycles Selected:",(int*)&cycles,1,100) {
+Edit_Effect_Tunner::Edit_Effect_Tunner() : cycle_prop("Cycles Selected:",(int*)&cycles,1,100)
+{
 
 	cycles=4;
 }
 
 
-void Edit_Effect_Normalize::selected_notify(Sample_Data *p_data,size_t p_begin,size_t p_end) {
+void Edit_Effect_Normalize::selected_notify(Sample_Data *p_data,ptrdiff_t p_begin,ptrdiff_t p_end)
+{
 
 	float max=1.0f;
 
-	size_t i;
+	ptrdiff_t i;
 
 	size_t channels=p_data->num_channels();
 	float *aux_val;
@@ -232,7 +241,8 @@ void Edit_Effect_Normalize::selected_notify(Sample_Data *p_data,size_t p_begin,s
 	amp=int(max);
 	// if (amp>MULT_MAX) amp=MULT_MAX;
 }
-void Edit_Effect_Normalize::process(Sample_Data *p_data,size_t p_begin,size_t p_end) {
+void Edit_Effect_Normalize::process(Sample_Data *p_data,ptrdiff_t p_begin,ptrdiff_t p_end)
+{
 
 
 	if (!p_data->get_size())
@@ -254,7 +264,7 @@ void Edit_Effect_Normalize::process(Sample_Data *p_data,size_t p_begin,size_t p_
 	ns_autoptr<Mutex_Lock_Container> ns_p_data_lock;
 	ns_p_data_lock.ptr_new(p_data_lock);
 
-	for (size_t i=p_begin; i < p_end; i++) {
+	for (ptrdiff_t i=p_begin; i < p_end; i++) {
 		p_data->get_sample(i, aux_val);
 		for(size_t chan=0; chan<channels; chan++) {
 			aux_val[chan] *= mult;
@@ -263,19 +273,22 @@ void Edit_Effect_Normalize::process(Sample_Data *p_data,size_t p_begin,size_t p_
 	}
 }
 
-Edit_Effect_Normalize::Edit_Effect_Normalize() : amp_prop("Amplify(%):",&amp,0,MULT_MAX) {
+Edit_Effect_Normalize::Edit_Effect_Normalize() : amp_prop("Amplify(%):",&amp,0,MULT_MAX)
+{
 
 	amp=100;
 }
 
-list<Property_Bridge*> Edit_Effect_Normalize::get_property_list() {
+list<Property_Bridge*> Edit_Effect_Normalize::get_property_list()
+{
 
 	list<Property_Bridge*> props;
 	props.push_back(&amp_prop);
 	return props;
 }
 
-void Edit_Effect_Toggle_Depth::process(Sample_Data *p_data,size_t p_begin,size_t p_end) {
+void Edit_Effect_Toggle_Depth::process(Sample_Data *p_data,ptrdiff_t p_begin,ptrdiff_t p_end)
+{
 
 
 	if (!p_data->get_size())
@@ -287,7 +300,8 @@ void Edit_Effect_Toggle_Depth::process(Sample_Data *p_data,size_t p_begin,size_t
 	p_data->toggle_quality();
 }
 
-void Edit_Effect_PostLoop_Cut::process(Sample_Data *p_data,size_t p_begin,size_t p_end) {
+void Edit_Effect_PostLoop_Cut::process(Sample_Data *p_data,ptrdiff_t p_begin,ptrdiff_t p_end)
+{
 
 	if (!p_data->is_loop_enabled())
 		return;
@@ -303,7 +317,8 @@ void Edit_Effect_PostLoop_Cut::process(Sample_Data *p_data,size_t p_begin,size_t
 	p_data->truncate();
 }
 
-void Edit_Effect_Center::process(Sample_Data *p_data,size_t p_begin,size_t p_end) {
+void Edit_Effect_Center::process(Sample_Data *p_data,ptrdiff_t p_begin,ptrdiff_t p_end)
+{
 
 	if (!p_data->is_loop_enabled())
 		return;
@@ -326,7 +341,7 @@ void Edit_Effect_Center::process(Sample_Data *p_data,size_t p_begin,size_t p_end
 	ns_autoptr<Mutex_Lock_Container> ns_p_data_lock;
 	ns_p_data_lock.ptr_new(p_data_lock);
 
-	size_t i;
+	ptrdiff_t i;
 	for (i=p_begin; i < p_end; i++) {
 
 		p_data->get_sample(i, aux_val);
@@ -348,7 +363,8 @@ void Edit_Effect_Center::process(Sample_Data *p_data,size_t p_begin,size_t p_end
 	}
 }
 
-void Edit_Effect_PreLoop_Cut::process(Sample_Data *p_data,size_t p_begin,size_t p_end) {
+void Edit_Effect_PreLoop_Cut::process(Sample_Data *p_data,ptrdiff_t p_begin,ptrdiff_t p_end)
+{
 
 
 	if (!p_data->is_loop_enabled())
@@ -372,6 +388,12 @@ void Edit_Effect_PreLoop_Cut::process(Sample_Data *p_data,size_t p_begin,size_t 
 
 	p_data->seek(p_data->get_loop_begin());
 	p_data->get_sample_array(new_data, new_size);
+	
+	// Correct the loop pointers first so that truncate() doesn't do it for us
+	// the wrong way.
+
+	p_data->set_loop_end( p_data->get_loop_end() - p_data->get_loop_begin() );
+	p_data->set_loop_begin( 0 );
 
 	// Paste the data at the beginning of the sample and truncate the sample.
 
@@ -380,9 +402,5 @@ void Edit_Effect_PreLoop_Cut::process(Sample_Data *p_data,size_t p_begin,size_t 
 	delete new_data;
 	p_data->truncate();
 
-	// Correct the loop pointers.
-
-	p_data->set_loop_end( p_data->get_loop_end() - p_data->get_loop_begin() );
-	p_data->set_loop_begin( 0 );
 }
 
