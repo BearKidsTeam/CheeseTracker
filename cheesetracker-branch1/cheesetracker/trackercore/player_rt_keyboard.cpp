@@ -64,10 +64,6 @@ void Player_Realtime_Keyboard::instrument_set(int p_instrument_index) {
 void Player_Realtime_Keyboard::instrument_press_key(int p_note,int p_volume) {
 
 	if ((p_note>=Note::NOTES) || (p_note<0)) return;
-
-        if (key_pressed[p_note]) return; // avoid extra keypresses
-
-	key_pressed[p_note]=true;
 	
 	int channel;
 
@@ -134,12 +130,6 @@ void Player_Realtime_Keyboard::sample_set(Sample_Data *p_sample_data) {
 }
 
 void Player_Realtime_Keyboard::sample_press_key(int p_note) {
-
-
-       if (key_pressed[p_note]) return; // avoid extra keypresses
-
-	key_pressed[p_note]=true;
-
 
 	latest_key_pressed=p_note;
 	if (current_sample==NULL)  {

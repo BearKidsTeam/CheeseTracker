@@ -1,3 +1,15 @@
+Mon Aug 6 22:54:33 EDT 2007 J Phelps <godless@users.sf.net>
+	* interface.cpp(eventFilter): Imposed my intentation style on
+	the entire file. Also fixed another old bug: eventFilter()
+	didn't properly handle keyPressEvents for the live keyboard.
+	As a result, the real-time keyboard sometimes got triggered
+	twice, which Linietsky worked around by adding a filter
+	in Player_Realtime_Keyboard::instrument_press_key()
+
+	eventFilter now handles those keyPressEvents properly, and
+	the filter code in (instrument|sample)_press_key has been
+	removed.
+	
 Mon Aug 6 21:28:16 EDT 2007 J Phelps <godless@users.sf.net>
 	* sample_data_fixedpoint.h(fixedpoint_loop): More
 	minor math adjustments.

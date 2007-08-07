@@ -38,11 +38,13 @@
 
 #include "components/audio/sound_driver_manager.h"
 
+#include <cctype>
 #include <qfiledialog.h>
 #include <qmessagebox.h>
 
 
-Saver::Error  Interface::save_song() {
+Saver::Error  Interface::save_song()
+{
 
 	FILE *f=fopen(tracker.song.variables.filename.c_str(),"rb");
 	if (!f) { //file doesnt exist, cant do direct save
@@ -60,7 +62,8 @@ Saver::Error  Interface::save_song() {
 
 }
 
-Saver::Error  Interface::save_song_as() {
+Saver::Error  Interface::save_song_as()
+{
 
 	QString s=QString::null;
 
@@ -112,62 +115,59 @@ Saver::Error  Interface::save_song_as() {
 	return Saver::SAVE_OK;
 }
 
-string Interface::get_song_name() {
+string Interface::get_song_name()
+{
 
 	return tracker.song.variables.name;
 }
-Interface::PageList Interface::get_current_page() {
-
+Interface::PageList Interface::get_current_page()
+{
 	return (PageList)currentPageIndex();
-
 }
 
 
-void Interface::update_pattern_editor() {
-
+void Interface::update_pattern_editor()
+{
 	pattern_editor->reupdate_components();
 }
 
-Tracker_Instance * Interface::get_tracker() {
-
+Tracker_Instance * Interface::get_tracker()
+{
 	return &tracker;
 }
 
-void Interface::play_song() {
-
+void Interface::play_song()
+{
 	tracker.player.play_start_song();
-
 }
 
-void Interface::stop_song() {
-
+void Interface::stop_song()
+{
 	tracker.player.play_stop();
 	tracker.rt_keyboard.instrument_stop_all();
 	tracker.rt_keyboard.sample_stop_all();
-
 }
-void Interface::play_pattern() {
-
+void Interface::play_pattern()
+{
 	tracker.player.play_start_pattern(tracker.editor.get_current_pattern());
 }
 
-void Interface::play_pattern_from_cursor() {
-
+void Interface::play_pattern_from_cursor()
+{
 	tracker.player.play_start_pattern(tracker.editor.get_current_pattern(),tracker.editor.get_cursor_y());
 }
 
-void Interface::play_from_mark() {
-
+void Interface::play_from_mark()
+{
 	tracker.player.play_start(tracker.editor.get_marked_pattern(),-1,tracker.editor.get_marked_row());
-
 }
-void Interface::play_from_order() {
-
+void Interface::play_from_order()
+{
 	tracker.player.play_start_song_from_order(tracker.editor.orderlist_get_cursor_y());
 }
 
-void Interface::play_from_cursor() {
-
+void Interface::play_from_cursor()
+{
 	// Bugfix Sun Mar 25 04:56:51 EDT 2007
 	//
 	// Play from the cursor on the Order & Defaults (F11)
@@ -197,8 +197,8 @@ void Interface::play_from_cursor() {
 }
 
 
-void Interface::keyReleaseEvent ( QKeyEvent * e ) {
-
+void Interface::keyReleaseEvent ( QKeyEvent * e )
+{
         switch (currentPageIndex()) {
 
 		case Page__Instrument_Editor: {
@@ -239,8 +239,8 @@ void Interface::keyReleaseEvent ( QKeyEvent * e ) {
 
 //stupid stupid Qt. DONT EAT THE KEYPRESSES DAMN
 
-bool Interface::eventFilter( QObject *o, QEvent *e ) {
-
+bool Interface::eventFilter( QObject *o, QEvent *e )
+{
 	if (e->type()!=QEvent::KeyPress) {
 
 		return QTabWidget::eventFilter(o,e);
@@ -250,18 +250,17 @@ bool Interface::eventFilter( QObject *o, QEvent *e ) {
 
 		QKeyEvent *k=(QKeyEvent*)e;
 		keyPressEvent(k);
-		return ((k->ascii()>='0' && k->ascii()<='9') || (k->ascii()=='/') || (k->ascii()=='*')); //bitch, you get no event!
+		int key = toupper(k->ascii());
+		return ((key>='A') && (key<='Z')) || ((key>='0') && (key<='9'));
 
 	}
-
-
 
 	return QTabWidget::eventFilter(o,e);
 }
 
 
-void Interface::keyPressEvent ( QKeyEvent * e ) {
-
+void Interface::keyPressEvent ( QKeyEvent * e )
+{
 	if(e->state() & (AltButton|ShiftButton|ControlButton)) {
 		return;
 	}
@@ -347,8 +346,8 @@ int Interface::widget_timer_interval=20; //20 miliseconds?
 static const int midi_timer_interval=10; //20 miliseconds?
 Int_Property_Bridge Interface::timer_interval_bridge("Repaint Interval (msecs):",&widget_timer_interval,20,1000);
 
-void Interface::midi_check_timer() {
-
+void Interface::midi_check_timer()
+{
 	MIDI_Client_Manager *mcm=MIDI_Client_Manager::get_singleton_instance();
 	if (!mcm)
 		return;
@@ -408,8 +407,8 @@ void Interface::midi_check_timer() {
 
 }
 
-void Interface::update_song_widgets() {
-
+void Interface::update_song_widgets()
+{
 	pattern_editor->configure(&tracker.song,&tracker.editor,&tracker.player);
 	sample_editor->set_song(&tracker.song);
 	instrument_editor->set_song(&tracker.song);
@@ -424,8 +423,8 @@ void Interface::update_song_widgets() {
 	buffers_editor->update();
 }
 
-Loader::Error Interface::open_song(string p_name) {
-
+Loader::Error Interface::open_song(string p_name)
+{
 	Sound_Driver_Manager::get_singleton_instance()->get_variables_lock()->grab(__FILE__, __LINE__);
 	Loader::Error res=tracker.format_manager.load_module(p_name.c_str());
 	Sound_Driver_Manager::get_singleton_instance()->get_variables_lock()->release();
@@ -440,25 +439,23 @@ Loader::Error Interface::open_song(string p_name) {
 	return res;
 }
 
-void Interface::selected_sample_in_editor(int p_which) {
-
+void Interface::selected_sample_in_editor(int p_which)
+{
 	instrument_editor->set_selected_instrument(tracker.song.find_sample_in_instrument(p_which));
 }
-void Interface::selected_instrument_in_pattern(int p_which) {
-
-
+void Interface::selected_instrument_in_pattern(int p_which)
+{
 	instrument_editor->set_selected_instrument(p_which);
-
 }
 
-void Interface::update_sample_editor_request() {
-
+void Interface::update_sample_editor_request()
+{
 	sample_editor->update_samples();
 	sample_editor->update_selected_sample();
 }
 
-void Interface::widget_update_timer() {
-
+void Interface::widget_update_timer()
+{
 	if (last_timer_interval!=widget_timer_interval) {
 		//just in case the timer changed interval
 		timer->changeInterval(widget_timer_interval);
@@ -482,24 +479,22 @@ void Interface::widget_update_timer() {
 	}
 
 }
-void Interface::update_instrument_mode_callback() {
-
+void Interface::update_instrument_mode_callback()
+{
 	instrument_editor->update();
-
 }
 
-void Interface::play_next_order() {
-
+void Interface::play_next_order()
+{
 	tracker.player.goto_next_order();
 }
-void Interface::play_previous_order() {
-
+void Interface::play_previous_order()
+{
 	tracker.player.goto_previous_order();
-
 }
 
-Interface::Interface(QWidget *p_widget) : QTabWidget(p_widget) {
-
+Interface::Interface(QWidget *p_widget) : QTabWidget(p_widget)
+{
 	pattern_editor = new  Pattern_Edit_Widget(this);
 	addTab(pattern_editor,QPixmap((const char**)icon_patterns_xpm) ,"Patterns");
 	pattern_editor ->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
