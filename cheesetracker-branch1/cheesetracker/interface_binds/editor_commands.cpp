@@ -391,8 +391,10 @@ void Editor::perform_action(Pattern_Actions p_action) {
 
                 	mark_block_end();
 		} break;
+		case Pattern_MARK_COLUMN_SIXTEEN: {
+			mark_column_sixteen();
+		} break;
 		case Pattern_MARK_COLUMN_ALL: {
-
                 	mark_column_all();
 		} break;
 		case Pattern_BLOCK_COPY: {

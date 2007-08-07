@@ -207,7 +207,9 @@ void Pattern::set_length(Uint8 p_length) {
 
        		for (i=0;i<PATTERN_WIDTH;i++) {
 
-       			for (I=column[i].begin();I!=column[i].end();I++) {
+       			for (I=column[i].begin();
+			     I!=column[i].end();
+			     I++) {
 
 
        				if (I->first>=length) column[i].erase(I->first);
@@ -217,9 +219,9 @@ void Pattern::set_length(Uint8 p_length) {
 
        		for (i=0;i<PATTERN_WIDTH;i++) {
 
-       			for (I=column[i].begin();I!=column[i].end();I++) {
-
-
+       			for (I=column[i].begin();
+			     I!=column[i].end();
+			     I++) {
        				if (I->first>=p_length) column[i].erase(I->first);
        			}
        		}

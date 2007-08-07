@@ -123,6 +123,13 @@ void Editor::selection_release()
 	selection_active=false;
 }
 
+void Editor::mark_column_sixteen()
+{
+	selection_begin_x = selection_end_x = cursor_x;
+	selection_end_y	= cursor_y + 15;
+	selection_active= true;
+}
+
 void Editor::mark_column_all()
 {
 	if ( selection_active

@@ -1,3 +1,14 @@
+Tue Aug 7 04:34:46 EDT 2007 J Phelps <godless@users.sf.net>
+	* pattern_edit__keys.cpp(event): Added keybinding for
+	Alt+D (select block of 16).
+	* editor_selection.cpp,editor.h: Added new function,
+	mark_block_sixteen(), to support the new key command.
+
+	Added new Editor::Pattern_Actions enum Pattern_MARK_BLOCK_SIXTEEN.
+	* editor_commands.cpp(perform_action): Added block to handle the
+	Pattern_MARK_BLOCK_SIXTEEN menu action.
+	* mdi_main_window.cpp(MDI_Main_Window()): Added menu item
+	"Mark- Sixteen notes".
 Tue Aug 7 04:06:48 EDT 2007 J Phelps <godless@users.sf.net>
 	* simple_edit_effects.(cpp|h), edit_effect.h: Altered the
 	indentation style. Changed all p_begin and p_end arguments to

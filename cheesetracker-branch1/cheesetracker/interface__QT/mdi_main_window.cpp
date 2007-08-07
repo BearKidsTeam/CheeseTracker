@@ -694,6 +694,8 @@ MDI_Main_Window::MDI_Main_Window() : QMainWindow( 0, "Main Window"/*, WDestructi
 	pattern_edit_menu->setAccel(Qt::ALT+Qt::Key_B ,Editor::Pattern_MARK_BLOCK_BEGIN);
 	pattern_edit_menu->insertItem("Mark- Block End",Editor::Pattern_MARK_BLOCK_END);
 	pattern_edit_menu->setAccel(Qt::ALT+Qt::Key_E ,Editor::Pattern_MARK_BLOCK_END);
+	pattern_edit_menu->insertItem("Mark- Sixteen notes", Editor::Pattern_MARK_COLUMN_SIXTEEN);
+	pattern_edit_menu->setAccel(Qt::ALT+Qt::Key_D, Editor::Pattern_MARK_COLUMN_SIXTEEN);
 	pattern_edit_menu->insertItem("Mark- Toggle Column/All",Editor::Pattern_MARK_COLUMN_ALL);
 	pattern_edit_menu->setAccel(Qt::ALT+Qt::Key_L ,Editor::Pattern_MARK_COLUMN_ALL);
 	pattern_edit_menu->insertSeparator();

@@ -348,6 +348,10 @@ bool Pattern_Edit::event ( QEvent * e  ) {
 				must_repaint=true;
 			} break;
 
+			case 'D': {
+				editor->mark_column_sixteen();
+			} break;
+
 			case 'E': {
 
 				editor->mark_block_end();
