@@ -1,3 +1,12 @@
+Wed Aug 8 16:23:28 EDT 2007 J Phelps <godless@users.sf.net>
+	* sample_player_fdialog.(h|cpp): Added a checkbox titled
+	"Audition samples", checked by default. When activated, the
+	load-sample dialog behaves as always, allowing samples to be
+	auditioned with the virtual musical keyboard. When disabled,
+	samples are not loaded for auditioning and the musical keyboard
+	keybindings are disabled.
+
+	Currently, the positioning of the checkbox is very suboptimal.
 Tue Aug 7 21:06:13 EDT 2007 J Phelps <godless@users.sf.net>
 	* sample_data_fixedpoint.h (fixedpoint_loop): Fixed
 	a divide-by-zero bug.

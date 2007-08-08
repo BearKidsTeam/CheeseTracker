@@ -19,12 +19,17 @@
 #include "interface_binds/editor.h"
 
 #include <qfiledialog.h>
+#include <qcheckbox.h>
+#include <qvbox.h>
 /**
 @author Juan Linietsky
 */
 class Sample_Player_FDialog : public QFileDialog {
 
 	Q_OBJECT
+
+	QCheckBox *audition;
+	bool audition_mode;
 
 	struct Vars {
 		File_Format_Manager *file_manager;
@@ -39,9 +44,11 @@ class Sample_Player_FDialog : public QFileDialog {
 	} preview;
 
 	bool eventFilter(QObject *p_obj,QEvent *p_event);
+	void position_audition_checkbox();
 
 protected slots:
 	void filename_hilite_slot(const QString& p_file);
+	void audition_slot(bool p_on);
 public:
 
 	void set_binds(File_Format_Manager *p_file_manager,Player_Realtime_Keyboard *p_rt_keyboard);

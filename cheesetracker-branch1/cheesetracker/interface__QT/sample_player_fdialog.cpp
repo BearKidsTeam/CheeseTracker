@@ -10,10 +10,22 @@
 //
 //
 #include "sample_player_fdialog.h"
+#include <qhbox.h>
 
+void
+Sample_Player_FDialog::audition_slot(bool p_on)
+{
+	if(vars.sample && !p_on) {
+		vars.rt_keyboard->sample_stop_all();
+		delete vars.sample;
+		vars.sample = NULL;
+	}
+	audition_mode = p_on;
+}
 
 void Sample_Player_FDialog::filename_hilite_slot(const QString& p_file) {
 
+	if(!audition_mode) return;
 	vars.rt_keyboard->sample_stop_all();
 	printf("Loading sample %s\n",p_file.ascii());
 	if (vars.sample)
@@ -26,10 +38,13 @@ void Sample_Player_FDialog::filename_hilite_slot(const QString& p_file) {
 }
 
 
-bool Sample_Player_FDialog::eventFilter(QObject *p_obj,QEvent *p_event) {
+bool Sample_Player_FDialog::eventFilter(QObject *p_obj,QEvent *p_event)
+{
+	if(p_event->type() == QEvent::Resize) {
+		position_audition_checkbox();
+	}
 
 	if (vars.sample==NULL) {
-
 		return QFileDialog::eventFilter(p_obj,p_event);
 	}
 
@@ -74,24 +89,42 @@ bool Sample_Player_FDialog::eventFilter(QObject *p_obj,QEvent *p_event) {
 	return QFileDialog::eventFilter(p_obj,p_event);
 }
 
-void Sample_Player_FDialog::set_binds(File_Format_Manager *p_file_manager,Player_Realtime_Keyboard *p_rt_keyboard) {
+void Sample_Player_FDialog::set_binds(File_Format_Manager *p_file_manager,Player_Realtime_Keyboard *p_rt_keyboard)
+{
 
 	vars.file_manager=p_file_manager;
 	vars.rt_keyboard=p_rt_keyboard;
 
 }
 
-Sample_Player_FDialog::Sample_Player_FDialog() {
+
+void
+Sample_Player_FDialog::position_audition_checkbox()
+{
+	audition->move(5,this->height()-20);
+}
+
+Sample_Player_FDialog::Sample_Player_FDialog()
+{
 
 	vars.sample=NULL;
 	QObject::connect(this,SIGNAL(fileHighlighted(const QString&)),this,SLOT(filename_hilite_slot(const QString&)));
+	audition = new QCheckBox("Audition samples", this);
+	audition->resize(audition->width()+40, audition->height());
+	position_audition_checkbox();
+	QObject::connect(audition,SIGNAL(toggled(bool)),this,SLOT(audition_slot(bool)));
+	audition->setChecked(true);
+	audition_mode=true;
 }
 
 
-Sample_Player_FDialog::~Sample_Player_FDialog() {
+Sample_Player_FDialog::~Sample_Player_FDialog()
+{
 
-	if (vars.sample)
+	if (vars.sample) {
+		vars.rt_keyboard->sample_stop_all();
 		delete vars.sample;
+	}
 }
 
 
