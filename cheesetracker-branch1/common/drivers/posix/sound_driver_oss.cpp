@@ -33,6 +33,7 @@
 #ifdef OSS_ENABLED
 
 #include <cerrno>
+#include <unistd.h>
 #include "Error.h"
 #include "sound_driver_oss.h"
 #include "math.h"
@@ -188,7 +189,16 @@ int Sound_Driver_OSS::init() {
 
 bool Sound_Driver_OSS::finish() {
 
-	if ( sound_fd>=0 ) close(sound_fd);
+	if ( sound_fd>=0 ) {
+		if(close(sound_fd) == -1) {
+			throw Error(errno, "/dev/dsp: Cannot close");
+		}
+		// Sleep for a quarter of a second. This prevents the
+		// "Device or resource busy" error if init() is called
+		// immediately after finish().
+		usleep(250000);
+		sound_fd = -1;
+	}
 
 	if (audiobuffer!=NULL) free(audiobuffer);
 	audiobuffer=NULL;

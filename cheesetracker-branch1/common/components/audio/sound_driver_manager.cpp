@@ -221,10 +221,16 @@ void Sound_Driver_Manager::reset_active_driver() {
 
 	if (variables_lock) variables_lock->grab(__FILE__, __LINE__);
 
-	if (driver_list[active_driver_index]->is_active()) {
+	try {
+		if (driver_list[active_driver_index]->is_active()) {
 
-		driver_list[active_driver_index]->finish();
+			driver_list[active_driver_index]->finish();
 
+		}
+	} catch (Error E) {
+		if(variables_lock)
+			variables_lock->release();
+		throw E;
 	}
 
 	internal_driver_init();
@@ -322,6 +328,10 @@ void Sound_Driver_Manager::request_mix_16bits(bool p_mix_16bits) {
 
 void Sound_Driver_Manager::request_buffer_size(int p_buffsize) {
 
+	///// FIXME: The start() and finish() methods in this program
+	///// can throw exceptions, which will cause variables_lock->release()
+	///// to be skipped over, which will lead to a deadlock.
+
 	tmp_mix_buffsize=p_buffsize;
 
 	if (active_driver_index<0) return;
@@ -331,10 +341,8 @@ void Sound_Driver_Manager::request_buffer_size(int p_buffsize) {
 	if (variables_lock) variables_lock->grab(__FILE__, __LINE__);
 
 	if (driver_list[active_driver_index]->is_active()) {
-
 			driver_list[active_driver_index]->finish();
 	  		need_reinit=true;
-
 	}
 
 	if (driver_lock) driver_lock->grab(__FILE__, __LINE__); //we need an extra lock for this

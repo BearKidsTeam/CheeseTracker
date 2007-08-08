@@ -1,3 +1,12 @@
+Tue Aug 7 19:19:28 EDT 2007 J Phelps <godless@users.sf.net>
+	* sound_driver_oss.cpp(finish): Throw an exception if
+	close() returns -1. Also usleep() for 1/4 second to
+	eliminate the "Device or resource busy" error that
+	happens if the close() is immediately followed by an
+	open().
+	* sound_drive_manager.cpp: Added a try..catch around
+	one of the calls to Sound_Driver::init(), but more
+	uncaught calls remain.
 Tue Aug 7 15:11:07 EDT 2007 J Phelps <godless@users.sf.net>
 	* pattern.cpp (set_length): Added a new iterator J. This
 	function had a habit of calling map::erase() on a map
