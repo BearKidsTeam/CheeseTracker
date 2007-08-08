@@ -150,15 +150,18 @@ Sample_Data::fixedpoint_loop(bool sustaining)
 	if(sustaining && sustain_loop_on) {
 		loop_begin_local	= sustain_loop_begin;
 		loop_end_local		= sustain_loop_end;
-		loop_on_local 		= true;
+		// Prevent divide by zero by disabling looping
+		// for zero-length loops.
+		loop_on_local 		= (loop_begin_local != loop_end_local);
 		pingpong_local		= sustain_pingpong_loop;
 	} else if(loop_on) {
 		pingpong_local		= pingpong_loop;
 		loop_begin_local	= loop_begin;
 		loop_end_local		= loop_end;
-		loop_on_local 		= true;
+		// Prevent divide by zero by disabling looping for
+		// zero-length loops.
+		loop_on_local 		= (loop_begin_local != loop_end_local);
 	}
-
 
 	if(fixedpoint_backwards) {
 		// Check if the cursor is before the loop begin point
