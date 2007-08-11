@@ -329,8 +329,25 @@ void Editor::clear_field_at_cursor() {
 }
 
 
-// keyboard internationalization
-int Editor::get_note_increment(char key) {
+// get_note_increment - Returns the musical-keyboard binding
+//                      associated with {key}.
+//
+// arguments          - key: The ASCII value of the key.
+//
+// notes              - Lowercase letters are not handled.
+//
+// bugs               - The design of this function doesn't
+//                      allow special keys, such as F1-F12,
+//                      the cursor keys, SHIFT, CTRL, or ALT,
+//                      to be used as musical-keyboard keys.
+//
+//                    - It is unknown if QKeyEvent::ascii(),
+//                      used to obtain the ASCII values passed
+//                      as {key}, handles keypresses such as
+//                      Esc, Del, and Backspace in the expected
+//                      manner (\033, \177, and \008 respectively).
+int Editor::get_note_increment(char key)
+{
 
 	//fixme: internationaliza it! :D
 
@@ -339,11 +356,8 @@ int Editor::get_note_increment(char key) {
 
 	Keyboard_Input *kinput=Keyboard_Input::get_singleton_instance();
 	
-	if ( (key>='A') && (key<='Z') ) key+='a'-'A';
-
 	for (i=KEY_C_1;i<KEY_MAX;i++) {
-
-		if (kinput->get_key_bind_key_nocase(i)==key)
+		if (toupper(kinput->get_key_bind_key_nocase(i))==key)
 			tmpval=i-KEY_C_1;
 	}
 

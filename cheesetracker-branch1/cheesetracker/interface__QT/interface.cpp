@@ -208,10 +208,8 @@ void Interface::keyReleaseEvent ( QKeyEvent * e )
 			//printf("UNPRESS!\n");
 
 			int key=e->ascii();
-			if ((key>='a') && (key<='z')) key-='a'-'A';
-
-			if ( ((key>='A') && (key<='Z')) || ((key>='0') && (key<='9')) ) {
-				Uint8 note=tracker.editor.get_note_from_key(key);
+			Uint8 note=tracker.editor.get_note_from_key(key);
+			if(note != EMPTY_FIELD) {
 				tracker.rt_keyboard.instrument_set(tracker.editor.get_instrument_mask());
 				tracker.rt_keyboard.instrument_stop_key(note);
 			}
@@ -250,8 +248,7 @@ bool Interface::eventFilter( QObject *o, QEvent *e )
 
 		QKeyEvent *k=(QKeyEvent*)e;
 		keyPressEvent(k);
-		int key = toupper(k->ascii());
-		return ((key>='A') && (key<='Z')) || ((key>='0') && (key<='9'));
+		return (tracker.editor.get_note_from_key(k->ascii()) != EMPTY_FIELD);
 
 	}
 
@@ -307,10 +304,8 @@ void Interface::keyPressEvent ( QKeyEvent * e )
 
 			//printf("PRESS !\n");
 			int key=e->ascii();
-			if ((key>='a') && (key<='z')) key-='a'-'A';
-
-			if ( ((key>='A') && (key<='Z')) || ((key>='0') && (key<='9')) ) {
-				Uint8 note=tracker.editor.get_note_from_key(key);
+			Uint8 note=tracker.editor.get_note_from_key(key);
+			if(note != EMPTY_FIELD) {
 				tracker.rt_keyboard.instrument_set(tracker.editor.get_instrument_mask_value());
 				tracker.rt_keyboard.instrument_press_key(note,64);
 			}
@@ -320,13 +315,9 @@ void Interface::keyPressEvent ( QKeyEvent * e )
 
 			if (e->isAutoRepeat())
 				break;
-
-			//printf("PRESS !\n");
 			int key=e->ascii();
-			if ((key>='a') && (key<='z')) key-='a'-'A';
-
-			if ( ((key>='A') && (key<='Z')) || ((key>='0') && (key<='9')) ) {
-				Uint8 note=tracker.editor.get_note_from_key(key);
+			Uint8 note=tracker.editor.get_note_from_key(key);
+			if(note != EMPTY_FIELD) {
 				Sample_Data * sample=tracker.song.get_sample( sample_editor->get_selected_sample_index() )?&tracker.song.get_sample( sample_editor->get_selected_sample_index() )->data:NULL;
 				if (sample==NULL) break;
 

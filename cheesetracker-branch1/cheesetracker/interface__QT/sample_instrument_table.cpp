@@ -189,10 +189,7 @@ bool Sample_Instrument_Table::event(QEvent *e) {
 			} break;
 		}
 
-	} else	if (	(key_char>='A') && (key_char<='Z') ||
-		(key_char>='0') && (key_char<='9') || (key_char=='.')) {
-
-
+	} else {
 		InsertValue(key_char);
 	}
 
@@ -269,7 +266,7 @@ void Sample_Instrument_Table::ClearOrder() {
 
 void Sample_Instrument_Table::InsertValue(int number) {
 
-	switch (number) {
+	switch (toupper(number)) {
 		case 'R': {
 
 			if (cursor_x==0)

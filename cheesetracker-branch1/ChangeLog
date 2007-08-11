@@ -1,3 +1,18 @@
+Sat Aug 11 14:17:05 EDT 2007 J Phelps <godless@users.sf.net>
+	* editor.cpp(get_note_from_key): Removed extra temporary
+	variable.
+	* editor_note_insertion.cpp(insert_note_at_cursor): Added
+	toupper to argument passed to get_note_increment().
+	* interface.cpp(eventFilter,keyPressEvent,keyReleaseEvent),
+	* sample_player_fdialog.cpp(eventFilter),
+	* editor_note_insertion.cpp,
+	* pattern_edit__keys.cpp(event),
+	* sample_instrument_table.cpp(event): Removed
+	the tests that prevented keypresses outside of the range [0-9A-Z]
+	from being usable as musical-keyboard keys, to fix Bug Tracker
+	item #1771371.
+	* editor_commands.cpp(get_note_increment): Removed conversion
+	to uppercase, as this is handled upstream.
 Wed Aug 8 16:23:28 EDT 2007 J Phelps <godless@users.sf.net>
 	* sample_player_fdialog.(h|cpp): Added a checkbox titled
 	"Audition samples", checked by default. When activated, the

@@ -73,17 +73,18 @@ bool Sample_Player_FDialog::eventFilter(QObject *p_obj,QEvent *p_event)
 		Editor aux_editor;
 		aux_editor.default_octave_raise();
 
-	} else if ( ((key>='A') && (key<='Z')) || ((key>='0') && (key<='9')) ) {
+	} else {
 
 		Editor aux_editor;
-		aux_editor.get_note_from_key(key);
 		Uint8 note=aux_editor.get_note_from_key(key);
 
-		vars.rt_keyboard->sample_stop_key(note);
-		vars.rt_keyboard->sample_set(vars.sample);
-		vars.rt_keyboard->sample_press_key(note);
+		if(note != EMPTY_FIELD) {
+			vars.rt_keyboard->sample_stop_key(note);
+			vars.rt_keyboard->sample_set(vars.sample);
+			vars.rt_keyboard->sample_press_key(note);
 
-		return TRUE;
+			return TRUE;
+		}
 	}
 
 	return QFileDialog::eventFilter(p_obj,p_event);

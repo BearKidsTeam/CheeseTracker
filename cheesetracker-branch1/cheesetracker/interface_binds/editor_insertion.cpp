@@ -78,7 +78,7 @@ bool Editor::insert_note_at_cursor(char keynote) {
 	bool success;
 	success=false;
 
-	tmpinc=get_note_increment(keynote);
+	tmpinc=get_note_increment(toupper(keynote));
 
 	if (tmpinc!=99) {
 
@@ -282,13 +282,11 @@ void Editor::insert_parameter_at_cursor_field2(Uint8 parameter) {
 }
 
 
-bool Editor::press_key_at_cursor(int key) { // A-Z (caps) / 0-9
+bool Editor::press_key_at_cursor(int key)
+{
 	
 	bool success;
 	success=false;
-
-
-	assert(key >= '0' && key <= '9' || key >= 'A' && key <= 'Z');
 
 	switch (cursor_field) {
 

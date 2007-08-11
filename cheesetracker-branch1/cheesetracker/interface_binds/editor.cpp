@@ -379,40 +379,33 @@ void Editor::set_note_increment_table(Uint8* p_table) {
 
 }
 
-Uint8 Editor::get_note_from_key(int key) {
-
-	int tmpinc=get_note_increment(key);
-	int tmpnote;
-
+Uint8 Editor::get_note_from_key(int key)
+{
+	int tmpinc=get_note_increment(toupper(key));
 	if (tmpinc!=99) {
-
-		tmpnote=(12*default_octave+tmpinc);
-		tmpnote=BOUND(tmpnote,0,Note::NOTES);
+		return BOUND((12*default_octave+tmpinc),0,Note::NOTES);
         } else {
-
-		tmpnote=255;
+		return EMPTY_FIELD;
 	}
 
-	return tmpnote;
 }
 
-string Editor::get_single_note_string(int p_note) {
-
+string Editor::get_single_note_string(int p_note)
+{
 	if ((p_note<0) || (p_note>=Note::NOTES)) return "???";
 
 	else return notes[p_note];
-
 }
 
-void Editor::channel_mute_toggle(int p_track) {
-
+void Editor::channel_mute_toggle(int p_track)
+{
 	if ((p_track<0) || (p_track>=PATTERN_WIDTH)) return;
 
 	song->initial_variables.channel[p_track].mute=!song->initial_variables.channel[p_track].mute;
 }
 
-void Editor::channel_solo_toggle(int p_track) {
-
+void Editor::channel_solo_toggle(int p_track)
+{
 	if ((p_track<0) || (p_track>=PATTERN_WIDTH)) return;
 
         int i,muted_tracks;
@@ -445,8 +438,8 @@ void Editor::channel_solo_toggle(int p_track) {
         }
 }
 
-void Editor::set_column_offset(int value) {
-
+void Editor::set_column_offset(int value)
+{
 	column_offset=value;
 
 	if (cursor_x<column_offset)
@@ -456,7 +449,8 @@ void Editor::set_column_offset(int value) {
 		cursor_x=(column_offset+get_visible_columns())-1;
 	}
 }
-void Editor::set_row_offset(int value) {
+void Editor::set_row_offset(int value)
+{
 
 	int new_row_offset=value;
 
@@ -482,7 +476,8 @@ void Editor::set_row_offset(int value) {
 	}
 }
 
-void Editor::set_mark() {
+void Editor::set_mark()
+{
 
         if (mark_active && (current_pattern==marked_pattern) && (cursor_y==marked_row)) {
 
@@ -496,15 +491,16 @@ void Editor::set_mark() {
 	}
 }
 
-void Editor::current_channel_mute_toggle() {
-
+void Editor::current_channel_mute_toggle()
+{
 	channel_mute_toggle(cursor_x);
 
 }
-void Editor::current_channel_solo_toggle() {
-
+void Editor::current_channel_solo_toggle()
+{
 	channel_solo_toggle(cursor_x);
 }
 
-Editor::~Editor(){
+Editor::~Editor()
+{
 }

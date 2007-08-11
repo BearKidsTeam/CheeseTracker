@@ -622,7 +622,9 @@ bool Pattern_Edit::event ( QEvent * e  ) {
 			must_repaint=true;
 			grab_event=true;
 
-		} else if (/*is_note(key_value) ||*/ ((key_value>='0') && (key_value<='9')) || ((key_value>='A') && (key_value<='Z') ))  { //quickhack!
+		} else if (editor->get_note_from_key(key_value) != EMPTY_FIELD
+		           || ((key_value>='0') && (key_value<='9'))
+		           || ((key_value>='A') && (key_value<='Z') ))  { 
 
 			previous_cursor_x=editor->get_cursor_x();
 			previous_cursor_y=editor->get_cursor_y();

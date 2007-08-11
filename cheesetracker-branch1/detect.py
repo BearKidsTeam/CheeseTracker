@@ -436,6 +436,11 @@ def check_qt(libdata):
 
 	print "QT Check:";
 
+	# FIXME: In QT 4, <qtglobal.h> changes to <Qt/qglobal.h>, and
+	# the QT_VERSION_STR macro is defined indirectly in another include
+	# file. This means that the 'grep' method used below is useless
+	# for QT 4!
+
 	if (os.environ.has_key('QTDIR')):
                 qtdir=os.environ['QTDIR'];
 		print "$QTDIR exists at, using QTDIR instead of harcdoded pathlist " + qtdir;
