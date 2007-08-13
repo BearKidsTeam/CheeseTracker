@@ -14,7 +14,7 @@
 #include "components/data/dds_packer.h"
 
 #define FILE_FORMAT_MAJOR 1
-#define FILE_FORMAT_MINOR 1
+#define FILE_FORMAT_MINOR 2
 
 
 

@@ -1,3 +1,8 @@
+Mon Aug 13 17:22:24 EDT 2007 J Phelps <godless@users.sf.net>
+	* loader_ct.cpp: Incremented FILE_FORMAT_MINOR so that
+	older versions of CheeseTracker will issue a warning when
+	reading files created with newer versions. Stereo samples
+	are unreadable to old versions of CheeseTracker.
 Sat Aug 11 14:17:05 EDT 2007 J Phelps <godless@users.sf.net>
 	* editor.cpp(get_note_from_key): Removed extra temporary
 	variable.
