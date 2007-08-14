@@ -33,15 +33,15 @@ void Property_Bridge_Edit_List::create_section(string p_name, bool p_in_tabwidge
 	Section section;
 
 	if (p_in_tabwidget)
-		section.scroll = new QScrollView(tabs);
+		section.scroll = new Q3ScrollView(tabs);
 	else
-		section.scroll = new QScrollView(this);
+		section.scroll = new Q3ScrollView(this);
 
 	section.scroll->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
-	section.scroll->setResizePolicy(QScrollView::AutoOneFit);
+	section.scroll->setResizePolicy(Q3ScrollView::AutoOneFit);
 	section.scroll->enableClipper(true);
 	section.scroll->show();
-	section.vbox = new QVBox( section.scroll );
+	section.vbox = new Q3VBox( section.scroll );
 	section.vbox->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 	section.vbox->setMinimumWidth(200);
 	section.scroll->addChild(section.vbox);
@@ -189,7 +189,7 @@ void Property_Bridge_Edit_List::set_property_bridge_list(list<Property_Bridge*> 
 	}
 }
 
-Property_Bridge_Edit_List::Property_Bridge_Edit_List(QWidget *p_parent) : QVBox(p_parent) {
+Property_Bridge_Edit_List::Property_Bridge_Edit_List(QWidget *p_parent) : Q3VBox(p_parent) {
 
 	tabs = new QTabWidget(this);
 	tabs->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));

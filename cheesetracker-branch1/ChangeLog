@@ -1,3 +1,95 @@
+Mon Aug 13 20:49:23 EDT 2007 J Phelps <godless@users.sf.net>
+	* Minimum changes required to compile against Qt 4.
+	Due to many, many differences in not only the
+	signatures of the interfaces, but in how they work,
+	the program is now barely usable.
+
+	Files affected:
+	cheeetracker/interface__QT/ample_edit.cpp
+	cheeetracker/interface__QT/ample_edit.h
+	cheeetracker/interface__QT/ample_intrument_table.cpp
+	cheeetracker/interface__QT/ample_intrument_table.h
+	cheeetracker/interface__QT/ample_player_fdialog.cpp
+	cheeetracker/interface__QT/ample_player_fdialog.h
+	cheeetracker/interface__QT/etting_window.cpp
+	cheeetracker/interface__QT/etting_window.h
+	cheeetracker/interface__QT/interface.cpp
+	cheeetracker/interface__QT/interface.h
+	cheeetracker/interface__QT/intrument_edit.cpp
+	cheeetracker/interface__QT/intrument_edit.h
+	cheeetracker/interface__QT/mdi_main_window.cpp
+	cheeetracker/interface__QT/mdi_main_window.h
+	cheeetracker/interface__QT/order_and_default_editor.cpp
+	cheeetracker/interface__QT/order_and_default_editor.h
+	cheeetracker/interface__QT/orderlit_edit.cpp
+	cheeetracker/interface__QT/orderlit_edit.h
+	cheeetracker/interface__QT/pattern_edit.cpp
+	cheeetracker/interface__QT/pattern_edit.h
+	cheeetracker/interface__QT/pattern_edit__key.cpp
+	cheeetracker/interface__QT/pattern_edit_widget.cpp
+	cheeetracker/interface__QT/pattern_edit_widget.h
+	cheeetracker/interface__QT/variable_edit.cpp
+	cheeetracker/interface__QT/variable_edit.h
+	cheeetracker/trackercore/Error.cpp
+	cheeetracker/trackercore/SCub
+	common/interface__QT/audio/ample_editor_clipboard.cpp
+	common/interface__QT/audio/ample_editor_clipboard.h
+	common/interface__QT/audio/ample_editor.cpp
+	common/interface__QT/audio/ample_editor_effect.cpp
+	common/interface__QT/audio/ample_editor_effect.h
+	common/interface__QT/audio/ample_editor_format.cpp
+	common/interface__QT/audio/ample_editor_format.h
+	common/interface__QT/audio/ample_editor.h
+	common/interface__QT/audio/ample_viewer.cpp
+	common/interface__QT/audio/ample_viewer.h
+	common/interface__QT/audio/ample_viewer_zoom.cpp
+	common/interface__QT/audio/ample_viewer_zoom.h
+	common/interface__QT/audio/audio_config.cpp
+	common/interface__QT/audio/audio_config.h
+	common/interface__QT/audio/effect_buffer_editor.cpp
+	common/interface__QT/audio/effect_buffer_editor.h
+	common/interface__QT/audio/effect_chain_editor.cpp
+	common/interface__QT/audio/effect_chain_editor.h
+	common/interface__QT/audio/envelope_editor.cpp
+	common/interface__QT/audio/envelope_editor.h
+	common/interface__QT/audio/envelope_point_editor.cpp
+	common/interface__QT/audio/envelope_point_editor.h
+	common/interface__QT/audio/mixer_effect_manager.cpp
+	common/interface__QT/audio/mixer_effect_manager.h
+	common/interface__QT/audio/note_bridge.cpp
+	common/interface__QT/audio/note_bridge.h
+	common/interface__QT/audio/reampler_config.cpp
+	common/interface__QT/audio/reampler_config.h
+	common/interface__QT/helper/ccolor_bridge.cpp
+	common/interface__QT/helper/ccolor_bridge.h
+	common/interface__QT/helper/ccolor_lit.cpp
+	common/interface__QT/helper/ccolor_lit.h
+	common/interface__QT/helper/ccolor_panel.cpp
+	common/interface__QT/helper/ccolor_panel.h
+	common/interface__QT/helper/clit_manager.cpp
+	common/interface__QT/helper/clit_manager.h
+	common/interface__QT/helper/cpinbutton.cpp
+	common/interface__QT/helper/cpinbutton.h
+	common/interface__QT/helper/font_bridge.cpp
+	common/interface__QT/helper/font_bridge.h
+	common/interface__QT/helper/keyboard_input_config.cpp
+	common/interface__QT/helper/keyboard_input_config.h
+	common/interface__QT/helper/property_bridge_edit.cpp
+	common/interface__QT/helper/property_bridge_edit.h
+	common/interface__QT/helper/property_bridge_edit_lit.cpp
+	common/interface__QT/helper/property_bridge_edit_lit.h
+	common/interface__QT/helper/vertical_crolled_window.cpp
+	common/interface__QT/helper/vertical_crolled_window.h
+	common/interface__QT/helper/vlabel.cpp
+	common/interface__QT/helper/vlabel.h
+	common/interface__QT/popup/cpindialog.cpp
+	common/interface__QT/popup/cpindialog.h
+	common/interface__QT/popup/effect_elect_popup.cpp
+	common/interface__QT/popup/effect_elect_popup.h
+	common/interface__QT/popup/text_area_popup.cpp
+	common/interface__QT/popup/text_area_popup.h
+	common/SCub
+	detect.py
 Mon Aug 13 17:22:24 EDT 2007 J Phelps <godless@users.sf.net>
 	* loader_ct.cpp: Incremented FILE_FORMAT_MINOR so that
 	older versions of CheeseTracker will issue a warning when

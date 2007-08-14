@@ -26,13 +26,16 @@
 //
 //
 #include "order_and_defaults_editor.h"
+//Added by qt3to4:
+#include <QLabel>
+#include <Q3Frame>
 
-Order_And_Defaults_Editor::Defaults::Entry::Entry(QWidget *p_parent) : QHBox(p_parent) {
+Order_And_Defaults_Editor::Defaults::Entry::Entry(QWidget *p_parent) : Q3HBox(p_parent) {
 
-	QFrame *auxframe;
+	Q3Frame *auxframe;
 	channel = new QLabel(this);
 
-	auxframe=new QFrame(this);
+	auxframe=new Q3Frame(this);
 	auxframe->setFrameStyle(Panel|Sunken);
 
 	pan = new Q_Property_Bridge_Int(this);
@@ -40,7 +43,7 @@ Order_And_Defaults_Editor::Defaults::Entry::Entry(QWidget *p_parent) : QHBox(p_p
 
 	surround = new Q_Property_Bridge_Bool(this);
 
-	auxframe=new QFrame(this);
+	auxframe=new Q3Frame(this);
 	auxframe->setFrameStyle(Panel|Sunken);
 
 	volume = new Q_Property_Bridge_Int(this);
@@ -86,24 +89,24 @@ void Order_And_Defaults_Editor::timer_callback() {
 }
 
 
-Order_And_Defaults_Editor::Order_And_Defaults_Editor(QWidget *p_parent) : QHBox(p_parent) {
+Order_And_Defaults_Editor::Order_And_Defaults_Editor(QWidget *p_parent) : Q3HBox(p_parent) {
 
 	string channel="Channel ";
 
-        order.group = new QGroupBox(1,Qt::Vertical,"List:",this);
+        order.group = new Q3GroupBox(1,Qt::Vertical,"List:",this);
 	order.group->setSizePolicy(QSizePolicy(QSizePolicy::Maximum,QSizePolicy::Expanding));
 	setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 	order.orderlist = new OrderList_Edit(order.group);
 	order.orderlist->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 
 //	defaults.scroll = new Vertical_Scrolled_Window(this);
-	defaults.group = new QGroupBox(1,Qt::Vertical,"Initial channel defaults:",this);
-	defaults.scroll = new QScrollView(defaults.group);
+	defaults.group = new Q3GroupBox(1,Qt::Vertical,"Initial channel defaults:",this);
+	defaults.scroll = new Q3ScrollView(defaults.group);
 	defaults.scroll->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
-	defaults.scroll->setResizePolicy(QScrollView::AutoOneFit);
+	defaults.scroll->setResizePolicy(Q3ScrollView::AutoOneFit);
 
 	defaults.scroll->enableClipper(true);
-	defaults.scrolled_box = new QVBox(defaults.scroll->viewport());
+	defaults.scrolled_box = new Q3VBox(defaults.scroll->viewport());
 	defaults.scroll->addChild(defaults.scrolled_box);
 
 //	defaults.scroll->set_child(defaults.scrolled_box);

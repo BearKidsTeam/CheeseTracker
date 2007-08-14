@@ -12,6 +12,8 @@
 #include "vlabel.h"
  
 #include <qpainter.h>
+//Added by qt3to4:
+#include <QPaintEvent>
 
 void VLabel::setText(QString p_text) {
 

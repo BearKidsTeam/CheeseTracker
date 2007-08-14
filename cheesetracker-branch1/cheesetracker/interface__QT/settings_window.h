@@ -18,11 +18,13 @@
 #define SETTINGS_WINDOW_H
 
 
-#include <qmainwindow.h>
+#include <q3mainwindow.h>
 #include <qtabwidget.h>
-#include <qhbox.h>
-#include <qvbox.h>
+#include <q3hbox.h>
+#include <q3vbox.h>
 #include <qpushbutton.h>
+//Added by qt3to4:
+#include <QCloseEvent>
 #include "interface__QT/helpers/ccolor_list.h"
 #include "interface__QT/audio/audio_config.h"
 #include "interface__QT/audio/resampler_config.h"
@@ -37,7 +39,7 @@
  * Juan Linietsky
  **/
 
-class Interface_Settings : public QGroupBox {
+class Interface_Settings : public Q3GroupBox {
 
 	Q_Property_Bridge_Int *bridge_repaint;
 	Q_Property_Bridge_Bool *bridge_bstore;
@@ -54,11 +56,11 @@ public:
 };
 
 
-class Settings_Window : public QMainWindow {
+class Settings_Window : public Q3MainWindow {
 
-	QVBox *vbox;
+	Q3VBox *vbox;
 	QTabWidget *sections;
-	QHBox *action_area;
+	Q3HBox *action_area;
 	QPushButton *button_close;
 
 	Audio_Config *audio_config;

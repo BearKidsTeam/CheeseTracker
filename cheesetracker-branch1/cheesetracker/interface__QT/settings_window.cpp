@@ -25,6 +25,7 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
+#include <QDesktopWidget>
 #include "interface__QT/pattern_edit.h"
 #include "interface__QT/table_base.h"
 #include "settings_window.h"
@@ -33,6 +34,11 @@
 #include "interface__QT/icons/icon_interface.xpm"
 #include "interface__QT/icons/icon_keys.xpm"
 #include <qapplication.h>
+//Added by qt3to4:
+#include <QCloseEvent>
+#include <Q3Frame>
+#include <QPixmap>
+#include <QLabel>
 
 #include "interface__QT/interface.h"
 #include "interface_binds/tracker_instance.h"
@@ -40,7 +46,7 @@
 
 
 
-Interface_Settings::Interface_Settings(QWidget *p_parent) : QGroupBox(1, Qt::Horizontal,"Interface Settings",p_parent) {
+Interface_Settings::Interface_Settings(QWidget *p_parent) : Q3GroupBox(1, Qt::Horizontal,"Interface Settings",p_parent) {
 
 	bridge_repaint = new Q_Property_Bridge_Int(this);
 	bridge_repaint->set_bridge(&Interface::timer_interval_bridge);
@@ -124,24 +130,24 @@ void Settings_Window::save_settings(ConfigHandler *p_config_handler) {
 }
 
 
-Settings_Window::Settings_Window() : QMainWindow(0,"Preferences")
+Settings_Window::Settings_Window() : Q3MainWindow(0,"Preferences")
 {
 
 	setCaption("CheeseTracker - Preferences");
-	vbox = new QVBox(this);
+	vbox = new Q3VBox(this);
 	vbox->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 	sections=new QTabWidget(vbox);
 	sections->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
-	action_area=new QHBox(vbox);
+	action_area=new Q3HBox(vbox);
 	action_area->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Maximum));
-	QFrame *auxframe = new QFrame(action_area);
+	Q3Frame *auxframe = new Q3Frame(action_area);
 	auxframe->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 	button_close = new QPushButton("Close",action_area);
 	setFocusProxy(vbox);
 	setCentralWidget(vbox);
 
 
-	QHBox *auxhbox = new QHBox(sections);
+	Q3HBox *auxhbox = new Q3HBox(sections);
 
 	sections->addTab(auxhbox,QPixmap((const char**)icon_audio_config_xpm),"Audio");
 

@@ -15,6 +15,11 @@
  ***************************************************************************/
 
 #include "orderlist_edit.h"
+//Added by qt3to4:
+#include <QEvent>
+#include <QMouseEvent>
+#include <QKeyEvent>
+#include <QPaintEvent>
 
 
 void OrderList_Edit::draw_single_mode() {
@@ -226,8 +231,8 @@ void OrderList_Edit::set_current_playing_order(int p_order) {
 
 OrderList_Edit::OrderList_Edit(QWidget *p_parent) : Table_Base(p_parent) {
 
-	setBackgroundMode (NoBackground);
-	setFocusPolicy(QWidget::StrongFocus);
+        setBackgroundMode (Qt::NoBackground);
+	setFocusPolicy(Qt::StrongFocus);
 
 	row_offset=0;
 	editor=NULL;

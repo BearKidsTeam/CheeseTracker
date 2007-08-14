@@ -12,8 +12,12 @@
 //
 #include "components/audio/sound_driver_manager.h"
 #include "mixer_effects_manager.h"
-#include <qgroupbox.h>
+#include <q3groupbox.h>
 #include <qcursor.h>
+//Added by qt3to4:
+#include <Q3Frame>
+#include <QLabel>
+#include <Q3PopupMenu>
 
 void Mixer_Effects_Manager::buffer_name_changed(const QString& p_str) {
 
@@ -427,21 +431,21 @@ void Mixer_Effects_Manager::erase_selected_buffer_slot() {
 	update();
 }
 
-Mixer_Effects_Manager::Mixer_Effects_Manager(QWidget *p_parent) : QHBox(p_parent) {
+Mixer_Effects_Manager::Mixer_Effects_Manager(QWidget *p_parent) : Q3HBox(p_parent) {
 
-	QVBox * buffer_splitter = new QVBox(this);
+	Q3VBox * buffer_splitter = new Q3VBox(this);
 	setStretchFactor(buffer_splitter,1);
 
-	QGroupBox *name_gb= new QGroupBox ( 1, Qt::Horizontal,"Selected:",buffer_splitter);
+	Q3GroupBox *name_gb= new Q3GroupBox ( 1, Qt::Horizontal,"Selected:",buffer_splitter);
 
         selected_name = new QLineEdit(name_gb);
 	QObject::connect(selected_name,SIGNAL(textChanged(const QString& )),this,SLOT(buffer_name_changed(const QString& )));
 
-	QGroupBox *channel_gb= new QGroupBox ( 1, Qt::Horizontal,"Mixer Channels",buffer_splitter);
-	channel_list = new QListBox(channel_gb);
+	Q3GroupBox *channel_gb= new Q3GroupBox ( 1, Qt::Horizontal,"Mixer Channels",buffer_splitter);
+	channel_list = new Q3ListBox(channel_gb);
 	QObject::connect(channel_list,SIGNAL(highlighted(int)) ,this,SLOT(channel_selected_slot(int)));
-	QGroupBox *buffer_gb= new QGroupBox ( 1, Qt::Horizontal,"Global Buffers",buffer_splitter);
-	buffer_list = new QListBox(buffer_gb);
+	Q3GroupBox *buffer_gb= new Q3GroupBox ( 1, Qt::Horizontal,"Global Buffers",buffer_splitter);
+	buffer_list = new Q3ListBox(buffer_gb);
 	buffer_list_manager = new Clist_Manager(buffer_gb);
 	QObject::connect(buffer_list_manager->add,SIGNAL(clicked()),this,SLOT(create_buffer_slot()));
 	QObject::connect(buffer_list_manager->remove,SIGNAL(clicked()),this,SLOT(erase_selected_buffer_slot()));
@@ -449,17 +453,17 @@ Mixer_Effects_Manager::Mixer_Effects_Manager(QWidget *p_parent) : QHBox(p_parent
 	buffer_list_manager->movedown->hide();
 	buffer_list_manager->moveup->hide();
 
-	QVBox * route_splitter = new QVBox(this);
+	Q3VBox * route_splitter = new Q3VBox(this);
 	setStretchFactor(route_splitter,2);
 
-	QGroupBox *chain_gb= new QGroupBox ( 1, Qt::Horizontal,"Effect Chain",route_splitter);
+	Q3GroupBox *chain_gb= new Q3GroupBox ( 1, Qt::Horizontal,"Effect Chain",route_splitter);
 	chain_editor = new Effect_Chain_Editor(chain_gb);
 
-	QGroupBox *send_gb= new QGroupBox ( 1, Qt::Horizontal,"Output to Buffer",route_splitter);
+	Q3GroupBox *send_gb= new Q3GroupBox ( 1, Qt::Horizontal,"Output to Buffer",route_splitter);
 	send_gb->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Maximum));
 
-	QVBox * output_splitter = new QVBox(send_gb);
-	QHBox *output_buffer_splitter = new QHBox(output_splitter);
+	Q3VBox * output_splitter = new Q3VBox(send_gb);
+	Q3HBox *output_buffer_splitter = new Q3HBox(output_splitter);
 
 	new QLabel("Outputs:",output_buffer_splitter);
 
@@ -469,7 +473,7 @@ Mixer_Effects_Manager::Mixer_Effects_Manager(QWidget *p_parent) : QHBox(p_parent
 	buffer_out_add = new QPushButton("Add",output_buffer_splitter);
 	buffer_out_remove = new QPushButton("Remove",output_buffer_splitter);
 
-	QHBox *output_send_splitter = new QHBox(output_splitter);
+	Q3HBox *output_send_splitter = new Q3HBox(output_splitter);
 
 	new QLabel("Initial Send:",output_send_splitter);
 	initial_send_level = new CSpinButton(output_send_splitter);
@@ -486,10 +490,10 @@ Mixer_Effects_Manager::Mixer_Effects_Manager(QWidget *p_parent) : QHBox(p_parent
 	QObject::connect(buffer_out_remove,SIGNAL(clicked()),this,SLOT(output_remove_slot()));
 
 
-	QFrame *auxfrm = new QFrame(output_send_splitter);
+	Q3Frame *auxfrm = new Q3Frame(output_send_splitter);
 	auxfrm->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Maximum));
 
-	buffer_select_popup = new QPopupMenu(this);
+	buffer_select_popup = new Q3PopupMenu(this);
 	QObject::connect(buffer_select_popup,SIGNAL(aboutToShow()),this,SLOT(at_popup_show_slot()));
 	QObject::connect(buffer_select_popup,SIGNAL(activated(int)),this,SLOT(popup_selected_buffer_slot(int)));
 

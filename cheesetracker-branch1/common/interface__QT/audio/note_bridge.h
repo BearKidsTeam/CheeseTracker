@@ -28,13 +28,13 @@
 #ifndef NOTE_BRIDGE_H
 #define NOTE_BRIDGE_H
 #include "common/components/data/property_bridges.h"
-#include <qvbox.h>
+#include <q3vbox.h>
 #include <qlabel.h>
 #include "interface__QT/helpers/cspinbutton.h"
 /**
 @author Juan Linietsky
 */
- class Q_Note_Bridge : public QHBox {
+ class Q_Note_Bridge : public Q3HBox {
 
  Q_OBJECT
 

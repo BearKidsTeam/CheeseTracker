@@ -18,13 +18,16 @@
 #define VERTICAL_SCROLLED_WINDOW_H
 
 
-#include <qscrollview.h>
+#include <q3scrollview.h>
+//Added by qt3to4:
+#include <QEvent>
+#include <QResizeEvent>
 
 /**
  *
  * Juan Linietsky
  **/
-class Vertical_Scrolled_Window : public QScrollView {
+class Vertical_Scrolled_Window : public Q3ScrollView {
 
 	QWidget *child;
 

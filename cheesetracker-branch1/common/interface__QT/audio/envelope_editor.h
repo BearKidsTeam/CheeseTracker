@@ -18,11 +18,11 @@
 #define ENVELOPE_EDITOR_H
 
 
-#include <qgroupbox.h>
-#include <qhbox.h>
+#include <q3groupbox.h>
+#include <q3hbox.h>
 #include <qlabel.h>
-#include <qgrid.h>
-#include <qframe.h>
+#include <q3grid.h>
+#include <q3frame.h>
 
 
 #include "interface__QT/audio/envelope_point_editor.h"
@@ -33,25 +33,25 @@
  *
  * Juan Linietsky
  **/
-class Envelope_Editor : public QGroupBox {
+class Envelope_Editor : public Q3GroupBox {
 
 	Q_OBJECT
 
 
-	QVBox *vbox;
+	Q3VBox *vbox;
 
 	Envelope_Point_Editor *envelope_point_editor;
-	QHBox  *envelope_point_editor_frame;
+	Q3HBox  *envelope_point_editor_frame;
 
-	QGroupBox * control_group;
+	Q3GroupBox * control_group;
 
-        QHBox *control_hbox;
+        Q3HBox *control_hbox;
         QCheckBox *enabled;
 
-        QGrid *table;
+        Q3Grid *table;
 
 
-	QGroupBox * control_loop;
+	Q3GroupBox * control_loop;
 
         QCheckBox *loop_enabled;
 
@@ -88,7 +88,7 @@ public slots:
 public:
 
 	Envelope_Point_Editor* get_point_editor() { return envelope_point_editor; }
-	QHBox * get_control_box();
+	Q3HBox * get_control_box();
 	void set_envelope(Envelope *p_envelope);
 
 	Envelope_Editor(QWidget * p_parent);

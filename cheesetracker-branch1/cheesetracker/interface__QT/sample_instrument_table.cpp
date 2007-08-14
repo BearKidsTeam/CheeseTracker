@@ -28,6 +28,10 @@
 #include "sample_instrument_table.h"
 #include <math.h> //thanks mrs brisby!
 #include <qtooltip.h>
+//Added by qt3to4:
+#include <QEvent>
+#include <QKeyEvent>
+#include <QPaintEvent>
 
 
 
@@ -156,7 +160,7 @@ bool Sample_Instrument_Table::event(QEvent *e) {
 	if ((key_char>='a') && (key_char<='z')) key_char-=('a'-'A');
 
 
-	if (event->state()&AltButton) {
+	if (event->state()&Qt::AltButton) {
 
 		switch(key_char) {
 			case 'Q': {
@@ -411,8 +415,8 @@ Sample_Instrument_Table::Sample_Instrument_Table(QWidget *p_widget) : Table_Base
 	instrument=NULL;
 	allocate_colormap();
 
-	setBackgroundMode (NoBackground);
-	setFocusPolicy(QWidget::StrongFocus);
+	setBackgroundMode (Qt::NoBackground);
+	setFocusPolicy(Qt::StrongFocus);
 	QToolTip::add( this, "Shorcuts:\n\n'.' - Clear field\nR - Repeat last field.\nAlt+Q Raise all notes a semitone.\nAlt+A Lower all notes a semitone.\nAlt+S Set all samples to last entered one.");
 
 }

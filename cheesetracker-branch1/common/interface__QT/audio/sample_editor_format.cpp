@@ -35,7 +35,11 @@
 #include "interface__QT/icons/transp_semitone_down.xpm"
 #include "interface__QT/icons/transp_semitone_up.xpm"
 #include <qpushbutton.h>
-#include <qhbox.h>
+#include <q3hbox.h>
+//Added by qt3to4:
+#include <QPixmap>
+#include <QLabel>
+#include <Q3Frame>
 
 void Sample_Editor_Format::transpose_up_1_4_cbk() {
 
@@ -236,10 +240,10 @@ void Sample_Editor_Format::set_sample_viewer(Sample_Viewer *p_sample_viewer) {
 	sample_viewer=p_sample_viewer;
 }
 
-Sample_Editor_Format::Sample_Editor_Format(QWidget *p_parent) : QVBox(p_parent) {
+Sample_Editor_Format::Sample_Editor_Format(QWidget *p_parent) : Q3VBox(p_parent) {
 
 
-	QGrid * grid = new QGrid(4,this);
+	Q3Grid * grid = new Q3Grid(4,this);
 	//first row
 	label_base_freq = new QLabel ("C5 Freq:",grid);
 	spin_base_freq = new CSpinButton(grid);
@@ -277,7 +281,7 @@ Sample_Editor_Format::Sample_Editor_Format(QWidget *p_parent) : QVBox(p_parent) 
 
 	grid->setSpacing(5);
 
-	QHBox * grid2 = new QHBox(this);
+	Q3HBox * grid2 = new Q3HBox(this);
 	grid2->setSpacing(2);
 
 	QPushButton *auxbut;
@@ -288,7 +292,7 @@ Sample_Editor_Format::Sample_Editor_Format(QWidget *p_parent) : QVBox(p_parent) 
 	auxbut->setSizePolicy(QSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum));
 	QObject::connect( auxbut, SIGNAL(clicked()), this, SLOT(transpose_up_1_4_cbk()));
 
-	(new QFrame(grid2))->setFrameStyle(VLine+Sunken);
+	(new Q3Frame(grid2))->setFrameStyle(VLine+Sunken);
 
 	auxbut = new QPushButton(QPixmap((const char**)transp_12_down_xpm),"",grid2);
 	auxbut->setSizePolicy(QSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum));
@@ -298,7 +302,7 @@ Sample_Editor_Format::Sample_Editor_Format(QWidget *p_parent) : QVBox(p_parent) 
 	QObject::connect( auxbut, SIGNAL(clicked()), this, SLOT(transpose_up_1_2_cbk()));
 
 
-	(new QFrame(grid2))->setFrameStyle(VLine+Sunken);
+	(new Q3Frame(grid2))->setFrameStyle(VLine+Sunken);
 
 	auxbut = new QPushButton(QPixmap((const char**)transp_semitone_down_xpm),"",grid2);
 	auxbut->setSizePolicy(QSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum));
@@ -308,7 +312,7 @@ Sample_Editor_Format::Sample_Editor_Format(QWidget *p_parent) : QVBox(p_parent) 
 	QObject::connect( auxbut, SIGNAL(clicked()), this, SLOT(transpose_up_1_cbk()));
 
 
-	(new QFrame(grid2))->setFrameStyle(VLine+Sunken);
+	(new Q3Frame(grid2))->setFrameStyle(VLine+Sunken);
 
 	auxbut = new QPushButton(QPixmap((const char**)transp_octave_down_xpm),"",grid2);
 	auxbut->setSizePolicy(QSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum));

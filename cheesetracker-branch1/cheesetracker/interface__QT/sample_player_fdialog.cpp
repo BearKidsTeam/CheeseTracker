@@ -10,7 +10,8 @@
 //
 //
 #include "sample_player_fdialog.h"
-#include <qhbox.h>
+#include <QEvent>
+#include <QKeyEvent>
 
 void
 Sample_Player_FDialog::audition_slot(bool p_on)
@@ -45,18 +46,18 @@ bool Sample_Player_FDialog::eventFilter(QObject *p_obj,QEvent *p_event)
 	}
 
 	if (vars.sample==NULL) {
-		return QFileDialog::eventFilter(p_obj,p_event);
+		return Q3FileDialog::eventFilter(p_obj,p_event);
 	}
 
 	if (p_event->type()!=QEvent::KeyPress) {
 
-		return QFileDialog::eventFilter(p_obj,p_event);
+		return Q3FileDialog::eventFilter(p_obj,p_event);
 	}
 
 	QKeyEvent*e=(QKeyEvent *)p_event;
 	if (e->isAutoRepeat()) {
 
-		return QFileDialog::eventFilter(p_obj,p_event);
+		return Q3FileDialog::eventFilter(p_obj,p_event);
 	}
 
 
@@ -87,7 +88,7 @@ bool Sample_Player_FDialog::eventFilter(QObject *p_obj,QEvent *p_event)
 		}
 	}
 
-	return QFileDialog::eventFilter(p_obj,p_event);
+	return Q3FileDialog::eventFilter(p_obj,p_event);
 }
 
 void Sample_Player_FDialog::set_binds(File_Format_Manager *p_file_manager,Player_Realtime_Keyboard *p_rt_keyboard)

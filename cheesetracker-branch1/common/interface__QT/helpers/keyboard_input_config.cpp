@@ -29,6 +29,9 @@
 
 #include "components/data/keyboard_input.h"
 #include <qdialog.h>
+//Added by qt3to4:
+#include <QLabel>
+#include <QKeyEvent>
 
 
 class GetKeyDialog : public QDialog {
@@ -85,7 +88,7 @@ void Key_Entry::update() {
 }
 
 
-Key_Entry::Key_Entry(QWidget *p_parent,int p_key_idx) : QHBox(p_parent) {
+Key_Entry::Key_Entry(QWidget *p_parent,int p_key_idx) : Q3HBox(p_parent) {
 
 	setFrameStyle(Box+Raised);
 	Keyboard_Input *kinput = Keyboard_Input::get_singleton_instance();
@@ -116,17 +119,17 @@ void Keyboard_Input_Config::update() {
 
 }
 
-Keyboard_Input_Config::Keyboard_Input_Config(QWidget *p_parent) : QGroupBox ( 1, Qt::Vertical,"Tracker Key Bindings",p_parent) {
+Keyboard_Input_Config::Keyboard_Input_Config(QWidget *p_parent) : Q3GroupBox ( 1, Qt::Vertical,"Tracker Key Bindings",p_parent) {
 
 	Keyboard_Input *kinput = Keyboard_Input::get_singleton_instance();
 
-	scroll = new QScrollView(this);
+	scroll = new Q3ScrollView(this);
 
 	scroll->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
-	scroll->setResizePolicy(QScrollView::AutoOneFit);
+	scroll->setResizePolicy(Q3ScrollView::AutoOneFit);
 	scroll->enableClipper(true);
 
-	vbox = new QVBox(scroll);
+	vbox = new Q3VBox(scroll);
 	scroll->addChild(vbox);
 
 	for (int i=0;i< kinput->get_key_bind_count();i++) {

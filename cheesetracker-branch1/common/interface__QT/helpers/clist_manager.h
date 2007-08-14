@@ -14,13 +14,13 @@
 
 
 
-#include <qhbox.h>
+#include <q3hbox.h>
 #include <qpushbutton.h>
 
 /**
 @author Juan Linietsky
 */
-class Clist_Manager : public QHBox {
+class Clist_Manager : public Q3HBox {
 
 public:
 

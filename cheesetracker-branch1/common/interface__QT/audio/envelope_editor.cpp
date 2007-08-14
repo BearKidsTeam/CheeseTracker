@@ -26,6 +26,8 @@
 //
 //
 #include "envelope_editor.h"
+//Added by qt3to4:
+#include <QLabel>
 
 void Envelope_Editor::envelope_changed() {
 
@@ -128,20 +130,20 @@ void Envelope_Editor::set_envelope(Envelope *p_envelope) {
 	update_envelope_variables();
 }
 
-QHBox * Envelope_Editor::get_control_box() {
+Q3HBox * Envelope_Editor::get_control_box() {
 
 	return control_hbox;
 }
 
 
 
-Envelope_Editor::Envelope_Editor(QWidget * p_parent) : QGroupBox ( 1, Qt::Vertical,"Envelope:",p_parent) {
+Envelope_Editor::Envelope_Editor(QWidget * p_parent) : Q3GroupBox ( 1, Qt::Vertical,"Envelope:",p_parent) {
 
 
-	vbox = new QVBox(this);
+	vbox = new Q3VBox(this);
 	vbox->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 
-	envelope_point_editor_frame = new QHBox (vbox);
+	envelope_point_editor_frame = new Q3HBox (vbox);
 	envelope_point_editor_frame->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 	envelope_point_editor_frame->setFrameStyle(WinPanel|Sunken);
 	envelope_point_editor_frame->setMargin(0);
@@ -150,16 +152,16 @@ Envelope_Editor::Envelope_Editor(QWidget * p_parent) : QGroupBox ( 1, Qt::Vertic
 	envelope_point_editor->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 
 
-	control_group = new QGroupBox(1,Qt::Vertical,"Control:",vbox);
+	control_group = new Q3GroupBox(1,Qt::Vertical,"Control:",vbox);
 	control_group->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Maximum));
 
-	control_hbox = new QHBox(control_group);
+	control_hbox = new Q3HBox(control_group);
 	enabled = new QCheckBox("Enable Envelope",control_hbox);
 
-	control_loop = new QGroupBox(1,Qt::Vertical,"Loop:",vbox);
+	control_loop = new Q3GroupBox(1,Qt::Vertical,"Loop:",vbox);
 	control_loop->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Maximum));
 
-	table = new QGrid(4,control_loop);
+	table = new Q3Grid(4,control_loop);
 	table->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 
 	loop_enabled = new QCheckBox("Enable Loop",table);

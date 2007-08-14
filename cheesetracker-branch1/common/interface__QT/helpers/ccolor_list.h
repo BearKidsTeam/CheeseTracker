@@ -18,8 +18,8 @@
 #define CCOLOR_LIST_H
 
 #include "components/data/config_handler.h"
-#include <qscrollview.h>
-#include <qvbox.h>
+#include <q3scrollview.h>
+#include <q3vbox.h>
 #include "interface__QT/helpers/ccolor_bridge.h"
 #include <vector>
 #include <map>
@@ -33,7 +33,7 @@
  *
  * Juan Linietsky
  **/
-class CColor_List : public QVBox
+class CColor_List : public Q3VBox
 {
 	Q_OBJECT
 public:
@@ -53,7 +53,7 @@ public:
 
 
 private:
-        QScrollView *scroll;
+        Q3ScrollView *scroll;
 
         struct Color_Data {
 		CColor_Bridge *bridge;
@@ -63,7 +63,7 @@ private:
 
 	vector<Color_Data> color_list;
 
-	QVBox *vbox;
+	Q3VBox *vbox;
 	QString current_section;
 
 	QComboBox *preset_combo;

@@ -27,6 +27,8 @@
 //
 #include "font_bridge.h"
 #include <qfontdialog.h>
+//Added by qt3to4:
+#include <QLabel>
 
 
 void Font_Bridge::select_new_font() {
@@ -55,7 +57,7 @@ void Font_Bridge::update_font_descr() {
 }
 
 
-Font_Bridge::Font_Bridge(QFont *p_bridge,QWidget *p_parent) : QHBox(p_parent)
+Font_Bridge::Font_Bridge(QFont *p_bridge,QWidget *p_parent) : Q3HBox(p_parent)
 {
 	setFrameStyle(Box+Raised);
 	setMargin(4);

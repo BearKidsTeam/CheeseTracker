@@ -30,6 +30,11 @@
 #include "Error.h"
 #include <qmessagebox.h>
 #include <qpainter.h>
+//Added by qt3to4:
+#include <QPaintEvent>
+#include <QPixmap>
+#include <QMouseEvent>
+#include <QEvent>
 
 
 bool Sample_Viewer::colors_initialized;
@@ -140,13 +145,13 @@ bool Sample_Viewer::event ( QEvent * e ) {
 
 					case SET_SELECTION: {
 
-						if (m->button()==LeftButton)
+					  if (m->button()==Qt::LeftButton)
 							ungrab=true;
 
 					} break;
 					case SET_SELECTION_BEGIN: {
 
-						if (m->button()==MidButton)
+						if (m->button()==Qt::MidButton)
 							ungrab=true;
 
 
@@ -154,7 +159,7 @@ bool Sample_Viewer::event ( QEvent * e ) {
 					} break;
 					case SET_SELECTION_END: {
 
-						if (m->button()==RightButton)
+						if (m->button()==Qt::RightButton)
 							ungrab=true;
 
 					} break;
@@ -191,7 +196,7 @@ bool Sample_Viewer::event ( QEvent * e ) {
 
 			switch (m->button()) {
 
-				case LeftButton: {
+				case Qt::LeftButton: {
 
 					grab_type=SET_SELECTION;
 					selection->clear();
@@ -204,7 +209,7 @@ bool Sample_Viewer::event ( QEvent * e ) {
 
 
 				} break;
-				case RightButton: {
+				case Qt::RightButton: {
 
 					grab_type=SET_SELECTION_END;
 
@@ -215,7 +220,7 @@ bool Sample_Viewer::event ( QEvent * e ) {
 					closer_point=(selection->get_point_1()>selection->get_point_2())?1:2;
 
 				} break;
-				case MidButton: {
+				case Qt::MidButton: {
 					grab_type=SET_SELECTION_BEGIN;
 					if (!selection->is_active())
 						break;
@@ -743,7 +748,7 @@ Sample_Viewer::Sample_Viewer( QWidget *p_parent) : QWidget( p_parent,"Sample Vie
 	max_sample_cache_size=200*1024;
 	backing_store_width=backing_store_height=-1;
 	backing_store=NULL;
-	setBackgroundMode (NoBackground);
+	setBackgroundMode (Qt::NoBackground);
 	recompute_pending=true;
 	selection=NULL;
 	grabbing_mouse=false;

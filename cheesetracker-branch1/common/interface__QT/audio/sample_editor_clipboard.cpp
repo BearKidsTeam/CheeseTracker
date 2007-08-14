@@ -29,6 +29,8 @@
 #include <algorithm>
 #include "sample_editor_clipboard.h"
 #include "ns_autoptr.h"
+//Added by qt3to4:
+#include <QLabel>
 
 void Sample_Editor_Clipboard::copy_cbk() {
 
@@ -242,7 +244,7 @@ void Sample_Editor_Clipboard::clear_clipboard() {
 }
 
 
-Sample_Editor_Clipboard::Sample_Editor_Clipboard(QWidget *p_parent) : QHBox(p_parent) {
+Sample_Editor_Clipboard::Sample_Editor_Clipboard(QWidget *p_parent) : Q3HBox(p_parent) {
 
 	new QLabel("Edit:",this);
 

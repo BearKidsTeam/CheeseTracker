@@ -18,13 +18,13 @@
 #include "interface_binds/player_rt_keyboard.h"
 #include "interface_binds/editor.h"
 
-#include <qfiledialog.h>
+#include <q3filedialog.h>
 #include <qcheckbox.h>
-#include <qvbox.h>
+#include <QEvent>
 /**
 @author Juan Linietsky
 */
-class Sample_Player_FDialog : public QFileDialog {
+class Sample_Player_FDialog : public Q3FileDialog {
 
 	Q_OBJECT
 

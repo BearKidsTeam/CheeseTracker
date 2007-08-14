@@ -26,7 +26,9 @@
 //
 //
 #include "audio_config.h"
-#include <qfiledialog.h>
+#include <q3filedialog.h>
+//Added by qt3to4:
+#include <QLabel>
 
 const int Audio_Config::frequency_options[Audio_Config::OPTIONS_FREQUENCY] = {
 
@@ -219,7 +221,7 @@ void Audio_Config::button_choose_file_callback() {
 
 
 
-	QString fn = QFileDialog::getOpenFileName( save_name->text(), filter, this );
+	QString fn = Q3FileDialog::getOpenFileName( save_name->text(), filter, this );
 	if ( !fn.isEmpty() ) {
 		entry_file_changed_callback(fn);
 	}
@@ -234,22 +236,22 @@ void Audio_Config::entry_file_changed_callback(const QString &p_string) {
 	 update_driver_variables();
 }
 
-Audio_Config::Audio_Config(QWidget *p_parent) : QGroupBox(1, Qt::Vertical,"Audio Device",p_parent)
+Audio_Config::Audio_Config(QWidget *p_parent) : Q3GroupBox(1, Qt::Vertical,"Audio Device",p_parent)
 {
-	vbox = new QVBox(this);
-	hbox_1 = new QHBox(vbox);
+	vbox = new Q3VBox(this);
+	hbox_1 = new Q3HBox(vbox);
 	hbox_1->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 
-        driver_list_box = new QListBox(hbox_1);
+        driver_list_box = new Q3ListBox(hbox_1);
 	driver_list_box->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 	driver_list_box->setMinimumWidth(200);
 
-	options_group = new QGroupBox(1,Qt::Vertical,"Properties:",hbox_1);
+	options_group = new Q3GroupBox(1,Qt::Vertical,"Properties:",hbox_1);
 	options_group->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Maximum));
 	hbox_1->setStretchFactor(driver_list_box,3);
 	hbox_1->setStretchFactor(options_group,2);
 
-	driver_options = new QVBox(options_group);
+	driver_options = new Q3VBox(options_group);
 	driver_options->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Maximum));
 
 	new QLabel("Sampling Depth:",driver_options);
@@ -287,12 +289,12 @@ Audio_Config::Audio_Config(QWidget *p_parent) : QGroupBox(1, Qt::Vertical,"Audio
 	}
 
 	new QLabel("Status:",driver_options);
-	status_hbox = new QHBox(driver_options);
+	status_hbox = new Q3HBox(driver_options);
 
 	button_enabled = new QCheckBox("Enabled",status_hbox);
 	button_reset = new QPushButton("Reset!",status_hbox);
 
-	hbox_2 = new QHBox(vbox);
+	hbox_2 = new Q3HBox(vbox);
 	hbox_2->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Maximum));
 	new QLabel("File Name:",hbox_2);
 	save_name = new QLineEdit(hbox_2);

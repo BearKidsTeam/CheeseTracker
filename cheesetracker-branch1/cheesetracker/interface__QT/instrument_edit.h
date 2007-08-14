@@ -20,15 +20,15 @@
 #include "trackercore/player_data.h"
 #include "trackercore/file_format_manager.h"
 #include <qwidget.h>
-#include <qlistview.h>
-#include <qgroupbox.h>
-#include <qhbox.h>
+#include <q3listview.h>
+#include <q3groupbox.h>
+#include <q3hbox.h>
 #include <qlayout.h>
 #include <qtabwidget.h>
-#include <qgrid.h>
+#include <q3grid.h>
 #include <vector>
 #include <qradiobutton.h>
-#include <qbuttongroup.h>
+#include <q3buttongroup.h>
 
 
 	using std::vector;
@@ -43,7 +43,7 @@
  *
  * Juan Linietsky
  **/
-class Instrument_Edit : public QHBox {
+class Instrument_Edit : public Q3HBox {
 
 	Q_OBJECT //grah
 
@@ -51,14 +51,14 @@ class Instrument_Edit : public QHBox {
 		MAX_INSTRUMENT_NAME_LEN=25
 	};
 
-	class ListviewItem : public  QListViewItem {
+	class ListviewItem : public  Q3ListViewItem {
         		int id;
 
 	public:
 
 			void set_id(int p_id) { id=p_id; }
 			int get_id() { return id; }
-			ListviewItem( QListView * p_parent ) :  QListViewItem(p_parent) {}
+			ListviewItem( Q3ListView * p_parent ) :  Q3ListViewItem(p_parent) {}
 
 	};
 
@@ -67,28 +67,28 @@ class Instrument_Edit : public QHBox {
 
 	vector<ListviewItem*> instrument_items;
 
-	QButtonGroup *layer_group;
+	Q3ButtonGroup *layer_group;
 	vector<QRadioButton*> layer_options;
 
 	Q_Property_Bridge_Int_CSpinButon *property_output_buffer;
 
-	QGroupBox *instrument_list_group;
+	Q3GroupBox *instrument_list_group;
 
 	QTabWidget *instrument_props_notebook;
 
-	QHBox * instrument_general_hbox;
-	QVBox * instrument_volume_vbox;
-	QVBox * instrument_pan_vbox;
-	QVBox * instrument_pitchfilter_vbox;
+	Q3HBox * instrument_general_hbox;
+	Q3VBox * instrument_volume_vbox;
+	Q3VBox * instrument_pan_vbox;
+	Q3VBox * instrument_pitchfilter_vbox;
 
-	QGroupBox * note_sample_table_group;
+	Q3GroupBox * note_sample_table_group;
 	Sample_Instrument_Table *note_sample_edit;
 
 	struct Volume {
 
 		Envelope_Editor * envelope_editor;
-		QGroupBox *group;
-		QGrid *grid;
+		Q3GroupBox *group;
+		Q3Grid *grid;
 
 		Q_Property_Bridge_Int_CSpinButon * property_global_amount;
 		Q_Property_Bridge_Int_CSpinButon * property_fadeout;
@@ -100,8 +100,8 @@ class Instrument_Edit : public QHBox {
 
 		Envelope_Editor * envelope_editor;
 
-		QGroupBox *group;
-		QGrid *grid;
+		Q3GroupBox *group;
+		Q3Grid *grid;
 
 		Q_Property_Bridge_Bool *property_use_default;
 		Q_Property_Bridge_Int *property_default_amount;
@@ -116,8 +116,8 @@ class Instrument_Edit : public QHBox {
 
 		Envelope_Editor * envelope_editor;
 
-		QGroupBox *group;
-		QGrid *grid;
+		Q3GroupBox *group;
+		Q3Grid *grid;
 
 		Q_Property_Bridge_Bool *property_envelope_use_as_filter;
 		Q_Property_Bridge_Bool *property_use_default_cutoff;
@@ -129,12 +129,12 @@ class Instrument_Edit : public QHBox {
 
 	struct NNAData {
 
-		QVBox *vbox;
-		QHBox *hbox;
+		Q3VBox *vbox;
+		Q3HBox *hbox;
 
-		QButtonGroup * nna_group;
-		QButtonGroup * dct_group;
-		QButtonGroup * dct_group_action;
+		Q3ButtonGroup * nna_group;
+		Q3ButtonGroup * dct_group;
+		Q3ButtonGroup * dct_group_action;
 
 		QRadioButton * nna_cut;
 		QRadioButton * nna_off;
@@ -167,8 +167,8 @@ class Instrument_Edit : public QHBox {
 	File_Format_Manager *file_manager;
 protected slots:
 
-	void item_selected_cbk(QListViewItem *p_item);
-	void item_renamed_cbk( QListViewItem * item, int col );
+	void item_selected_cbk(Q3ListViewItem *p_item);
+	void item_renamed_cbk( Q3ListViewItem * item, int col );
 	void load_instrument_from_keyboard(void);
 
 	void update_selected_instrument();
@@ -189,7 +189,7 @@ public:
 
 	void set_voice_status_info(vector<Player_Data::VoiceStatusInfo> *p_voice_status_info);
 	//sorry for this, but Qt forces me to expose it, since it eats keypresses :(
-	QListView * instrument_list;
+	Q3ListView * instrument_list;
 
 	void copy_instrument();
 	void cut_instrument();

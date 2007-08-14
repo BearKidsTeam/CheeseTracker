@@ -26,6 +26,9 @@
 //
 //
 #include "pattern_edit.h"
+//Added by qt3to4:
+#include <QPaintEvent>
+#include <QPixmap>
 
 
 
@@ -37,7 +40,7 @@
 int Pattern_Edit::volume_scale_memory=100; //default val
 bool Pattern_Edit::colors_initialized=false;
 bool Pattern_Edit::font_initialized=false;
-bool Pattern_Edit::use_backing_store=true;
+bool Pattern_Edit::use_backing_store=false;
 Bool_Property_Bridge Pattern_Edit::backing_store_bridge("Pattern Editor Backing Store:",&use_backing_store);
 QFont Pattern_Edit::font;
 
@@ -324,19 +327,7 @@ void Pattern_Edit::print_single_row(QPainter &painter,int rowofs) {
 
 	/* Draw notes and separator lines. */
 
-	if ((backing_store==NULL) || (backing_store->height()!=editor->get_row_height()) || (backing_store->width()!=editor->get_column_width())) {
-
-		if (backing_store!=NULL) {
-			delete backing_store;
-			delete backing_store_painter;
-		}
-
-		backing_store = new QPixmap(editor->get_column_width(),editor->get_row_height());
-		backing_store_painter = new QPainter(backing_store,this);
-		backing_store_painter->setFont(font);
-	}
-
-	QPainter *cpainter=use_backing_store?backing_store_painter:(&painter);
+	QPainter *cpainter=&painter;
 
 	for (i=0;i<editor->get_visible_columns();i++) {
 
@@ -346,14 +337,8 @@ void Pattern_Edit::print_single_row(QPainter &painter,int rowofs) {
 
 		int row_x=editor->left_numbers_width()+i*editor->get_column_width();
 		int row_y=y_offset;
-		if (use_backing_store) {
-			x=0;
-			y=0;
-
-		} else {
-			x=row_x;
-			y=row_y;
-		}
+		x=row_x;
+		y=row_y;
 
 		if ((current_row % editor->get_hl_major())==0) {
 
@@ -397,11 +382,6 @@ void Pattern_Edit::print_single_row(QPainter &painter,int rowofs) {
 
 		if (i!=(editor->get_visible_columns()-1))
 			cpainter->fillRect((x+editor->get_column_width()-5),y, 1 ,editor->get_row_height(),colors[Col_SepChannels]);
-
-		if (use_backing_store) {
-
-			bitBlt(this,row_x,row_y,backing_store);
-		}
 
 
 	}
@@ -638,9 +618,9 @@ Pattern_Edit::Pattern_Edit(QWidget *p_parent) : QWidget(p_parent),font_metrics(f
 
 
 //	font.setFamily("Console8x16.pcf");
-	setBackgroundMode (NoBackground);
+	setBackgroundMode (Qt::NoBackground);
 	previous_shift=false;
-	setFocusPolicy(QWidget::StrongFocus);
+	setFocusPolicy(Qt::StrongFocus);
 	variables_lock=NULL;
 
 	mouse_select.begin_y=0;

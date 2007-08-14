@@ -14,17 +14,17 @@
 #define MIXER_EFFECTS_MANAGER_H
 
 #include "components/audio/mixer.h"
-#include <qhbox.h>
-#include <qvbox.h>
-#include <qlistbox.h>
-#include <qpopupmenu.h>
+#include <q3hbox.h>
+#include <q3vbox.h>
+#include <q3listbox.h>
+#include <q3popupmenu.h>
 #include "interface__QT/helpers/clist_manager.h"
 #include "interface__QT/audio/effect_chain_editor.h"
 
 /**
 @author Juan Linietsky
 */
-class Mixer_Effects_Manager : public QHBox {
+class Mixer_Effects_Manager : public Q3HBox {
 
 	Q_OBJECT
 
@@ -38,8 +38,8 @@ class Mixer_Effects_Manager : public QHBox {
 	} vars;
 
 	bool updating;
-	QListBox *channel_list;
-	QListBox *buffer_list;
+	Q3ListBox *channel_list;
+	Q3ListBox *buffer_list;
 
 	Clist_Manager *buffer_list_manager;
 
@@ -51,7 +51,7 @@ class Mixer_Effects_Manager : public QHBox {
 	CSpinButton *initial_send_level;
 	CSpinButton *send_level_control;
 
-	QPopupMenu * buffer_select_popup;
+	Q3PopupMenu * buffer_select_popup;
 	void update_selected_buffer();
 	void update_send_parameters();
 

@@ -27,6 +27,9 @@
 //
 #include "cspinbutton.h"
 #include <qlineedit.h>
+//Added by qt3to4:
+#include <QMouseEvent>
+#include <QEvent>
 
 
 bool CSpinButton::eventFilter( QObject *o, QEvent *e ) {
@@ -45,7 +48,7 @@ bool CSpinButton::eventFilter( QObject *o, QEvent *e ) {
 		if (QEvent::MouseButtonRelease == e->type()) {
 			QMouseEvent * mouseEvent = static_cast<QMouseEvent *>(e);
 
-				if (MidButton == mouseEvent->button())	{
+			if (Qt::MidButton == mouseEvent->button())	{
 
 					if (mid_button_pressed) {
 
@@ -59,32 +62,19 @@ bool CSpinButton::eventFilter( QObject *o, QEvent *e ) {
 
 		if (QEvent::MouseButtonPress == e->type()) {
 			QMouseEvent * mouseEvent = static_cast<QMouseEvent *>(e);
+			
+			// reworked to be simpler in Qt4 port
+			// might be buggy, but is logically the
+			// right way to do this
 
-			bool up   = upRect().contains(mouseEvent->pos());
-			bool down = downRect().contains(mouseEvent->pos());
-
-			if (up || down) {
-				if (MidButton == mouseEvent->button())	{
-
-					spin_widget->grabMouse();
-					mid_button_pressed=true;
-					grab_x=mouseEvent->x();
-					grab_y=mouseEvent->y();
-					if (up)
-						setValue(value()+page_value);
-						else
-						setValue(value()-page_value);
-
-					return true; // Eat it.
-				} else if (RightButton == mouseEvent->button()) {
-
-					if (up)
-						setValue(maxValue());
-						else
-						setValue(minValue());
-
-					return false; // Eat it.
-				}
+			if (Qt::MidButton == mouseEvent->button())	{
+			  setSingleStep(page_value);
+			    return true; // Eat it.
+			} else if (Qt::RightButton == mouseEvent->button()) {
+			  setValue(maxValue());
+			  return false; // Eat it.
+			} else {
+			  setValue(1);
 			}
 		}
 	}
@@ -92,10 +82,6 @@ bool CSpinButton::eventFilter( QObject *o, QEvent *e ) {
 	return QSpinBox::eventFilter(o, e);
 }
 
-QLineEdit * CSpinButton::get_editor () const {
-
-	return editor();
-}
 
 void CSpinButton::set_page_value(int p_page_value) {
 
@@ -104,10 +90,8 @@ void CSpinButton::set_page_value(int p_page_value) {
 CSpinButton::CSpinButton(QWidget *p_parent) : QSpinBox(p_parent)
 {
 
-	spin_widget= childAt(upRect().topLeft());
-	spin_widget->installEventFilter(this);
 	page_value=100;
-	editor()->setAlignment(Qt::AlignRight);
+	setAlignment(Qt::AlignRight);
 
 }
 

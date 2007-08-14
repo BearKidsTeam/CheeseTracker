@@ -25,15 +25,16 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 
+#include <QColorGroup>
 #include "instrument_edit.h"
 
-#include <qfiledialog.h>
+#include <q3filedialog.h>
 #include <qmessagebox.h>
 Instrument Instrument_Edit::instrument_clipboard;
 
 void Instrument_Edit::load_instrument() {
 
-	QString fn = QFileDialog::getOpenFileName( QString::null, "Instrument Files (*.ci *.CI *.ii *.II *.xi *.XI)", this );
+	QString fn = Q3FileDialog::getOpenFileName( QString::null, "Instrument Files (*.ci *.CI *.ii *.II *.xi *.XI)", this );
 	if (fn.isEmpty())
 		return; //nothing
 
@@ -48,7 +49,7 @@ void Instrument_Edit::load_instrument() {
 
 void Instrument_Edit::save_instrument() {
 
-	QString s = QFileDialog::getSaveFileName(
+	QString s = Q3FileDialog::getSaveFileName(
 			QString::null,
 			"Instrument Formats (*.ci *.CI *.ii *.II)",
 			this,
@@ -190,7 +191,7 @@ void Instrument_Edit::set_variables_lock(Mutex_Lock *p_lock) {
 	panning.envelope_editor->get_point_editor()->set_envelope_lock(p_lock);
 	pitch_filter.envelope_editor->get_point_editor()->set_envelope_lock(p_lock);
 }
-void Instrument_Edit::item_selected_cbk(QListViewItem *p_item) {
+void Instrument_Edit::item_selected_cbk(Q3ListViewItem *p_item) {
 
 	ListviewItem * item = dynamic_cast<ListviewItem *>(p_item);
 	if (item==NULL) {
@@ -213,7 +214,7 @@ void Instrument_Edit::set_selected_instrument(int p_which) {
 	instrument_list->setSelected(instrument_items[p_which],true);
 }
 
-void Instrument_Edit::item_renamed_cbk( QListViewItem * p_item, int col ) {
+void Instrument_Edit::item_renamed_cbk( Q3ListViewItem * p_item, int col ) {
 
 	ListviewItem * item = dynamic_cast<ListviewItem *>(p_item);
 	if (item==NULL) {
@@ -333,31 +334,31 @@ void Instrument_Edit::set_voice_status_info(vector<Player_Data::VoiceStatusInfo>
 }
 
 
-Instrument_Edit::Instrument_Edit(QWidget *p_parent) : QHBox(p_parent)  {
+Instrument_Edit::Instrument_Edit(QWidget *p_parent) : Q3HBox(p_parent)  {
 
 	song=NULL;
 	editor=NULL;
 
-	QVBox * instr_props_aux_vbox = new QVBox(this);
+	Q3VBox * instr_props_aux_vbox = new Q3VBox(this);
 
-	instrument_list_group = new QGroupBox ( 1, Qt::Vertical,"Instrument List",instr_props_aux_vbox);
+	instrument_list_group = new Q3GroupBox ( 1, Qt::Vertical,"Instrument List",instr_props_aux_vbox);
 
 	selected_instrument=0;
 	/* listview */
-	instrument_list = new QListView(instrument_list_group);
+	instrument_list = new Q3ListView(instrument_list_group);
 	instrument_list->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
-	instrument_list->setDefaultRenameAction(QListView::Accept);
+	instrument_list->setDefaultRenameAction(Q3ListView::Accept);
 
 	instrument_list->addColumn("#",20);
 	instrument_list->addColumn("Name");
 
 	instrument_list->setAllColumnsShowFocus(true);
 
-	QObject::connect(instrument_list, SIGNAL(returnPressed ( QListViewItem *)),
+	QObject::connect(instrument_list, SIGNAL(returnPressed ( Q3ListViewItem *)),
 			this, SLOT(load_instrument_from_keyboard(void)));
 
-	QObject::connect(instrument_list, SIGNAL(selectionChanged ( QListViewItem * )),this, SLOT(item_selected_cbk ( QListViewItem * )) );
-	QObject::connect(instrument_list, SIGNAL(itemRenamed ( QListViewItem *,int )),this, SLOT(item_renamed_cbk ( QListViewItem *,int )) );
+	QObject::connect(instrument_list, SIGNAL(selectionChanged ( Q3ListViewItem * )),this, SLOT(item_selected_cbk ( Q3ListViewItem * )) );
+	QObject::connect(instrument_list, SIGNAL(itemRenamed ( Q3ListViewItem *,int )),this, SLOT(item_renamed_cbk ( Q3ListViewItem *,int )) );
 
 	for (int i=1;i<99;i++) {
 
@@ -372,13 +373,13 @@ Instrument_Edit::Instrument_Edit(QWidget *p_parent) : QHBox(p_parent)  {
 		instrument_item->setRenameEnabled(1,true);
 	}
 
-	QHBox *aux_layer_hbox = new QHBox(instr_props_aux_vbox);
+	Q3HBox *aux_layer_hbox = new Q3HBox(instr_props_aux_vbox);
 	aux_layer_hbox->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Maximum));
 
-	QGroupBox *auxgroup = new QGroupBox ( 1, Qt::Vertical,"Output:",aux_layer_hbox);
+	Q3GroupBox *auxgroup = new Q3GroupBox ( 1, Qt::Vertical,"Output:",aux_layer_hbox);
 	property_output_buffer = new Q_Property_Bridge_Int_CSpinButon(auxgroup);
 
-	layer_group = new QButtonGroup ( 1, Qt::Vertical,"Current Layer:",aux_layer_hbox);
+	layer_group = new Q3ButtonGroup ( 1, Qt::Vertical,"Current Layer:",aux_layer_hbox);
 	for (int i=0;i<Instrument::MAX_LAYERS;i++) {
 
 		char text[2];
@@ -395,46 +396,46 @@ Instrument_Edit::Instrument_Edit(QWidget *p_parent) : QHBox(p_parent)  {
 	instrument_props_notebook = new QTabWidget (this);
 	instrument_props_notebook->setMargin(5);
 
-	instrument_general_hbox = new QHBox(instrument_props_notebook);
+	instrument_general_hbox = new Q3HBox(instrument_props_notebook);
 	instrument_props_notebook->addTab(instrument_general_hbox ,"General");
 	instrument_general_hbox ->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 
-	instrument_volume_vbox = new QVBox(instrument_props_notebook);
+	instrument_volume_vbox = new Q3VBox(instrument_props_notebook);
 	instrument_props_notebook->addTab(instrument_volume_vbox ,"Volume");
 	instrument_volume_vbox ->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 
-	instrument_pan_vbox = 	new QVBox(instrument_props_notebook);
+	instrument_pan_vbox = 	new Q3VBox(instrument_props_notebook);
 	instrument_props_notebook->addTab(instrument_pan_vbox  ,"Pan");
 	instrument_pan_vbox  ->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 
-	instrument_pitchfilter_vbox = new QVBox(instrument_props_notebook);
+	instrument_pitchfilter_vbox = new Q3VBox(instrument_props_notebook);
 	instrument_props_notebook-> addTab(instrument_pitchfilter_vbox ,"Pitch/Filter");
 	instrument_pitchfilter_vbox->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 
 
 	/* General properties */
 
-	note_sample_table_group = new QGroupBox( 1, Qt::Vertical,"Note/Sample:",instrument_general_hbox);
+	note_sample_table_group = new Q3GroupBox( 1, Qt::Vertical,"Note/Sample:",instrument_general_hbox);
 	note_sample_table_group->setSizePolicy(QSizePolicy(QSizePolicy::Maximum,QSizePolicy::Expanding));
 	note_sample_edit = new Sample_Instrument_Table(note_sample_table_group);
 	note_sample_edit->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 
 
-	nna.vbox = new QVBox(instrument_general_hbox);
+	nna.vbox = new Q3VBox(instrument_general_hbox);
 	nna.vbox->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 
-	nna.nna_group = new QButtonGroup ( 1, Qt::Horizontal,"New Note Action:", nna.vbox);
+	nna.nna_group = new Q3ButtonGroup ( 1, Qt::Horizontal,"New Note Action:", nna.vbox);
 	nna.nna_group->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 	QObject::connect(nna.nna_group, SIGNAL(pressed ( int )),this, SLOT(nna_selected( int )) );
 
-	nna.hbox = new QHBox(nna.vbox);
+	nna.hbox = new Q3HBox(nna.vbox);
 	nna.hbox->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 
-	nna.dct_group = new QButtonGroup ( 1, Qt::Horizontal,"Dup. Check Type", nna.hbox);
+	nna.dct_group = new Q3ButtonGroup ( 1, Qt::Horizontal,"Dup. Check Type", nna.hbox);
 	nna.dct_group->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 	QObject::connect(nna.dct_group, SIGNAL(pressed ( int )),this, SLOT(dct_selected( int )) );
 
-	nna.dct_group_action = new QButtonGroup ( 1, Qt::Horizontal,"Dup. Check Action:", nna.hbox);
+	nna.dct_group_action = new Q3ButtonGroup ( 1, Qt::Horizontal,"Dup. Check Action:", nna.hbox);
 	nna.dct_group_action->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 	QObject::connect(nna.dct_group_action, SIGNAL(pressed ( int )),this, SLOT(dct_action_selected( int )) );
 
@@ -456,8 +457,8 @@ Instrument_Edit::Instrument_Edit(QWidget *p_parent) : QHBox(p_parent)  {
 
 	/* Volume Properties */
 	volume.envelope_editor = new Envelope_Editor(instrument_volume_vbox);
-	volume.group = new QGroupBox ( 1, Qt::Vertical,"Volume Parameters",instrument_volume_vbox);
-	volume.grid = new QGrid(2,volume.group);
+	volume.group = new Q3GroupBox ( 1, Qt::Vertical,"Volume Parameters",instrument_volume_vbox);
+	volume.grid = new Q3Grid(2,volume.group);
 
 
 	volume.property_global_amount = new Q_Property_Bridge_Int_CSpinButon(volume.grid);
@@ -468,11 +469,11 @@ Instrument_Edit::Instrument_Edit(QWidget *p_parent) : QHBox(p_parent)  {
 	/* Panning Properties */
 	panning.envelope_editor = new Envelope_Editor(instrument_pan_vbox);
 
-	panning.group = new QGroupBox ( 1, Qt::Vertical,"Panning Parameters",instrument_pan_vbox);
-	panning.grid = new QGrid(2,panning.group);
+	panning.group = new Q3GroupBox ( 1, Qt::Vertical,"Panning Parameters",instrument_pan_vbox);
+	panning.grid = new Q3Grid(2,panning.group);
 
 
-	QHBox *auxhv = new QHBox(panning.grid);
+	Q3HBox *auxhv = new Q3HBox(panning.grid);
 	panning.property_use_default = new Q_Property_Bridge_Bool(auxhv);
 	panning.property_use_default->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Maximum));
 	panning.property_default_amount = new Q_Property_Bridge_Int(auxhv);
@@ -486,8 +487,8 @@ Instrument_Edit::Instrument_Edit(QWidget *p_parent) : QHBox(p_parent)  {
 	/* Pitch / Filter properties */
 
 	pitch_filter.envelope_editor = new Envelope_Editor(instrument_pitchfilter_vbox);
-	pitch_filter.group = new QGroupBox ( 1, Qt::Vertical,"Filter Parameters",instrument_pitchfilter_vbox);
-	pitch_filter.grid = new QGrid(2,pitch_filter.group);
+	pitch_filter.group = new Q3GroupBox ( 1, Qt::Vertical,"Filter Parameters",instrument_pitchfilter_vbox);
+	pitch_filter.grid = new Q3Grid(2,pitch_filter.group);
 
 	pitch_filter.property_envelope_use_as_filter = new Q_Property_Bridge_Bool(pitch_filter.envelope_editor->get_control_box());
 	pitch_filter.property_filter_type = new Q_Property_Bridge_Options(pitch_filter.envelope_editor->get_control_box());

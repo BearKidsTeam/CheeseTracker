@@ -50,9 +50,9 @@ void Resampler_Config::update_resampler_list() {
 }
 
 
-Resampler_Config::Resampler_Config(QWidget *p_parent) : QGroupBox(1, Qt::Vertical,"Wave Resampler:",p_parent) {
+Resampler_Config::Resampler_Config(QWidget *p_parent) : Q3GroupBox(1, Qt::Vertical,"Wave Resampler:",p_parent) {
 
-	resampler_list_box = new QListBox(this);
+	resampler_list_box = new Q3ListBox(this);
 	resampler_list_box->setSizePolicy(QSizePolicy( QSizePolicy::Expanding , QSizePolicy::Expanding ));
 
 	QObject::connect(resampler_list_box,SIGNAL(highlighted(int)),this,SLOT(resampler_selected(int)));

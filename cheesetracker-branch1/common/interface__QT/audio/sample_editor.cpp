@@ -26,7 +26,7 @@
 //
 //
 #include "sample_editor.h"
-#include <qgroupbox.h>
+#include <q3groupbox.h>
 
 void Sample_Editor::add_edit_effect(Edit_Effect *p_edit_effect) {
 
@@ -92,7 +92,7 @@ void Sample_Editor::destructive_operation_end_cbk() {
 	destructive_operation_end();
 }
 
-Sample_Editor::Sample_Editor(QWidget *p_parent) : QVBox(p_parent)   {
+Sample_Editor::Sample_Editor(QWidget *p_parent) : Q3VBox(p_parent)   {
 
 	sample_data=NULL;
 
@@ -100,7 +100,7 @@ Sample_Editor::Sample_Editor(QWidget *p_parent) : QVBox(p_parent)   {
 	setStretchFactor(sample_viewer,3);
 	sample_viewer->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 
-	format_box = new QHBox(this);
+	format_box = new Q3HBox(this);
 	format_box->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Maximum));
 
 	sample_viewer_zoom = new Sample_Viewer_Zoom(this);
@@ -111,9 +111,9 @@ Sample_Editor::Sample_Editor(QWidget *p_parent) : QVBox(p_parent)   {
 	setStretchFactor(tabs,2);
 
 
-	QVBox *auxvb2 = new QVBox(tabs);
+	Q3VBox *auxvb2 = new Q3VBox(tabs);
 	auxvb2->setMargin(5);
-	QGroupBox *auxvb = new QGroupBox(1, Qt::Vertical,"Sample Format && Loop",auxvb2);
+	Q3GroupBox *auxvb = new Q3GroupBox(1, Qt::Vertical,"Sample Format && Loop",auxvb2);
 	auxvb->setMargin(5);
 	sample_editor_format=new Sample_Editor_Format(auxvb);
 
@@ -124,9 +124,9 @@ Sample_Editor::Sample_Editor(QWidget *p_parent) : QVBox(p_parent)   {
 	QObject::connect(sample_editor_format,SIGNAL(sample_base_freq_changed()),this,SIGNAL(sample_freq_changed()));
 
 
-	QVBox *auxvb2_2 = new QVBox(tabs);
+	Q3VBox *auxvb2_2 = new Q3VBox(tabs);
 	auxvb2_2->setMargin(5);
-	QGroupBox *auxvb_2 = new QGroupBox(1, Qt::Vertical,"Clipboard Options",auxvb2_2);
+	Q3GroupBox *auxvb_2 = new Q3GroupBox(1, Qt::Vertical,"Clipboard Options",auxvb2_2);
 	auxvb_2->setMargin(5);
 
 	sample_editor_clipboard = new Sample_Editor_Clipboard(auxvb_2);

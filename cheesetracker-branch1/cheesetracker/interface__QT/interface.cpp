@@ -39,8 +39,11 @@
 #include "components/audio/sound_driver_manager.h"
 
 #include <cctype>
-#include <qfiledialog.h>
+#include <q3filedialog.h>
 #include <qmessagebox.h>
+#include <QKeyEvent>
+#include <QPixmap>
+#include <QEvent>
 
 
 Saver::Error  Interface::save_song()
@@ -69,12 +72,12 @@ Saver::Error  Interface::save_song_as()
 
 #ifdef CYGWIN_ENABLED
 
-	s = QFileDialog::getOpenFileName( QString::null, "Module Files (*.ct *.it)", this );
+	s = Q3FileDialog::getOpenFileName( QString::null, "Module Files (*.ct *.it)", this );
 
 
 #else
-	QFileDialog* fd = new QFileDialog( this, "Save Song", TRUE );
-	fd->setMode( QFileDialog::AnyFile );
+	Q3FileDialog* fd = new Q3FileDialog( this, "Save Song", TRUE );
+	fd->setMode( Q3FileDialog::AnyFile );
 	fd->setFilter( "Cheese Tracker (*.ct)" );
 	fd->addFilter( "Impulse Tracker 2.14 (*.it)" );
 	fd->addFilter( "Songs (*.ct *.it)" );
@@ -258,7 +261,7 @@ bool Interface::eventFilter( QObject *o, QEvent *e )
 
 void Interface::keyPressEvent ( QKeyEvent * e )
 {
-	if(e->state() & (AltButton|ShiftButton|ControlButton)) {
+	if(e->state() & (Qt::AltButton|Qt::ShiftButton|Qt::ControlButton)) {
 		return;
 	}
 

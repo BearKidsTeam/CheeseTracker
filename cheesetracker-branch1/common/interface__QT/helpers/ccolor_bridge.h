@@ -18,7 +18,7 @@
 #define CCOLOR_BRIDGE_H
 
 
-#include <qhbox.h>
+#include <q3hbox.h>
 #include <qlabel.h>
 #include "interface__QT/helpers/ccolor_panel.h"
 #include <qpushbutton.h>
@@ -27,7 +27,7 @@
  *
  * Juan Linietsky
  **/
-class CColor_Bridge : public QHBox {
+class CColor_Bridge : public Q3HBox {
 	Q_OBJECT
 	QLabel *label;
 	QPushButton *button;

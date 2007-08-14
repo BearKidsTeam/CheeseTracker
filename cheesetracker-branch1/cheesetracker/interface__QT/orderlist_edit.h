@@ -21,6 +21,9 @@
 #include <qfont.h>
 #include <qfontmetrics.h>
 #include <qpainter.h>
+//Added by qt3to4:
+#include <QPaintEvent>
+#include <QEvent>
 #include "interface_binds/editor.h"
 #include "interface__QT/table_base.h"
 

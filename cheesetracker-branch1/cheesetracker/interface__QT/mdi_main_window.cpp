@@ -36,6 +36,7 @@
 #define APP_MAINTAINER_ "J Phelps <godless@users.sf.net>"
 #define APP_WEBSITE_ "http://cheesetracker.sf.net/"
 
+#include <QDesktopWidget>
 #include "mdi_main_window.h"
 #include "interface__QT/icons/control_play_prev.xpm"
 #include "interface__QT/icons/control_play.xpm"
@@ -62,6 +63,12 @@
 
 #include "interface__QT/popups/cspindialog.h"
 #include <qaction.h>
+//Added by qt3to4:
+#include <QLabel>
+#include <QPixmap>
+#include <Q3Frame>
+#include <Q3PopupMenu>
+#include <QCloseEvent>
 
 void MDI_Sub_Window::closeEvent( QCloseEvent *  e) {
 
@@ -142,9 +149,9 @@ void MDI_Sub_Window::update_display_box() {
 	}
 }
 
-MDI_Sub_Window::MDI_Sub_Window( QWidget* parent, const char* name, int wflags ) : QMainWindow( parent, name, wflags )
+MDI_Sub_Window::MDI_Sub_Window( QWidget* parent, const char* name, Qt::WindowFlags wflags ) : Q3MainWindow( parent, name, wflags )
 {
-	vbox = new QVBox(this);
+	vbox = new Q3VBox(this);
 	status_bar = new QStatusBar(vbox);
 	interface = new Interface(vbox);
 	interface->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
@@ -613,22 +620,22 @@ void MDI_Main_Window::about_to_show_tools_menu() {
 }
 
 
-MDI_Main_Window::MDI_Main_Window() : QMainWindow( 0, "Main Window"/*, WDestructiveClose*/ ) {
+MDI_Main_Window::MDI_Main_Window() : Q3MainWindow( 0, "Main Window"/*, WDestructiveClose*/ ) {
 
 	caption_default=(string)APP_NAME_+(string)APP_VERSION_+" "+(string)APP_AUTHOR_;
 
         
 	//QObject::connect( windowsMenu, SIGNAL( aboutToShow() ), this, SLOT( windowsMenuAboutToShow() ) );
 
-	file_menu_toolbar = new QToolBar(this,"file menu");
-	addToolBar( file_menu_toolbar, tr( "File Options" ), DockTop, false );
-	play_commands = new QToolBar( this, "player control" );
-	addToolBar( play_commands, tr( "Play Control" ), DockTop, false );
-	QPopupMenu * file = new QPopupMenu( this );
+	file_menu_toolbar = new Q3ToolBar(this,"file menu");
+	addToolBar( file_menu_toolbar, tr( "File Options" ), Qt::DockTop, false );
+	play_commands = new Q3ToolBar( this, "player control" );
+	addToolBar( play_commands, tr( "Play Control" ), Qt::DockTop, false );
+	Q3PopupMenu * file = new Q3PopupMenu( this );
 	menuBar()->insertItem( "File", file,FileItemID );
 
 
-	QAction * file_new_action = new QAction("New Song",QPixmap((const char**)file_disk_new_song_xpm),"&New Song",CTRL+Key_N,this);
+	QAction * file_new_action = new QAction(QPixmap((const char**)file_disk_new_song_xpm),"&New Song",Qt::CTRL+Qt::Key_N,this, "New Song");
 	QObject::connect( file_new_action, SIGNAL( activated() ) , this, SLOT(newDoc()) );
 	file_new_action->addTo(file_menu_toolbar);
 	file_new_action->addTo(file);
@@ -637,7 +644,7 @@ MDI_Main_Window::MDI_Main_Window() : QMainWindow( 0, "Main Window"/*, WDestructi
 
 //	id = file->insertItem( openIcon, "&Open...",this, SLOT(load()), CTRL+Key_O );
 //	id = file->insertItem(  "&Open...",this, SLOT(load()), CTRL+Key_O );
-	QAction * file_open_action = new QAction("Open Song",QPixmap((const char**)file_disk_open_xpm),"&Load...",CTRL+Key_L,this);
+	QAction * file_open_action = new QAction(QPixmap((const char**)file_disk_open_xpm),"&Load...",Qt::CTRL+Qt::Key_L,this,"Open Song");
 	QObject::connect( file_open_action, SIGNAL( activated() ) , this, SLOT(load()) );
 	file_open_action->addTo(file_menu_toolbar);
 	file_open_action->addTo(file);
@@ -646,9 +653,8 @@ MDI_Main_Window::MDI_Main_Window() : QMainWindow( 0, "Main Window"/*, WDestructi
 	// key binding, but no corresponding menu entry.
 
 	QAction * F9_file_open_action =
-		new QAction("Open Song",
-		            QPixmap((const char**)file_disk_open_xpm), "",
-		            Key_F9, this);
+		new QAction(QPixmap((const char**)file_disk_open_xpm), "",
+		            Qt::Key_F9, this, "Open Song");
 
 	QObject::connect(F9_file_open_action, SIGNAL( activated() ), this,
 	                 SLOT(load()) );
@@ -662,12 +668,12 @@ MDI_Main_Window::MDI_Main_Window() : QMainWindow( 0, "Main Window"/*, WDestructi
 	// Make Ctrl+I load an instrument. This requires a QAction with
 	// no associated menu item.
 
-	QAction * file_save_action = new QAction("Save",QPixmap((const char**)file_disk_xpm),"&Save",CTRL+Key_S,this);
+	QAction * file_save_action = new QAction(QPixmap((const char**)file_disk_xpm),"&Save",Qt::CTRL+Qt::Key_S,this,"Save");
 	QObject::connect( file_save_action, SIGNAL( activated() ) , this, SLOT(save()) );
 	file_save_action->addTo(file_menu_toolbar);
 	file_save_action->addTo(file);
 
-	QAction * file_saveas_action = new QAction("Save As",QPixmap((const char**)file_disk_saveas_xpm),"Save &As..",CTRL+ALT+Key_S,this);
+	QAction * file_saveas_action = new QAction(QPixmap((const char**)file_disk_saveas_xpm),"Save &As..",Qt::CTRL+Qt::ALT+Qt::Key_S,this,"Save As");
 	QObject::connect( file_saveas_action, SIGNAL( activated() ) , this, SLOT(save_as()) );
 	file_saveas_action->addTo(file_menu_toolbar);
 	file_saveas_action->addTo(file);
@@ -675,16 +681,16 @@ MDI_Main_Window::MDI_Main_Window() : QMainWindow( 0, "Main Window"/*, WDestructi
 	file->insertSeparator();
 
 //	file->insertItem( "&Close", this, SLOT(close_window()), CTRL+Key_W );
-	QAction * file_close_action = new QAction("Close",QPixmap((const char**)file_disk_close_xpm),"&Close",CTRL+Key_W,this);
+	QAction * file_close_action = new QAction(QPixmap((const char**)file_disk_close_xpm),"&Close",Qt::CTRL+Qt::Key_W,this,"Close");
 	QObject::connect( file_close_action, SIGNAL( activated() ) , this, SLOT(close_window()) );
 	file_close_action->addTo(file_menu_toolbar);
 	file_close_action->addTo(file);
 
-	file->insertItem( "&Quit", qApp, SLOT( closeAllWindows() ), CTRL+Key_Q );
+	file->insertItem( "&Quit", qApp, SLOT( closeAllWindows() ), Qt::CTRL+Qt::Key_Q );
 
         /* EDIT Section */
 
-	pattern_edit_menu = new QPopupMenu( this );
+	pattern_edit_menu = new Q3PopupMenu( this );
 	menuBar()->insertItem( "Pattern", pattern_edit_menu,PatternEditItemID );
 
 	pattern_edit_menu->insertItem("Undo/Redo Last Action",PatternEdit__Toggle_Last_Action);
@@ -751,7 +757,7 @@ MDI_Main_Window::MDI_Main_Window() : QMainWindow( 0, "Main Window"/*, WDestructi
 
         /* Sample Edit */
 
-	sample_edit_menu = new QPopupMenu( this );
+	sample_edit_menu = new Q3PopupMenu( this );
 	menuBar()->insertItem( "Sample", sample_edit_menu,SampleEditItemID );
 
 	sample_edit_menu->insertItem("Sample- Copy",SampleEdit__Copy);
@@ -763,7 +769,7 @@ MDI_Main_Window::MDI_Main_Window() : QMainWindow( 0, "Main Window"/*, WDestructi
 	sample_edit_menu->insertItem("Sample- Save",SampleEdit__Save);
 	sample_edit_menu->insertSeparator();
 	sample_edit_menu->insertItem("Sample- Make Instrument",SampleEdit__MakeInstrument);
-	sample_edit_menu->setAccel(CTRL+Key_I, SampleEdit__MakeInstrument);
+	sample_edit_menu->setAccel(Qt::CTRL+Qt::Key_I, SampleEdit__MakeInstrument);
 	sample_edit_menu->insertSeparator();
 	sample_edit_menu->insertItem("Sample- Clear Unused Samples",SampleEdit__ClearUnused);
 	sample_edit_menu->insertItem("Sample- Clear Default Pannings",SampleEdit__ClearDefaultPanning);
@@ -772,7 +778,7 @@ MDI_Main_Window::MDI_Main_Window() : QMainWindow( 0, "Main Window"/*, WDestructi
 
         /* Instrument Edit */
 
-	instrument_edit_menu = new QPopupMenu( this );
+	instrument_edit_menu = new Q3PopupMenu( this );
 	menuBar()->insertItem( "Instrument", instrument_edit_menu,InstrumentEditItemID );
 
 	instrument_edit_menu->insertItem("Instrument- Copy",InstrumentEdit__Copy);
@@ -792,26 +798,26 @@ MDI_Main_Window::MDI_Main_Window() : QMainWindow( 0, "Main Window"/*, WDestructi
 
         /* Toolbar play */
 
-	QPopupMenu* play_control_menu = new QPopupMenu( this );
+	Q3PopupMenu* play_control_menu = new Q3PopupMenu( this );
 	menuBar()->insertItem( "Song", play_control_menu,SongEditItemID );
 
 
-	QAction * play_prev_action = new QAction("Skip To Previous Order",QPixmap((const char**)control_play_prev_xpm),"Skip To P&revious Order",Qt::ALT+Qt::Key_Minus,this);
+	QAction * play_prev_action = new QAction(QPixmap((const char**)control_play_prev_xpm),"Skip To P&revious Order",Qt::ALT+Qt::Key_Minus,this,"Skip To Previous Order");
 	QObject::connect( play_prev_action, SIGNAL( activated() ) , this, SLOT( play_prev_action_cbk() ) );
 	play_prev_action->addTo(play_commands);
 	play_prev_action->addTo(play_control_menu);
 
-	QAction * play_action = new QAction("Play Song",QPixmap((const char**)control_play_xpm),"&Play Song",Qt::Key_F5,this);
+	QAction * play_action = new QAction(QPixmap((const char**)control_play_xpm),"&Play Song",Qt::Key_F5,this,"Play Song");
 	QObject::connect( play_action, SIGNAL( activated() ) , this, SLOT( play_action_cbk() ) );
 	play_action->addTo(play_commands);
 	play_action->addTo(play_control_menu);
 
-	QAction * stop_action = new QAction("Stop",QPixmap((const char**)control_stop_xpm),"&Stop",Qt::Key_F8,this);
+	QAction * stop_action = new QAction(QPixmap((const char**)control_stop_xpm),"&Stop",Qt::Key_F8,this,"Stop");
 	QObject::connect( stop_action, SIGNAL( activated() ) , this, SLOT( stop_action_cbk() ) );
 	stop_action->addTo(play_commands);
 	stop_action->addTo(play_control_menu);
 
-	QAction * play_next_action = new QAction("Skip To Next Order",QPixmap((const char**)control_play_next_xpm),"Skip To &Next Order",Qt::ALT+Qt::Key_Plus,this);
+	QAction * play_next_action = new QAction(QPixmap((const char**)control_play_next_xpm),"Skip To &Next Order",Qt::ALT+Qt::Key_Plus,this,"Skip To Next Order");
 	QObject::connect( play_next_action, SIGNAL( activated() ) , this, SLOT( play_next_action_cbk() ) );
 	play_next_action->addTo(play_commands);
 	play_next_action->addTo(play_control_menu);
@@ -819,23 +825,23 @@ MDI_Main_Window::MDI_Main_Window() : QMainWindow( 0, "Main Window"/*, WDestructi
 	play_commands->addSeparator();
 	play_control_menu->insertSeparator();
 
-	QAction * play_pattern_action = new QAction("Play Pattern",QPixmap((const char**)control_play_pattern_xpm),"Play Pa&ttern",Qt::Key_F6,this);
+	QAction * play_pattern_action = new QAction(QPixmap((const char**)control_play_pattern_xpm),"Play Pa&ttern",Qt::Key_F6,this,"Play Pattern");
 	QObject::connect( play_pattern_action, SIGNAL( activated() ) , this, SLOT( play_pattern_action_cbk() ) );
 	play_pattern_action->addTo(play_commands);
 	play_pattern_action->addTo(play_control_menu);
 
-	QAction * play_song_cursor_action = new QAction("Play Song From Cursor",QPixmap((const char**)control_play_pattern_all_xpm),"Play Song From &Cursor",Qt::Key_F7,this);
+	QAction * play_song_cursor_action = new QAction(QPixmap((const char**)control_play_pattern_all_xpm),"Play Song From &Cursor",Qt::Key_F7,this,"Play Song From Cursor");
 	QObject::connect( play_song_cursor_action, SIGNAL( activated() ) , this, SLOT( play_song_cursor_action_cbk() ) );
 	play_song_cursor_action->addTo(play_commands);
 	play_song_cursor_action->addTo(play_control_menu);
 
-	QAction * play_pattern_cursor_action = new QAction("Play Pattern From Cursor",QPixmap((const char**)control_play_pattern_all_xpm),"Play Song From &Cursor",Qt::SHIFT+Qt::Key_F6,this);
+	QAction * play_pattern_cursor_action = new QAction(QPixmap((const char**)control_play_pattern_all_xpm),"Play Song From &Cursor",Qt::SHIFT+Qt::Key_F6,this,"Play Pattern From Cursor");
 	QObject::connect( play_pattern_cursor_action, SIGNAL( activated() ) , this, SLOT( play_pattern_cursor_action_cbk() ) );
 	play_pattern_cursor_action->addTo(play_control_menu);
 
 	/*** Windows window */
 
-	windowsMenu = new QPopupMenu( this );
+	windowsMenu = new Q3PopupMenu( this );
 	windowsMenu->setCheckable( TRUE );
 
 	connect( windowsMenu, SIGNAL( aboutToShow() ), this, SLOT( about_to_show_window_menu() ) );
@@ -845,21 +851,19 @@ MDI_Main_Window::MDI_Main_Window() : QMainWindow( 0, "Main Window"/*, WDestructi
 
         /* Settings Menu */
 
-	settings_edit_menu = new QPopupMenu( this );
+	settings_edit_menu = new Q3PopupMenu( this );
 	menuBar()->insertItem( "Settings", settings_edit_menu,SettingsItemID );
 	connect( settings_edit_menu, SIGNAL( aboutToShow() ), this, SLOT( about_to_show_tools_menu() ) );
 	connect( settings_edit_menu, SIGNAL( activated(int) ), this, SLOT( tools_menu_item_activated(int) ) );
 
 
 	/* Editing Octave Toolbar */
-	editing_octave_toolbar = new QToolBar(this);
-	addToolBar( editing_octave_toolbar, tr( "Octave" ), DockTop, false );
+	editing_octave_toolbar = new Q3ToolBar(this);
+	addToolBar( editing_octave_toolbar, tr( "Octave" ), Qt::DockTop, false );
 
 	new QLabel("Octave:",editing_octave_toolbar);
 	editing_octave = new CSpinButton(editing_octave_toolbar);
-	editing_octave->get_editor()->setReadOnly(true);
-	editing_octave->get_editor()->setFocusPolicy(QWidget::NoFocus);
-	editing_octave->setFocusPolicy(QWidget::NoFocus);
+	editing_octave->setFocusPolicy(Qt::NoFocus);
 	editing_octave->setMaxValue(8);
 	editing_octave->setMinValue(0);
 	QObject::connect(editing_octave,SIGNAL(valueChanged(int)),this,SLOT(default_octave_changed_cbk(int)));
@@ -867,8 +871,8 @@ MDI_Main_Window::MDI_Main_Window() : QMainWindow( 0, "Main Window"/*, WDestructi
 
 	statusBar() ->message( "Ready", 2000 );
 
-	QVBox* vb = new QVBox( this );
-	vb->setFrameStyle( QFrame::StyledPanel | QFrame::Sunken );
+	Q3VBox* vb = new Q3VBox( this );
+	vb->setFrameStyle( Q3Frame::StyledPanel | Q3Frame::Sunken );
 	ws = new QWorkspace( vb );
 	setCentralWidget( vb );
 
@@ -886,7 +890,7 @@ MDI_Main_Window::MDI_Main_Window() : QMainWindow( 0, "Main Window"/*, WDestructi
 	menuBar()->setItemEnabled(InstrumentEditItemID,false);
 
 
-       	help_menu = new QPopupMenu(this);
+       	help_menu = new Q3PopupMenu(this);
 	menuBar()->insertItem( "Help", help_menu,HelpItemID );
 	help_menu->insertItem("Pattern Edit Effect List",Help__Pattern);
 	help_menu->insertSeparator();
@@ -949,7 +953,7 @@ void MDI_Main_Window::open_song(string p_song) {
 }
 
 MDI_Sub_Window *  MDI_Main_Window::newDoc() {
-	MDI_Sub_Window *  w = new MDI_Sub_Window( ws, 0, WDestructiveClose );
+        MDI_Sub_Window *  w = new MDI_Sub_Window( ws, 0, Qt::WDestructiveClose );
 
 	w->setCaption( "New Song" );
 	//	w->setIcon( QPixmap("document.xpm") );
@@ -976,13 +980,13 @@ void MDI_Main_Window::closeEvent( QCloseEvent *e ) {
 				}
 			}
 		}
-	QMainWindow::closeEvent( e );
+	Q3MainWindow::closeEvent( e );
 }
 
 void MDI_Main_Window::load()
 {
 
-    QString fn = QFileDialog::getOpenFileName( QString::null, "Module Files (*.ct *.CT *.it *.IT *.xm *.XM *.s3m *.S3M)", this );
+    QString fn = Q3FileDialog::getOpenFileName( QString::null, "Module Files (*.ct *.CT *.it *.IT *.xm *.XM *.s3m *.S3M)", this );
     if ( !fn.isEmpty() ) {
         MDI_Sub_Window* w = newDoc();
 	w->open_song( fn.ascii() );

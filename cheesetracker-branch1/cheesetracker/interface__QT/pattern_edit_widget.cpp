@@ -27,6 +27,9 @@
 //
 #include "pattern_edit_widget.h"
 #include "interface__QT/popups/cspindialog.h"
+//Added by qt3to4:
+#include <Q3Frame>
+#include <QLabel>
 
 
 void Pattern_Edit_Widget::focus_pattern_edit_widget() {
@@ -250,21 +253,19 @@ void Pattern_Edit_Widget::reupdate_components() { //needed from outside :(
 	pattern_edit->update();
 }
 
-Pattern_Edit_Widget::Pattern_Edit_Widget(QWidget *p_parent) : QVBox(p_parent) {
+Pattern_Edit_Widget::Pattern_Edit_Widget(QWidget *p_parent) : Q3VBox(p_parent) {
 
-	editing_options=new QHBox(this);
+	editing_options=new Q3HBox(this);
 	editing_options->setSizePolicy(QSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum));
 
 	new QLabel("Pattern:",editing_options);
 	pattern_spin= new CSpinButton(editing_options);
 	pattern_spin->setMaxValue(199);
 	pattern_spin->setSuffix("/0");
-	pattern_spin->get_editor()->setReadOnly(true);
-	pattern_spin->setFocusPolicy(QWidget::NoFocus);
-	pattern_spin->get_editor()->setFocusPolicy(QWidget::NoFocus);
+	pattern_spin->setFocusPolicy(Qt::NoFocus);
 	QObject::connect( pattern_spin, SIGNAL(valueChanged(int)), this, SLOT(pattern_spin_changed_cbk(int)) );
 
-	QFrame * aux_frame = new QFrame(editing_options);
+	Q3Frame * aux_frame = new Q3Frame(editing_options);
 	aux_frame->setFrameStyle(VLine+Sunken);
 	aux_frame->setMinimumWidth(20);
 
@@ -272,12 +273,10 @@ Pattern_Edit_Widget::Pattern_Edit_Widget(QWidget *p_parent) : QVBox(p_parent) {
 	order_spin= new CSpinButton(editing_options);
 	order_spin->setSuffix("/199");
 	order_spin->setMaxValue(199);
-	order_spin->get_editor()->setReadOnly(true);
-	order_spin->setFocusPolicy(QWidget::NoFocus);
-	order_spin->get_editor()->setFocusPolicy(QWidget::NoFocus);
+	order_spin->setFocusPolicy(Qt::NoFocus);
 	QObject::connect( order_spin, SIGNAL(valueChanged(int)), this, SLOT(order_spin_changed_cbk(int)) );
 
-	aux_frame = new QFrame(editing_options);
+	aux_frame = new Q3Frame(editing_options);
 	aux_frame->setFrameStyle(VLine+Sunken);
 	aux_frame->setMinimumWidth(20);
 
@@ -288,11 +287,11 @@ Pattern_Edit_Widget::Pattern_Edit_Widget(QWidget *p_parent) : QVBox(p_parent) {
 	pattern_len_set->setSizePolicy(QSizePolicy(QSizePolicy::Maximum,QSizePolicy::Minimum));
 
 
-	aux_frame = new QFrame(this);
+	aux_frame = new Q3Frame(this);
 	aux_frame->setFrameStyle(HLine+Sunken);
 	aux_frame->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Maximum));
 
-	editing_options_instrument=new QHBox(this);
+	editing_options_instrument=new Q3HBox(this);
 	editing_options_instrument->setSizePolicy(QSizePolicy(QSizePolicy::Minimum,QSizePolicy::Maximum));
 
 	new QLabel("Undo History:",editing_options_instrument);
@@ -302,7 +301,7 @@ Pattern_Edit_Widget::Pattern_Edit_Widget(QWidget *p_parent) : QVBox(p_parent) {
 	undo_button = new QPushButton("Undo",editing_options_instrument);
 	QObject::connect( undo_button, SIGNAL(clicked()), this, SLOT(undo_button_callback()) );
 
-	aux_frame = new QFrame(editing_options_instrument);
+	aux_frame = new Q3Frame(editing_options_instrument);
 	aux_frame->setFrameStyle(VLine+Sunken);
 	aux_frame->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 	aux_frame->setMinimumWidth(20);
@@ -313,19 +312,18 @@ Pattern_Edit_Widget::Pattern_Edit_Widget(QWidget *p_parent) : QVBox(p_parent) {
 
 	instrument_edit = new CSpinButton(editing_options_instrument);
 	instrument_edit->setMinValue(1);
-	instrument_edit->setFocusPolicy(QWidget::NoFocus);
-	instrument_edit->get_editor()->setFocusPolicy(QWidget::NoFocus);
+	instrument_edit->setFocusPolicy(Qt::NoFocus);
 
 	editing_options_instrument->setStretchFactor(instrument_edit,2);
 	QObject::connect( instrument_edit, SIGNAL(valueChanged(int)), this, SLOT(instrument_spin_changed_cbk(int)) );
 
-	aux_frame = new QHBox(this);
+	aux_frame = new Q3HBox(this);
 	aux_frame->setFrameStyle(Panel+Sunken);
 	aux_frame->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 
 
 
-	QGrid *grid = new QGrid(2,aux_frame);
+	Q3Grid *grid = new Q3Grid(2,aux_frame);
 	pattern_edit = new Pattern_Edit(grid);
 	pattern_edit->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 	vscroll = new QScrollBar(Qt::Vertical,grid);

@@ -12,7 +12,7 @@
 //
 #include "effect_buffers_editor.h"
 
-Effect_Buffers_Editor::Effect_Buffers_Editor(QWidget *p_parent) : QHBox(p_parent) {
+Effect_Buffers_Editor::Effect_Buffers_Editor(QWidget *p_parent) : Q3HBox(p_parent) {
 
 }
 

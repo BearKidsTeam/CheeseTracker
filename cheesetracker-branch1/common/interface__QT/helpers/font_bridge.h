@@ -28,7 +28,7 @@
 #ifndef FONT_BRIDGE_H
 #define FONT_BRIDGE_H
 
-#include <qhbox.h>
+#include <q3hbox.h>
 #include <qlabel.h>
 #include <qpushbutton.h>
 #include <qfont.h>
@@ -36,7 +36,7 @@
 /**
 @author Juan Linietsky
 */
-class Font_Bridge : public QHBox {
+class Font_Bridge : public Q3HBox {
 
 	Q_OBJECT
 

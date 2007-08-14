@@ -48,7 +48,7 @@
 
 
 #include <qtabwidget.h>
-#include <qscrollview.h>
+#include <q3scrollview.h>
 
 #include <vector>
 	using std::vector;
@@ -56,13 +56,13 @@
 	using std::list;
 
 
-class Property_Bridge_Edit_List : public QVBox {
+class Property_Bridge_Edit_List : public Q3VBox {
 
 
 	struct Section {
 
-                QScrollView *scroll;
-		QVBox *vbox;
+                Q3ScrollView *scroll;
+		Q3VBox *vbox;
 	};
 
 	QTabWidget * tabs;

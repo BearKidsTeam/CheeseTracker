@@ -26,6 +26,9 @@
 //
 //
 #include "vertical_scrolled_window.h"
+//Added by qt3to4:
+#include <QEvent>
+#include <QResizeEvent>
 
 bool Vertical_Scrolled_Window::eventFilter( QObject *o, QEvent *e ) {
 
@@ -52,7 +55,7 @@ void Vertical_Scrolled_Window::resizeEvent ( QResizeEvent * p_resevebt) {
  	child->resize(viewport()->width(),child->height());
 }
 
-Vertical_Scrolled_Window::Vertical_Scrolled_Window(QWidget *p_parent) : QScrollView(p_parent) {
+Vertical_Scrolled_Window::Vertical_Scrolled_Window(QWidget *p_parent) : Q3ScrollView(p_parent) {
 
 	child=NULL;
 }

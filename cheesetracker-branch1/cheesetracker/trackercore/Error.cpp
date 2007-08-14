@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <stdarg.h>
-#include <qmessagebox.h>
+#include <QMessageBox>
 #include "Error.h"
 
 #ifdef _WINDOWS

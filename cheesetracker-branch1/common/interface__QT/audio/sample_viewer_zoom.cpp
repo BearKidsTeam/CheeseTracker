@@ -30,6 +30,8 @@
 #include "../icons/zoom_minus.xpm"
 #include "../icons/zoom_plus.xpm"
 #include "../icons/zoom_selection.xpm"
+//Added by qt3to4:
+#include <QLabel>
 void Sample_Viewer_Zoom::update_zoom_bar() {
 
 	int zoom_offset=sample_viewer->get_zoom_offset();
@@ -176,7 +178,7 @@ void Sample_Viewer_Zoom::set_sample_data(Sample_Data *p_sample_data) {
 }
 
 
-Sample_Viewer_Zoom::Sample_Viewer_Zoom(QWidget *p_parent) : QVBox(p_parent),
+Sample_Viewer_Zoom::Sample_Viewer_Zoom(QWidget *p_parent) : Q3VBox(p_parent),
 	pix_zoom_more((const char**)zoom_plus_xpm),
 	pix_zoom_less((const char**)zoom_minus_xpm),
 	pix_zoom_all((const char**)zoom_all_xpm),
@@ -187,7 +189,7 @@ Sample_Viewer_Zoom::Sample_Viewer_Zoom(QWidget *p_parent) : QVBox(p_parent),
 
 	zoom_view_offset = new QScrollBar(Qt::Horizontal,this);
 
-	zoom_box = new QHBox(this);
+	zoom_box = new Q3HBox(this);
 	zoom_box->setSizePolicy(QSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum));
 
 	zoom_more = new QPushButton(zoom_box); zoom_more->setPixmap(pix_zoom_more);

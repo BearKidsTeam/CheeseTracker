@@ -27,6 +27,9 @@
 //
 #include "cspindialog.h"
 #include <qpushbutton.h>
+//Added by qt3to4:
+#include <QLabel>
+#include <Q3VBoxLayout>
 
 
 
@@ -42,13 +45,13 @@ void CSpinDialog::set_description(const QString &p_desc) {
 
 CSpinDialog::CSpinDialog(QWidget *p_parent) : QDialog(p_parent) {
 
-	main_vbox = new QVBoxLayout(this);
+	main_vbox = new Q3VBoxLayout(this);
 	main_vbox->setAutoAdd(true);
 	//main_vbox->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 
-	value_hbox = new QHBox(this);
+	value_hbox = new Q3HBox(this);
 
-	options_hbox = new QHBox(this);
+	options_hbox = new Q3HBox(this);
 
 //	value_hbox->insertSpacing(-1,4);
 	description = new QLabel(value_hbox);

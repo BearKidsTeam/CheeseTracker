@@ -139,10 +139,10 @@ void Effect_Chain_Editor::set_effect_chain(Effect_Parameter_Chain *p_chain) {
 }
 
 
-Effect_Chain_Editor::Effect_Chain_Editor(QWidget *p_parent) : QHBox(p_parent) {
+Effect_Chain_Editor::Effect_Chain_Editor(QWidget *p_parent) : Q3HBox(p_parent) {
 
-	QVBox *vb = new QVBox(this);
-	effect_list = new QListBox(vb);
+	Q3VBox *vb = new Q3VBox(this);
+	effect_list = new Q3ListBox(vb);
 	effect_list->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 	list_manage = new Clist_Manager(vb);
 	list_manage->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Maximum));

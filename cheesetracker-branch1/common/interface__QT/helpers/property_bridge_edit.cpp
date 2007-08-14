@@ -26,6 +26,9 @@
 //
 //
 #include "property_bridge_edit.h"
+//Added by qt3to4:
+#include <Q3Frame>
+#include <QLabel>
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -102,14 +105,14 @@ void Q_Property_Bridge_Int::set_bridge(Int_Property_Bridge *p_bridge) {
 	connection = bridge->changed_signal.connect(SigC::slot<void>(*this, &Q_Property_Bridge_Int::bridge_changed));
 }
 
-Q_Property_Bridge_Int::Q_Property_Bridge_Int(QWidget *p_parent,bool p_vertical) :  QVBox(p_parent) {
+Q_Property_Bridge_Int::Q_Property_Bridge_Int(QWidget *p_parent,bool p_vertical) :  Q3VBox(p_parent) {
 
 	updating_bridge=false;
 	updating_bridge_edit=false;
 	vertical=p_vertical;
 	bridge=NULL;
 	label = new QLabel("Bridge:",this);
-	slider_hbox = new QHBox(this);
+	slider_hbox = new Q3HBox(this);
 	vlabel = new VLabel(slider_hbox);
 	slider = new QSlider(p_vertical? Qt::Vertical : Qt::Horizontal,slider_hbox);
 	slider_label = new QLabel("0",slider_hbox);
@@ -232,12 +235,12 @@ void Q_Property_Bridge_Float::set_bridge(Float_Property_Bridge *p_bridge) {
 	connection = bridge->changed_signal.connect(SigC::slot<void>(*this, &Q_Property_Bridge_Float::bridge_changed));
 }
 
-Q_Property_Bridge_Float::Q_Property_Bridge_Float(QWidget *p_parent, bool p_text_visible) :  QVBox(p_parent) {
+Q_Property_Bridge_Float::Q_Property_Bridge_Float(QWidget *p_parent, bool p_text_visible) :  Q3VBox(p_parent) {
 
 	bridge=NULL;
 	input_source = NONE;
 	label = new QLabel("Bridge:",this);
-	slider_hbox = new QHBox(this);
+	slider_hbox = new Q3HBox(this);
 	slider = new QSlider(Qt::Horizontal,slider_hbox);
 	QObject::connect( slider, SIGNAL(valueChanged(int)),this, SLOT(value_changed(int)) );
 
@@ -305,7 +308,7 @@ void Q_Property_Bridge_Float_Dial::set_bridge(Float_Property_Bridge *p_bridge) {
 	connection = bridge->changed_signal.connect(SigC::slot<void>(*this, &Q_Property_Bridge_Float_Dial::bridge_changed));
 }
 
-Q_Property_Bridge_Float_Dial::Q_Property_Bridge_Float_Dial(QWidget *p_parent) :  QVBox(p_parent) {
+Q_Property_Bridge_Float_Dial::Q_Property_Bridge_Float_Dial(QWidget *p_parent) :  Q3VBox(p_parent) {
 
 	bridge=NULL;
 	dial = new QDial(this);
@@ -351,7 +354,7 @@ void Q_Property_Bridge_Int_CSpinButon::bridge_changed() {
 	spin->setValue(bridge->get());
 };
 
-Q_Property_Bridge_Int_CSpinButon::Q_Property_Bridge_Int_CSpinButon(QWidget *p_parent) :  QHBox(p_parent) {
+Q_Property_Bridge_Int_CSpinButon::Q_Property_Bridge_Int_CSpinButon(QWidget *p_parent) :  Q3HBox(p_parent) {
 
 	bridge=NULL;
 	label = new QLabel("Bridge:",this);
@@ -376,7 +379,7 @@ void Q_Property_Bridge_Bool::bridge_changed() {
 	check->setChecked(bridge->get());
 };
 
-Q_Property_Bridge_Bool::Q_Property_Bridge_Bool(QWidget *p_parent,bool p_vertical) : QVBox(p_parent) {
+Q_Property_Bridge_Bool::Q_Property_Bridge_Bool(QWidget *p_parent,bool p_vertical) : Q3VBox(p_parent) {
 
 	setSizePolicy(QSizePolicy( QSizePolicy::Maximum, QSizePolicy::Maximum));
 	vertical=p_vertical;
@@ -386,9 +389,9 @@ Q_Property_Bridge_Bool::Q_Property_Bridge_Bool(QWidget *p_parent,bool p_vertical
 	if (!p_vertical)
 		vlabel->hide();
 	
-	QHBox *auxhb = new QHBox(this);
+	Q3HBox *auxhb = new Q3HBox(this);
 	
-	(new QFrame(auxhb))->setSizePolicy(QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Maximum));;
+	(new Q3Frame(auxhb))->setSizePolicy(QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Maximum));;
 	check = new QCheckBox(auxhb);
 	bridge=NULL;
 	check->setText("");
@@ -451,7 +454,7 @@ void Q_Property_Bridge_Options::set_bridge(Options_Property_Bridge *p_bridge) {
 	connection = bridge->changed_signal.connect(SigC::slot<void>(*this, &Q_Property_Bridge_Options::bridge_changed));
 }
 
-Q_Property_Bridge_Options::Q_Property_Bridge_Options(QWidget *p_parent) :  QVBox(p_parent) {
+Q_Property_Bridge_Options::Q_Property_Bridge_Options(QWidget *p_parent) :  Q3VBox(p_parent) {
 
 	bridge=NULL;
 	label = new QLabel("Bridge:",this);
@@ -500,7 +503,7 @@ void Q_Property_Bridge_String::set_bridge(String_Property_Bridge *p_bridge) {
 	connection = bridge->changed_signal.connect(SigC::slot<void>(*this, &Q_Property_Bridge_String::bridge_changed));
 }
 
-Q_Property_Bridge_String::Q_Property_Bridge_String(QWidget *p_parent) :  QVBox(p_parent) {
+Q_Property_Bridge_String::Q_Property_Bridge_String(QWidget *p_parent) :  Q3VBox(p_parent) {
 
 	bridge=NULL;
 	label = new QLabel("Bridge:",this);
@@ -545,13 +548,13 @@ void Q_Property_Bridge_String_Multiline::set_bridge(String_Property_Bridge *p_br
 	connection = bridge->changed_signal.connect(SigC::slot<void>(*this, &Q_Property_Bridge_String_Multiline::bridge_changed));
 }
 
-Q_Property_Bridge_String_Multiline::Q_Property_Bridge_String_Multiline(QWidget *p_parent) :  QVBox(p_parent) {
+Q_Property_Bridge_String_Multiline::Q_Property_Bridge_String_Multiline(QWidget *p_parent) :  Q3VBox(p_parent) {
 
 
 	bridge=NULL;
 	validating = false;
 	label = new QLabel("Bridge:",this);
-	text_edit= new QTextEdit(this);
+	text_edit= new Q3TextEdit(this);
 	text_edit->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 
 	QObject::connect( text_edit, SIGNAL(textChanged()),this, SLOT(value_changed()) );

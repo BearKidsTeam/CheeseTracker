@@ -14,8 +14,8 @@
 
 #include "components/audio/effect_chain.h"
 
-#include <qlistbox.h>
-#include <qhbox.h>
+#include <q3listbox.h>
+#include <q3hbox.h>
 #include "interface__QT/helpers/clist_manager.h"
 #include "interface__QT/popups/effect_select_popup.h"
 #include "interface__QT/helpers/property_bridge_edit_list.h"
@@ -24,11 +24,11 @@
 /**
 @author Juan Linietsky
 */
-class Effect_Chain_Editor : public QHBox, public SigC::Object {
+class Effect_Chain_Editor : public Q3HBox, public SigC::Object {
 
 	Q_OBJECT
 
-	QListBox *effect_list;
+	Q3ListBox *effect_list;
 	Clist_Manager *list_manage;
 	Property_Bridge_Edit_List *prop_edit_list;
 	struct Vars {

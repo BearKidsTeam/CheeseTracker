@@ -26,6 +26,8 @@
 //
 //
 #include "note_bridge.h"
+//Added by qt3to4:
+#include <QLabel>
 
 void Q_Note_Bridge::value_changed(int p_newval) {
 
@@ -71,7 +73,7 @@ void Q_Note_Bridge::set_bridge(Int_Property_Bridge *p_bridge) {
 	value_changed(bridge_val);
 }
 
-Q_Note_Bridge::Q_Note_Bridge(QWidget *p_parent) :  QHBox(p_parent) {
+Q_Note_Bridge::Q_Note_Bridge(QWidget *p_parent) :  Q3HBox(p_parent) {
 
 	bridge=NULL;
 	label = new QLabel("Bridge:",this);

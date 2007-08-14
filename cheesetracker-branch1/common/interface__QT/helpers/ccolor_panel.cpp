@@ -26,6 +26,8 @@
 //
 //
 #include "ccolor_panel.h"
+//Added by qt3to4:
+#include <QPaintEvent>
 
 void CColor_Panel::paintEvent( QPaintEvent * p_event ) {
 

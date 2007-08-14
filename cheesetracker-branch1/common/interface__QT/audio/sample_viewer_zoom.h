@@ -18,7 +18,7 @@
 #define SAMPLE_VIEWER_ZOOM_H
 
 
-#include <qvbox.h>
+#include <q3vbox.h>
 #include "interface__QT/audio/sample_viewer.h"
 #include <qpushbutton.h>
 #include <qpixmap.h>
@@ -29,14 +29,14 @@
  *
  * Juan Linietsky
  **/
-class Sample_Viewer_Zoom : public QVBox {
+class Sample_Viewer_Zoom : public Q3VBox {
 
 	Q_OBJECT
 	Sample_Viewer * sample_viewer;
 
         bool updating_zoom;
 
-	QHBox * zoom_box;
+	Q3HBox * zoom_box;
 
 	QPushButton *zoom_more;
 	QPushButton *zoom_less;

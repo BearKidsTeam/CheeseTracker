@@ -17,7 +17,7 @@
 #ifndef SAMPLE_EDITOR_H
 #define SAMPLE_EDITOR_H
 
-#include <qvbox.h>
+#include <q3vbox.h>
 #include "interface__QT/audio/sample_viewer_zoom.h"
 #include "interface__QT/audio/sample_editor_format.h"
 #include "interface__QT/audio/sample_editor_clipboard.h"
@@ -34,7 +34,7 @@
  *
  * Juan Linietsky
  **/
-class Sample_Editor : public QVBox {
+class Sample_Editor : public Q3VBox {
 
 	Q_OBJECT
 
@@ -42,7 +42,7 @@ class Sample_Editor : public QVBox {
 	Sample_Editor();
 
 	Sample_Viewer * sample_viewer;
-	QHBox *format_box;
+	Q3HBox *format_box;
 	Sample_Data *sample_data;
 	Sample_Viewer_Zoom * sample_viewer_zoom;
 	Sample_Editor_Format *sample_editor_format;

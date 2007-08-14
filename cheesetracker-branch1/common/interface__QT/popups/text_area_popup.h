@@ -30,18 +30,20 @@
 #define TEXT_AREA_POPUP_H_
 
 #include <qdialog.h>
-#include <qvbox.h>
-#include <qhbox.h>
+#include <q3vbox.h>
+#include <q3hbox.h>
 #include <qlayout.h>
 #include <qpushbutton.h>
-#include <qtextedit.h>
+#include <q3textedit.h>
+//Added by qt3to4:
+#include <Q3VBoxLayout>
 
 
 class Text_Area_Popup : public QDialog {
 
-	QVBoxLayout *main_vbox;
+	Q3VBoxLayout *main_vbox;
 	QPushButton *ok_button;
-	QTextEdit *text_edit;
+	Q3TextEdit *text_edit;
 public:
 	void set_text(const char *p_text);
 

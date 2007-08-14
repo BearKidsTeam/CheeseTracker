@@ -59,31 +59,31 @@ void Variables_Edit::set_song(Song *p_song) {
 }
 
 
-Variables_Edit::Variables_Edit(QWidget *p_parent) :  QHBox(p_parent)
+Variables_Edit::Variables_Edit(QWidget *p_parent) :  Q3HBox(p_parent)
 {
 
-	variables.vbox = new QVBox(this);
+	variables.vbox = new Q3VBox(this);
 	variables.vbox->setSizePolicy(QSizePolicy(QSizePolicy::Maximum,QSizePolicy::Expanding));
 
-	variables.speed_group = new QGroupBox(1, Qt::Horizontal,"Speed/Tempo:", variables.vbox);
+	variables.speed_group = new Q3GroupBox(1, Qt::Horizontal,"Speed/Tempo:", variables.vbox);
 	variables.prop_tempo = new Q_Property_Bridge_Int_CSpinButon(variables.speed_group);
 	variables.prop_tempo->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 
 	variables.prop_speed = new Q_Property_Bridge_Int_CSpinButon(variables.speed_group);
 
-	variables.hilight_group = new QGroupBox(1, Qt::Horizontal,"Row Hilight:", variables.vbox);
+	variables.hilight_group = new Q3GroupBox(1, Qt::Horizontal,"Row Hilight:", variables.vbox);
 
 	variables.prop_hilight_minor = new Q_Property_Bridge_Int_CSpinButon(variables.hilight_group);
 	variables.prop_hilight_major = new Q_Property_Bridge_Int_CSpinButon(variables.hilight_group);
 
-	variables.modifiers_group = new QGroupBox(1, Qt::Horizontal,"Mixing:", variables.vbox);
+	variables.modifiers_group = new Q3GroupBox(1, Qt::Horizontal,"Mixing:", variables.vbox);
 	variables.modifiers_group->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 
 	variables.prop_global_volume = new Q_Property_Bridge_Int_CSpinButon(variables.modifiers_group);
 	variables.prop_mixing_volume = new Q_Property_Bridge_Int_CSpinButon(variables.modifiers_group);
 	variables.prop_separation = new Q_Property_Bridge_Int_CSpinButon(variables.modifiers_group);
 
-	variables.compatibility_group = new QGroupBox(1, Qt::Horizontal,"Compatibility:", variables.vbox);
+	variables.compatibility_group = new Q3GroupBox(1, Qt::Horizontal,"Compatibility:", variables.vbox);
 	variables.compatibility_group->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 
 	variables.prop_old_effects = new Q_Property_Bridge_Bool(variables.compatibility_group);
@@ -93,7 +93,7 @@ Variables_Edit::Variables_Edit(QWidget *p_parent) :  QHBox(p_parent)
 
 	variables.prop_linear_slides = new Q_Property_Bridge_Bool(variables.compatibility_group);
 
-	variables.message_group = new QGroupBox(1, Qt::Horizontal,"Song Name & Comments:", this);
+	variables.message_group = new Q3GroupBox(1, Qt::Horizontal,"Song Name & Comments:", this);
 	variables.message_group->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 
 	variables.prop_name = new Q_Property_Bridge_String(variables.message_group);

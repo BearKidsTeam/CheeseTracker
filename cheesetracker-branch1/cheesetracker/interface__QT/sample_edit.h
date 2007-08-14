@@ -22,9 +22,9 @@
 #include "interface_binds/player_rt_keyboard.h"
 
 #include <qwidget.h>
-#include <qlistview.h>
-#include <qgroupbox.h>
-#include <qhbox.h>
+#include <q3listview.h>
+#include <q3groupbox.h>
+#include <q3hbox.h>
 #include <vector>
 	using std::vector;
 #include "interface__QT/helpers/property_bridge_edit.h"
@@ -40,7 +40,7 @@
 
 
 
-class Sample_Edit : public QHBox {
+class Sample_Edit : public Q3HBox {
 
 	Q_OBJECT //grah
 
@@ -53,35 +53,35 @@ class Sample_Edit : public QHBox {
 
 	bool play_level[MAX_SAMPLES]; //play levels for display, to track status changes
 	
-	class ListviewItem : public  QListViewItem {
+	class ListviewItem : public  Q3ListViewItem {
         		int id;
 
 	public:
 
 			void set_id(int p_id) { id=p_id; }
 			int get_id() { return id; }
-			ListviewItem( QListView * p_parent ) :  QListViewItem(p_parent) {}
+			ListviewItem( Q3ListView * p_parent ) :  Q3ListViewItem(p_parent) {}
 
 	};
 
 
 	vector<ListviewItem*> sample_items;
 
-	QGroupBox *sample_list_group;
+	Q3GroupBox *sample_list_group;
 
-	QVBox *sample_props_vbox;
-	QHBox *sample_vars_hbox;
+	Q3VBox *sample_props_vbox;
+	Q3HBox *sample_vars_hbox;
 
-	QGroupBox *sample_data_group;
+	Q3GroupBox *sample_data_group;
 
-	QGroupBox *sample_volpan_group;
+	Q3GroupBox *sample_volpan_group;
 
 	Q_Property_Bridge_Int *bridge_default_volume;
 	Q_Property_Bridge_Int *bridge_global_volume;
 	Q_Property_Bridge_Bool *bridge_use_default_pan;
 	Q_Property_Bridge_Int *bridge_default_pan;
 
-	QGroupBox *sample_vibrato_group;
+	Q3GroupBox *sample_vibrato_group;
 
 
 	Q_Property_Bridge_Int *bridge_vibrato_speed;
@@ -126,8 +126,8 @@ class Sample_Edit : public QHBox {
 
 protected slots: //protect your sluts
 
-	void item_selected_cbk(QListViewItem *p_item);
-	void item_renamed_cbk( QListViewItem * item, int col );
+	void item_selected_cbk(Q3ListViewItem *p_item);
+	void item_renamed_cbk( Q3ListViewItem * item, int col );
 
 	void load_sample_from_keyboard(void);
 	void destructive_operation_begin_cbk();
@@ -148,7 +148,7 @@ public:
 	void set_file_format_manager(File_Format_Manager *p_file_manager) { file_manager=p_file_manager; }
 
 	//qt forces me to expose this, simply so i can install an eventfilter.. i'm sorry for doing it.
-	QListView * sample_list;
+	Q3ListView * sample_list;
 
 	void copy_sample();
 	void paste_sample();

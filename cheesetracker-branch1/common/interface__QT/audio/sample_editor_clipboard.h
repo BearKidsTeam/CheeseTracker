@@ -32,14 +32,14 @@
 #include "components/data/selection.h"
 #include "components/audio/sample_data.h"
 
-#include <qhbox.h>
+#include <q3hbox.h>
 #include <qpushbutton.h>
 #include <qlabel.h>
 
 #include <vector>
 	using std::vector;
 
-class Sample_Editor_Clipboard : public QHBox {
+class Sample_Editor_Clipboard : public Q3HBox {
 
 	Q_OBJECT
 

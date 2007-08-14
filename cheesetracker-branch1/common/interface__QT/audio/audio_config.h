@@ -19,13 +19,13 @@
 
 #include "components/audio/sound_driver_manager.h"
 
-#include <qgroupbox.h>
-#include <qhbox.h>
-#include <qvbox.h>
+#include <q3groupbox.h>
+#include <q3hbox.h>
+#include <q3vbox.h>
 #include <qcombobox.h>
 #include <qcheckbox.h>
 #include <qlineedit.h>
-#include <qlistbox.h>
+#include <q3listbox.h>
 #include <qpushbutton.h>
 #include <qlabel.h>
 #include "components/data/config_handler.h"
@@ -36,7 +36,7 @@
  *
  * Juan Linietsky
  **/
-class Audio_Config : public QGroupBox {
+class Audio_Config : public Q3GroupBox {
 
 	Q_OBJECT
 
@@ -50,21 +50,21 @@ class Audio_Config : public QGroupBox {
         static const int buffersize_options[OPTIONS_BUFFERSIZE];
 
 
-	QVBox *vbox;
-		QGroupBox *options_group;
-		QHBox *hbox_1;
-			QListBox *driver_list_box;
-			QVBox *driver_options;
+	Q3VBox *vbox;
+		Q3GroupBox *options_group;
+		Q3HBox *hbox_1;
+			Q3ListBox *driver_list_box;
+			Q3VBox *driver_options;
 				QComboBox *combo_stereo;
 				QComboBox *combo_16bits;
 				QComboBox *combo_buffersize;
 				QComboBox *combo_freq;
-				QHBox *status_hbox;
+				Q3HBox *status_hbox;
 				QCheckBox *button_enabled;
 				QPushButton *button_reset;
 
 
-	QHBox *hbox_2;
+	Q3HBox *hbox_2;
 		QLineEdit *save_name;
 		QPushButton *save_choose;
 

@@ -32,24 +32,24 @@
 #include "components/audio/edit_effect.h"
 #include "components/data/selection.h"
 #include "interface__QT/helpers/property_bridge_edit_list.h"
-#include <qhbox.h>
-#include <qvbox.h>
+#include <q3hbox.h>
+#include <q3vbox.h>
 #include <qpushbutton.h>
 #include <qtabwidget.h>
-#include <qgroupbox.h>
-#include <qlistbox.h>
+#include <q3groupbox.h>
+#include <q3listbox.h>
 #include <vector>
 
 	using std::vector;
 
-class Sample_Editor_Effects : public QVBox {
+class Sample_Editor_Effects : public Q3VBox {
 
 	Q_OBJECT
 
-        QVBox * main_vbox;
+        Q3VBox * main_vbox;
 
 	QPushButton *apply;
-	QListBox *effect_listbox;
+	Q3ListBox *effect_listbox;
 
 	vector<Edit_Effect*> effect_list;
 	int selected_effect;

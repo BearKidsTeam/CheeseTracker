@@ -14,11 +14,13 @@
 
 #include "components/audio/effect.h"
 #include <qdialog.h>
-#include <qvbox.h>
-#include <qhbox.h>
+#include <q3vbox.h>
+#include <q3hbox.h>
 #include <qlayout.h>
 #include <qpushbutton.h>
-#include <qlistbox.h>
+#include <q3listbox.h>
+//Added by qt3to4:
+#include <Q3VBoxLayout>
 /**
 @author Juan Linietsky
 */
@@ -27,10 +29,10 @@ public:
 
 	Q_OBJECT
 
-	QVBoxLayout *main_vbox;
+	Q3VBoxLayout *main_vbox;
 	QPushButton *ok_button;
 	QPushButton *cancel_button;
-	QListBox *list_box;
+	Q3ListBox *list_box;
 	int selected_effect_index;
 public slots:
 

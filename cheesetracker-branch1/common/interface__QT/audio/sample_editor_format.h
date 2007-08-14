@@ -19,11 +19,11 @@
 
 
 #include <qlabel.h>
-#include <qgrid.h>
+#include <q3grid.h>
 #include <qlineedit.h>
 #include <qcombobox.h>
 #include <qspinbox.h>
-#include <qvbox.h>
+#include <q3vbox.h>
 #include "common/components/audio/sample_data.h"
 #include "common/interface__QT/helpers/cspinbutton.h"
 #include "interface__QT/audio/sample_viewer.h"
@@ -31,7 +31,7 @@
  *
  * Juan Linietsky
  **/
-class Sample_Editor_Format : public QVBox {
+class Sample_Editor_Format : public Q3VBox {
 
 	Q_OBJECT
 

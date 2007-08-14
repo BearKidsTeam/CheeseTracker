@@ -20,21 +20,21 @@
 
 #include "interface__QT/pattern_edit.h"
 #include "interface__QT/helpers/cspinbutton.h"
-#include <qhbox.h>
-#include <qvbox.h>
+#include <q3hbox.h>
+#include <q3vbox.h>
 #include <qpushbutton.h>
 #include <qlineedit.h>
 #include <qlabel.h>
 #include <qcombobox.h>
 
-#include <qgrid.h>
+#include <q3grid.h>
 #include <qscrollbar.h>
 
 /**
  *
  * Juan Linietsky
  **/
-class Pattern_Edit_Widget : public QVBox {
+class Pattern_Edit_Widget : public Q3VBox {
 
 	Q_OBJECT
 
@@ -47,8 +47,8 @@ class Pattern_Edit_Widget : public QVBox {
 		string last_instrument_text;
 	} display_cache;
 
-	QHBox *editing_options;
-	QHBox *editing_options_instrument;
+	Q3HBox *editing_options;
+	Q3HBox *editing_options_instrument;
 
 	CSpinButton *pattern_spin;
 	QLabel *pattern_spin_max;

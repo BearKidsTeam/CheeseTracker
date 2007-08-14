@@ -18,6 +18,8 @@
 #define CSPINBUTTON_H
 
 #include <qspinbox.h>
+//Added by qt3to4:
+#include <QEvent>
 
 /**
  *
@@ -33,7 +35,6 @@ class CSpinButton : public QSpinBox {
 	int grab_x,grab_y;
 public:
 	void set_page_value(int p_page_value);
-	QLineEdit * get_editor () const;
 	CSpinButton(QWidget *p_parent);
 	~CSpinButton();
 };

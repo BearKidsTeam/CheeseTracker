@@ -404,34 +404,34 @@ def check_qt(libdata):
 		"",\
 		"/usr/lib",\
 		"/usr/X11R6/lib",\
-		"/usr/lib/qt3/lib",\
+		"/usr/lib/qt4/lib",\
 		"/usr/local/lib",\
-		"/usr/local/lib/qt3/lib",\
-		"/opt/qt3/lib"\
+		"/usr/local/lib/qt4/lib",\
+		"/opt/qt4/lib"\
 	];
 
 	qt_unix_bin_dirs = [\
                 "",\
 		"/usr/bin",\
 		"/usr/X11R6/bin",\
-		"/usr/lib/qt3/bin",\
+		"/usr/lib/qt4/bin",\
 		"/usr/local/bin",\
-		"/usr/local/lib/qt3/bin",\
-		"/opt/qt3/bin"\
+		"/usr/local/lib/qt4/bin",\
+		"/opt/qt4/bin"\
 	];
 
 	qt_unix_include_dirs = [\
 		"/usr/include",\
-		"/usr/include/qt3",\
+		"/usr/include/qt4",\
 		"/usr/X11R6/include",\
-		"/usr/X11R6/include/qt3",\
-		"/usr/lib/qt3/include",\
-		"/usr/lib/qt3/include/qt3",\
+		"/usr/X11R6/include/qt4",\
+		"/usr/lib/qt4/include",\
+		"/usr/lib/qt4/include/qt4",\
 		"/usr/local/include",\
-		"/usr/local/include/qt3",\
-		"/usr/local/lib/qt3/include",\
-		"/usr/local/lib/qt3/include/qt3",\
-		"/opt/qt3/include"\
+		"/usr/local/include/qt4",\
+		"/usr/local/lib/qt4/include",\
+		"/usr/local/lib/qt4/include/qt4",\
+		"/opt/qt4/include"\
 	];
 
 	print "QT Check:";
@@ -448,7 +448,7 @@ def check_qt(libdata):
 		qt_unix_include_dirs=[];
 		qt_unix_include_dirs.append(include_qtdir);
 		qt_unix_include_dirs.append(include_qtdir + '/qt');
-		qt_unix_include_dirs.append(include_qtdir + '/qt3');
+		qt_unix_include_dirs.append(include_qtdir + '/qt4');
 
 		lib_qtdir=qtdir+'/lib';
 		qt_unix_library_dirs=[];
@@ -461,36 +461,44 @@ def check_qt(libdata):
 		print "$QTDIR not found, you could define this pointing to a proper QT location if not found";
 		print "I will try to check if you have Qt in a bunch of paths..";
 
-	print "Looking for QT 3.x Includes:";
+	print "Looking for QT 4.x Includes:";
 
         qt_inc_found=0;
         for x in qt_unix_include_dirs:
 
-		file_to_check = "qglobal.h"
+		file_to_check = "Qt/qglobal.h"
 		current_file=x + "/" + file_to_check;
 
 		if (os.path.isfile(current_file)):
 			print x;
 			print "Checking QT version.. \n";
-			version=os.popen("cat " + current_file + " | grep \"QT_VERSION_STR \" ").readlines();
-			if not len(version):
-				print "Cant determine QT version! (qglobal.h not found at " +x+ ")\n";
+			version=check_cpp_output(
+				"#include <Qt/qglobal.h>\n		" +
+				"#include <iostream>\n			" +
+				"using namespace std;\n			" +
+				"int main() {\n				" +
+				"	cout << QT_VERSION_STR << endl;\n"+
+				"	return 0;\n			" +
+				"}\n", "-I" + x);
+			if (version == 0):
+				print "Cant determine QT version! (Qt/qglobal.h not found at " +x+ ")\n";
 				continue;
 
 			ver_str=version[0];
-			pos=ver_str.find("\"3.");
+			pos=ver_str.find("4.");
 			if (pos >=0 ): #found QT header
-				print ver_str;
-				libdata.qt_flags=["-I"+x,"-DQT_NO_EMIT"];
+				print "Found Qt Version " + ver_str;
+				libdata.qt_flags=["-I"+x,"-I"+x+"/Qt","-I"+x+"/QtCore","-I"+x+"/QtGui","-I"+x+"/Qt3Support","-DQT_NO_EMIT","-DQT3_SUPPORT"];
 				qt_inc_found=1;
 				break;
 
-	print "Looking for QT 3.x Libraries:";
+	print "Looking for QT 4.x Libraries:";
 
 	qt_lib_found=0;
 
         for x in qt_unix_library_dirs:
 		if (not qt_inc_found):
+			print "Skipping library test because the include files couldn't be found.";
 			break;
 
 		test_program="#include <qglobal.h>\n #include<stdio.h>\n int main() { \n printf(\"Testing QT: %s\\n\",QT_VERSION);\n return 0;\n }\n";
@@ -502,37 +510,26 @@ def check_qt(libdata):
 		auxlibpath="";
 		if (len(x)>0):
 			auxlibpath="-L"+x;
-		#check if we must use -lqt
-		execline="c++ " + auxlibpath + " "+libdata.qt_flags[0]+" test.cpp -o test -lqt  2>> config_errors.log"; # 2>/dev/null";
-		res=os.system(execline);
 
-		if (res == 0):
-			qt_lib_found=1;
-			print "using: -lqt" + auxlibpath;
-			libdata.qt_link_flags=[auxlibpath];
-			libdata.qt_libs=['qt'];
-			os.system("rm test.cpp");
-			os.system("rm test");
-			break;
-
-
-		execline="c++ " + auxlibpath + " "+libdata.qt_flags[0]+" test.cpp -o test -lqt-mt 2>> config_errors.log";
+		print "Searching for libraries in " + x;
+		execline="c++ " + auxlibpath + " " + ' '.join(libdata.qt_flags) + " test.cpp -o test -lQtCore -lQtGui -lQt3Support 2>> config_errors.log";
 		res=os.system(execline);
 		os.system("rm test.cpp");
 		if (res==0):
 			os.system("rm test");
-			print "using: -lqt-mt" + auxlibpath;
+			print "using: -lQtCore -lQtGui -lQt3Support" + auxlibpath;
 			qt_lib_found=1;
 			libdata.qt_link_flags=[auxlibpath];
-			libdata.qt_libs=['qt-mt'];
+			libdata.qt_libs=['QtCore', 'QtGui', 'Qt3Support'];
 			break;
 
-	print "Looking for QT 3.x 'moc' Binary:";
+	print "Looking for QT 4.x 'moc' Binary:";
 
 	qt_found=0;
 
         for x in qt_unix_bin_dirs:
 		if (not qt_lib_found):
+			print "Skipping moc test because libraries weren't found";
 			break;
 
 		command="moc";
@@ -547,9 +544,9 @@ def check_qt(libdata):
                 if (not len(version)):
                         continue;
 
-                pos=version[0].find(" 3.");
+                pos=version[0].find(" 4.");
                 if (pos<0):
-                        print("Not version 3:" + command);
+                        print("Not version 4:" + command);
                         continue;
 
        		qt_found=1;
@@ -562,8 +559,8 @@ def check_qt(libdata):
 		print("I Couldnt find QT in your system :(\n");
 		print("If you think it is actually installed, you could try the following:\n");
 		print("-Define/undefine the $QTDIR env var. Some distros/unixes dont place Qt in standard locations (Like Debian)\n");
-		print("-Check if the path where your Qt 3.x stuff is and add it to the list at detect.py!\n");
-		print("-I am not a good python coder so detect.py may be buggy, if you fixed it, please send patches to coding@reduz.com.ar :)\n");
+		print("-Check if the path where your Qt 4.x stuff is and add it to the list at detect.py!\n");
+		print("-detect.py may be buggy. If you fixed it, please send in patches at http://sf.net/projects/cheesetracker\n");
 
 		return 1;
 

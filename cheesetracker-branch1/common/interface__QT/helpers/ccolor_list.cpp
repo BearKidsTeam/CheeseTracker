@@ -26,6 +26,9 @@
 //
 //
 #include "ccolor_list.h"
+//Added by qt3to4:
+#include <QLabel>
+#include <Q3Frame>
 void CColor_List::load_settings(ConfigHandler *p_config_handler) {
 
 //	static char buf[40];
@@ -96,21 +99,21 @@ const QColor * CColor_List::Preset::get_item(string p_section,string p_name) {
 	return &I->second.color;
 }
 
-CColor_List::CColor_List(QWidget *p_parent) : QVBox(p_parent)
+CColor_List::CColor_List(QWidget *p_parent) : Q3VBox(p_parent)
 {
-	QHBox *aux_hbox = new QHBox(this);
+	Q3HBox *aux_hbox = new Q3HBox(this);
 	aux_hbox->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Maximum));
 	new QLabel("Preset:",aux_hbox);
 	preset_combo = new QComboBox(aux_hbox);
 
 
-	scroll = new QScrollView(this);
+	scroll = new Q3ScrollView(this);
 
 	scroll->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
-	scroll->setResizePolicy(QScrollView::AutoOneFit);
+	scroll->setResizePolicy(Q3ScrollView::AutoOneFit);
 	scroll->enableClipper(true);
 
-	vbox = new QVBox(scroll);
+	vbox = new Q3VBox(scroll);
 	scroll->addChild(vbox);
 
 	QObject::connect(preset_combo,SIGNAL(activated(int)),this,SLOT(preset_selected_cbk(int)));
@@ -143,7 +146,7 @@ void CColor_List::set_section(QString p_section_name,QString p_section_label) {
 
 	current_section=p_section_name;
 	new QLabel(p_section_label,vbox);
-	QFrame * frame = new QFrame(vbox);
+	Q3Frame * frame = new Q3Frame(vbox);
 	frame->setFrameStyle(HLine+Sunken);
 }
 

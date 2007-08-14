@@ -29,6 +29,8 @@
 #include "Error.h"
 #include "message_box.h"
 #include "sample_editor_effects.h"
+//Added by qt3to4:
+#include <Q3Frame>
 
 
 void Sample_Editor_Effects::set_sample_data(Sample_Data *p_sample) {
@@ -114,17 +116,17 @@ void Sample_Editor_Effects::add_edit_effect(Edit_Effect* p_effect) {
 }
 
 
-Sample_Editor_Effects::Sample_Editor_Effects(QWidget *p_parent) : QVBox(p_parent) {
+Sample_Editor_Effects::Sample_Editor_Effects(QWidget *p_parent) : Q3VBox(p_parent) {
 
-	QGroupBox *useless_gb= new QGroupBox( 1, Qt::Horizontal,"Effect List",this);
+	Q3GroupBox *useless_gb= new Q3GroupBox( 1, Qt::Horizontal,"Effect List",this);
 	useless_gb->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
-        QVBox * split_vbox = new QVBox(useless_gb);
+        Q3VBox * split_vbox = new Q3VBox(useless_gb);
 	split_vbox->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
-        QHBox * split_hbox = new QHBox(split_vbox);
+        Q3HBox * split_hbox = new Q3HBox(split_vbox);
 	split_hbox->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 
 	/* Effect listbox */
-        effect_listbox = new QListBox(split_hbox);
+        effect_listbox = new Q3ListBox(split_hbox);
 	effect_listbox->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 	effect_listbox->setScrollBar(true);
 
@@ -137,9 +139,9 @@ Sample_Editor_Effects::Sample_Editor_Effects(QWidget *p_parent) : QVBox(p_parent
 	//sections->addTab(bridge_list_edit,"Params");
 
 	/* apply button */
-	QHBox * auxhv = new QHBox(split_vbox);
+	Q3HBox * auxhv = new Q3HBox(split_vbox);
 	auxhv->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Maximum));
-	QFrame *useless = new QFrame(auxhv);
+	Q3Frame *useless = new Q3Frame(auxhv);
 	useless->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 	apply = new QPushButton("Apply",auxhv);
 //	apply->setSizePolicy(QSizePolicy(QSizePolicy::Maximum,QSizePolicy::Expanding));

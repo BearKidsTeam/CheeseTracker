@@ -14,21 +14,21 @@
 #define EFFECT_BUFFERS_EDITOR_H
 
 
-#include <qhbox.h>
-#include <qvbox.h>
-#include <qlistbox.h>
+#include <q3hbox.h>
+#include <q3vbox.h>
+#include <q3listbox.h>
 
 /**
 @author Juan Linietsky
 */
 
-class Effect_Buffers_Editor : public QHBox {
+class Effect_Buffers_Editor : public Q3HBox {
 	Q_OBJECT
 
-	QListBox *buffer_list;
-        QVBox *buffer_edit;
-	QListBox *insert_effect_list;
-	QListBox *insert_effect_move_up;
+	Q3ListBox *buffer_list;
+        Q3VBox *buffer_edit;
+	Q3ListBox *insert_effect_list;
+	Q3ListBox *insert_effect_move_up;
 
 public:
 	Effect_Buffers_Editor(QWidget *p_parent);

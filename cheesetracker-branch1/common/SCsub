@@ -2,6 +2,7 @@ Import('env');
 
 env.Append(CXXFLAGS=['-Icommon/','-Icommon/defines/']);
 #env.Append(CXXFLAGS=" -Icommon/defines ");
+env.Append(CXXFLAGS = env.detect.qt_flags);
 
 env.common_objects = ['message_box.o']
 env.qt_objects = []

@@ -18,12 +18,12 @@
 #define PROPERTY_BRIDGE_EDIT_H
 
 #include "common/components/data/property_bridges.h"
-#include <qvbox.h>
+#include <q3vbox.h>
 #include <qlabel.h>
 #include <qslider.h>
 #include <qcheckbox.h>
 #include <qcombobox.h>
-#include <qtextedit.h>
+#include <q3textedit.h>
 #include <qlineedit.h>
 #include <qdial.h>
 #include "interface__QT/helpers/cspinbutton.h"
@@ -45,7 +45,7 @@ enum WidgetInputSource {
 };
 
 
-class Q_Property_Bridge_Int : public QVBox, public SigC::Object {
+class Q_Property_Bridge_Int : public Q3VBox, public SigC::Object {
 
  Q_OBJECT
 
@@ -53,7 +53,7 @@ class Q_Property_Bridge_Int : public QVBox, public SigC::Object {
  	bool updating_bridge_edit;
 	bool vertical;
 	QLabel *label;
-	QHBox * slider_hbox;
+	Q3HBox * slider_hbox;
 	QSlider * slider;
 	QLabel * slider_label;
 	VLabel *vlabel;
@@ -73,7 +73,7 @@ public:
 	Q_Property_Bridge_Int(QWidget *p_parent, bool p_vertical=false);
 };
 
-class Q_Property_Bridge_Int_CSpinButon : public QHBox, public SigC::Object {
+class Q_Property_Bridge_Int_CSpinButon : public Q3HBox, public SigC::Object {
 
  Q_OBJECT
 
@@ -95,7 +95,7 @@ public:
 	Q_Property_Bridge_Int_CSpinButon(QWidget *p_parent);
 };
 
-class Q_Property_Bridge_Float : public QVBox, public SigC::Object {
+class Q_Property_Bridge_Float : public Q3VBox, public SigC::Object {
 
  Q_OBJECT
 
@@ -106,7 +106,7 @@ class Q_Property_Bridge_Float : public QVBox, public SigC::Object {
 	};
 
 	QLabel *label;
-	QHBox * slider_hbox;
+	Q3HBox * slider_hbox;
 	QSlider * slider;
 	Float_Property_Bridge *bridge;
 	Q_Property_Bridge_Float();
@@ -131,7 +131,7 @@ public:
 	Q_Property_Bridge_Float(QWidget *p_parent, bool textbox_visible = false);
  };
 
-class Q_Property_Bridge_Float_Dial : public QVBox, public SigC::Object {
+class Q_Property_Bridge_Float_Dial : public Q3VBox, public SigC::Object {
 
 	 Q_OBJECT
 
@@ -161,7 +161,7 @@ public:
  };
 
 
-class Q_Property_Bridge_Bool : public QVBox, public SigC::Object {
+class Q_Property_Bridge_Bool : public Q3VBox, public SigC::Object {
 
  Q_OBJECT
 	Q_Property_Bridge_Bool();
@@ -183,7 +183,7 @@ public:
 };
 
 
-class Q_Property_Bridge_Options: public QVBox, public SigC::Object {
+class Q_Property_Bridge_Options: public Q3VBox, public SigC::Object {
 
  Q_OBJECT
 
@@ -207,7 +207,7 @@ public:
  };
 
 
- class Q_Property_Bridge_String: public QVBox, public SigC::Object {
+ class Q_Property_Bridge_String: public Q3VBox, public SigC::Object {
 
  Q_OBJECT
 
@@ -230,12 +230,12 @@ public:
 	Q_Property_Bridge_String(QWidget *p_parent);
  };
 
-class Q_Property_Bridge_String_Multiline: public QVBox, public SigC::Object {
+class Q_Property_Bridge_String_Multiline: public Q3VBox, public SigC::Object {
 
 Q_OBJECT
 
 	QLabel *label;
-	QTextEdit *text_edit;
+	Q3TextEdit *text_edit;
 
 	Q_Property_Bridge_String_Multiline();
 	String_Property_Bridge *bridge;

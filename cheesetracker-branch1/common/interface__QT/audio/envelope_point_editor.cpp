@@ -28,6 +28,10 @@
 #include "envelope_point_editor.h"
 #include <qpainter.h>
 #include <qcursor.h>
+//Added by qt3to4:
+#include <QPaintEvent>
+#include <QMouseEvent>
+#include <QEvent>
 #include <math.h>
 
 
@@ -145,7 +149,7 @@ bool Envelope_Point_Editor::event ( QEvent * e ) {
 	if (QEvent::MouseButtonRelease == e->type()) {
 		QMouseEvent * mouseEvent = static_cast<QMouseEvent *>(e);
 
-		if (grab.moving_point && (mouseEvent->button()==LeftButton)) {
+		if (grab.moving_point && (mouseEvent->button()==Qt::LeftButton)) {
 
 			grab.moving_point=false;
 			releaseMouse();
@@ -187,7 +191,7 @@ bool Envelope_Point_Editor::event ( QEvent * e ) {
 
 		switch (mouseEvent->button()) {
 
-			case LeftButton: {
+			case Qt::LeftButton: {
 
 				// check the fish
 				if (closest_node!=-1) {
@@ -227,7 +231,7 @@ bool Envelope_Point_Editor::event ( QEvent * e ) {
 				}
 
 			} break;
-			case RightButton: {
+			case Qt::RightButton: {
 
         			if (closest_node!=-1) {
 
@@ -549,7 +553,7 @@ void Envelope_Point_Editor::update_position_list(const vector<int>& p_positions)
 
 Envelope_Point_Editor::Envelope_Point_Editor(QWidget *p_parent) : QWidget(p_parent) {
 
-	setBackgroundMode (NoBackground);
+	setBackgroundMode (Qt::NoBackground);
 	envelope=NULL;
 	zoom=0.25f;
 

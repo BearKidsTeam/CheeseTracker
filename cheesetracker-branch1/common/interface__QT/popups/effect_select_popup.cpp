@@ -11,6 +11,9 @@
 //
 #include "effect_select_popup.h"
 #include "components/audio/effect_source_manager.h"
+//Added by qt3to4:
+#include <Q3VBoxLayout>
+#include <Q3Frame>
 
 void Effect_Select_Popup::selected_effect(int p_which) {
 
@@ -38,19 +41,19 @@ Effect::Parameters * Effect_Select_Popup::get_selected_effect_params() {
 Effect_Select_Popup::Effect_Select_Popup() {
 
 	setCaption("Select Effect");
-	main_vbox = new QVBoxLayout(this);
+	main_vbox = new Q3VBoxLayout(this);
 	main_vbox->setAutoAdd(true);
 
-	list_box = new QListBox(this);
+	list_box = new Q3ListBox(this);
 	QObject::connect(list_box,SIGNAL(highlighted(int)) ,this,SLOT(selected_effect(int)));
 	list_box->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 
-	QHBox *hv = new QHBox(this);
+	Q3HBox *hv = new Q3HBox(this);
 	hv->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Maximum));
 	ok_button = new QPushButton("Ok",hv);
 	QObject::connect(ok_button,SIGNAL(clicked()),this,SLOT(accept()));
 
-	QFrame *fr = new QFrame(hv);
+	Q3Frame *fr = new Q3Frame(hv);
 	fr->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 
 	cancel_button = new QPushButton("Cancel",hv);

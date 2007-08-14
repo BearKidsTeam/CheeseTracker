@@ -19,41 +19,41 @@
 
 
 #include "trackercore/player_data.h"
-#include <qhbox.h>
-#include <qgroupbox.h>
+#include <q3hbox.h>
+#include <q3groupbox.h>
 #include "interface__QT/helpers/property_bridge_edit.h"
 #include "trackercore/song.h"
 /**
  *
  * Juan Linietsky
  **/
-class Variables_Edit : public QHBox {
+class Variables_Edit : public Q3HBox {
 
 	Q_OBJECT
 
 
 	struct Variables {
 
-		QVBox *vbox;
+		Q3VBox *vbox;
 
-		QGroupBox *speed_group;
+		Q3GroupBox *speed_group;
 		Q_Property_Bridge_Int_CSpinButon * prop_tempo;
 		Q_Property_Bridge_Int_CSpinButon * prop_speed;
 
-		QGroupBox *hilight_group;
+		Q3GroupBox *hilight_group;
 
 		Q_Property_Bridge_Int_CSpinButon * prop_hilight_major;
 		Q_Property_Bridge_Int_CSpinButon * prop_hilight_minor;
 
 
-		QGroupBox *modifiers_group;
+		Q3GroupBox *modifiers_group;
 
 		Q_Property_Bridge_Int_CSpinButon * prop_global_volume;
 		Q_Property_Bridge_Int_CSpinButon * prop_mixing_volume;
 		Q_Property_Bridge_Int_CSpinButon * prop_separation;
 
 
-		QGroupBox *compatibility_group;
+		Q3GroupBox *compatibility_group;
 
 		Q_Property_Bridge_Bool * prop_old_effects;
 		Q_Property_Bridge_Bool * prop_compatible_gxx;
@@ -61,7 +61,7 @@ class Variables_Edit : public QHBox {
 		Q_Property_Bridge_Bool * prop_stereo;
 		Q_Property_Bridge_Bool * prop_linear_slides;
 
-		QGroupBox *message_group;
+		Q3GroupBox *message_group;
 
 		Q_Property_Bridge_String *prop_name;
 		Q_Property_Bridge_String_Multiline *prop_message;

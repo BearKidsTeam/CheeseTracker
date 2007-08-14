@@ -21,25 +21,27 @@
 #include <list>
 #include <qaction.h>
 #include <qworkspace.h>
-#include <qmainwindow.h>
-#include <qtoolbar.h>
-#include <qpopupmenu.h>
+#include <q3mainwindow.h>
+#include <q3toolbar.h>
+#include <q3popupmenu.h>
 #include <qmenubar.h>
 #include <qfile.h>
-#include <qfiledialog.h>
+#include <q3filedialog.h>
 #include <qlabel.h>
 #include <qstatusbar.h>
 #include <qmessagebox.h>
 #include <qapplication.h>
-#include <qaccel.h>
-#include <qobjectlist.h>
-#include <qvbox.h>
+#include <q3accel.h>
+#include <qobject.h>
+#include <q3vbox.h>
+//Added by qt3to4:
+#include <QCloseEvent>
 #include "interface__QT/settings_window.h"
 #include "components/audio/sound_driver_manager.h"
 
 using std::list;
 
-class MDI_Sub_Window: public QMainWindow
+class MDI_Sub_Window: public Q3MainWindow
 {
     Q_OBJECT
 
@@ -47,7 +49,7 @@ class MDI_Sub_Window: public QMainWindow
 
     Sound_Driver_Manager * sound_driver_manager;
     QStatusBar * status_bar;
-    QVBox *vbox;
+    Q3VBox *vbox;
 
    string message_cache;
 
@@ -65,7 +67,7 @@ public:
 	Interface *get_interface() { return interface; }
 
 	void open_song(string p_name);
-	MDI_Sub_Window( QWidget* parent, const char* name, int wflags );
+  MDI_Sub_Window( QWidget* parent, const char* name, Qt::WindowFlags wflags );
 	~MDI_Sub_Window();
 
 };
@@ -74,7 +76,7 @@ public:
  *
  * Juan Linietsky
  **/
-class MDI_Main_Window: public QMainWindow
+class MDI_Main_Window: public Q3MainWindow
 {
 	Q_OBJECT
 
@@ -90,18 +92,18 @@ class MDI_Main_Window: public QMainWindow
 
 	QWorkspace* ws;
 
-	QPopupMenu* windowsMenu;
-	QToolBar *file_menu_toolbar;
-	QToolBar *play_commands;
-	QToolBar *editing_octave_toolbar;
+	Q3PopupMenu* windowsMenu;
+	Q3ToolBar *file_menu_toolbar;
+	Q3ToolBar *play_commands;
+	Q3ToolBar *editing_octave_toolbar;
 	CSpinButton *editing_octave;
 
 
-	QPopupMenu *pattern_edit_menu;
-	QPopupMenu *sample_edit_menu;
-	QPopupMenu *instrument_edit_menu;
-	QPopupMenu *settings_edit_menu;
-	QPopupMenu *help_menu;
+	Q3PopupMenu *pattern_edit_menu;
+	Q3PopupMenu *sample_edit_menu;
+	Q3PopupMenu *instrument_edit_menu;
+	Q3PopupMenu *settings_edit_menu;
+	Q3PopupMenu *help_menu;
 
         enum PatternEditItemIDs {
 		PatternEdit__Toggle_Last_Action=100,
@@ -175,6 +177,7 @@ class MDI_Main_Window: public QMainWindow
 
 	Sound_Driver_Manager * sound_driver_manager;
 
+	Mutex_Lock *info_lock;
 	
 private slots:
 
@@ -210,9 +213,6 @@ private slots:
 	void play_pattern_action_cbk();
 	void play_pattern_cursor_action_cbk();
 	void play_song_cursor_action_cbk();
-
-
-	Mutex_Lock *info_lock;
 
 
 //	void windowsMenuAboutToShow();

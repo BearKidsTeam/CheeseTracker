@@ -17,18 +17,18 @@
 #ifndef RESAMPLER_CONFIG_H
 #define RESAMPLER_CONFIG_H
 
-#include <qgroupbox.h>
-#include <qlistbox.h>
+#include <q3groupbox.h>
+#include <q3listbox.h>
 #include "components/data/config_handler.h"
 #include "components/audio/resampler_manager.h"
 /**
  *
  * Juan Linietsky
  **/
-class Resampler_Config : public QGroupBox
+class Resampler_Config : public Q3GroupBox
 {
 	Q_OBJECT
-        QListBox *resampler_list_box;
+        Q3ListBox *resampler_list_box;
 
 	void update_resampler_list();
 protected slots:

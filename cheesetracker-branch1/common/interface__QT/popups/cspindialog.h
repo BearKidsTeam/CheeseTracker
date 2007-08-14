@@ -19,10 +19,12 @@
 
 
 #include <qdialog.h>
-#include <qvbox.h>
+#include <q3vbox.h>
 #include <qlabel.h>
-#include <qhbox.h>
+#include <q3hbox.h>
 #include <qlayout.h>
+//Added by qt3to4:
+#include <Q3VBoxLayout>
 
 
 #include "interface__QT/helpers/cspinbutton.h"
@@ -34,9 +36,9 @@
 class CSpinDialog : public QDialog {
 
 
-	QVBoxLayout *main_vbox;
-	QHBox *value_hbox;
-	QHBox *options_hbox;;
+	Q3VBoxLayout *main_vbox;
+	Q3HBox *value_hbox;
+	Q3HBox *options_hbox;;
 
 	CSpinButton *spinbutton;
 	QLabel *description;

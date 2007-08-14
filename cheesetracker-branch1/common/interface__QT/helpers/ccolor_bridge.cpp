@@ -27,6 +27,8 @@
 //
 #include "ccolor_bridge.h"
 #include <qcolordialog.h>
+//Added by qt3to4:
+#include <QLabel>
 
 void CColor_Bridge::color_select() {
 
@@ -48,7 +50,7 @@ QColor * CColor_Bridge::get_color() {
 	return bridge;
 }
 
-CColor_Bridge::CColor_Bridge(QWidget *p_parent,QColor *p_bridge,const QString &p_text) :QHBox(p_parent) {
+CColor_Bridge::CColor_Bridge(QWidget *p_parent,QColor *p_bridge,const QString &p_text) :Q3HBox(p_parent) {
 
 	setFrameStyle(Box+Raised);
 	

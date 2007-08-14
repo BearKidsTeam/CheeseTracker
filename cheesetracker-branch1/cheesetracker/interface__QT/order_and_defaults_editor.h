@@ -20,9 +20,11 @@
 
 #include "interface__QT/helpers/vertical_scrolled_window.h"
 #include "interface__QT/helpers/property_bridge_edit.h"
-#include <qhbox.h>
-#include <qvbox.h>
-#include <qgroupbox.h>
+#include <q3hbox.h>
+#include <q3vbox.h>
+#include <q3groupbox.h>
+//Added by qt3to4:
+#include <QLabel>
 #include "interface__QT/orderlist_edit.h"
 #include "trackercore/song.h"
 
@@ -31,14 +33,14 @@
  *
  * Juan Linietsky
  **/
-class Order_And_Defaults_Editor : public QHBox {
+class Order_And_Defaults_Editor : public Q3HBox {
 
 	Q_OBJECT
 
 
         struct Order {
 
-		QGroupBox *group;
+		Q3GroupBox *group;
 		OrderList_Edit *orderlist;
 
 	} order;
@@ -46,11 +48,11 @@ class Order_And_Defaults_Editor : public QHBox {
 	struct Defaults {
 
 //		Vertical_Scrolled_Window * scroll;
-		QGroupBox *group;
-		QScrollView * scroll;
-		QVBox *scrolled_box;
+		Q3GroupBox *group;
+		Q3ScrollView * scroll;
+		Q3VBox *scrolled_box;
 
-		struct Entry : public QHBox {
+		struct Entry : public Q3HBox {
                         QLabel *channel;
 			Q_Property_Bridge_Int * pan;
 			Q_Property_Bridge_Bool * surround;

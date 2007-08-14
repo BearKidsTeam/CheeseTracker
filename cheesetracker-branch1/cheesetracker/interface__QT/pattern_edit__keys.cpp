@@ -15,6 +15,10 @@
  ***************************************************************************/
 #include "pattern_edit.h"
 #include <qevent.h>
+//Added by qt3to4:
+#include <QWheelEvent>
+#include <QMouseEvent>
+#include <QKeyEvent>
 #include "interface__QT/popups/cspindialog.h"
 #include "components/data/keyboard_input.h"
 #include "interface_binds/tracker_instance.h"
@@ -92,7 +96,7 @@ bool Pattern_Edit::event ( QEvent * e  ) {
 	if (e->type()==QEvent::MouseButtonPress) {
 
 		QMouseEvent *me=(QMouseEvent*)e;
-		if (me->button()!=LeftButton)
+		if (me->button()!=Qt::LeftButton)
 			return QWidget::event(e);
 
 		int x,y,field;
@@ -176,7 +180,7 @@ bool Pattern_Edit::event ( QEvent * e  ) {
 		}
 		QMouseEvent *me=(QMouseEvent*)e;
 
-		if (me->button()!=LeftButton)
+		if (me->button()!=Qt::LeftButton)
 			return QWidget::event(e);
 
 		if (mouse_select.active || mouse_select.begun) {
@@ -226,9 +230,9 @@ bool Pattern_Edit::event ( QEvent * e  ) {
 	bool grab_event=false;
 	bool must_repaint=false;
 
-	alt=event->state() & AltButton;
-	shift=event->state() & ShiftButton;
-	control=event->state() & ControlButton;
+	alt=event->state() & Qt::AltButton;
+	shift=event->state() & Qt::ShiftButton;
+	control=event->state() & Qt::ControlButton;
 
 	if (shift && !previous_shift) editor->shift_selection_begin();
 	if (!shift && previous_shift) editor->shift_selection_end();

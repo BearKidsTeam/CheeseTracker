@@ -27,7 +27,7 @@
 //
 
 #include "sample_edit.h"
-#include <qfiledialog.h>
+#include <q3filedialog.h>
 #include <qmessagebox.h>
 
 Sample Sample_Edit::sample_clipboard;
@@ -62,7 +62,7 @@ void Sample_Edit::load_sample() {
 
 #ifdef CYGWIN_ENABLED
 
-	fn = QFileDialog::getOpenFileName( QString::null, "Samples (*.cs *.is *.wav)", this );
+	fn = Q3FileDialog::getOpenFileName( QString::null, "Samples (*.cs *.is *.wav)", this );
 
 #else
 	fd->set_binds(file_manager,rt_keyboard);
@@ -98,7 +98,7 @@ void Sample_Edit::save_sample() {
 	if (!dst_sample->in_use)
 		return;
 
-	QString s = QFileDialog::getSaveFileName(
+	QString s = Q3FileDialog::getSaveFileName(
 			QString::null,
 			"Sample Formats (*.cs *.CS *.is *.IS *.wav *.WAV)",
 			this,
@@ -220,7 +220,7 @@ void Sample_Edit::set_selected_sample(int p_which) {
 
 }
 
-void Sample_Edit::item_selected_cbk(QListViewItem *p_item) {
+void Sample_Edit::item_selected_cbk(Q3ListViewItem *p_item) {
 
 	ListviewItem * item = dynamic_cast<ListviewItem *>(p_item);
 	if (item==NULL) {
@@ -237,7 +237,7 @@ void Sample_Edit::item_selected_cbk(QListViewItem *p_item) {
 	}
 }
 
-void Sample_Edit::item_renamed_cbk( QListViewItem * p_item, int col ) {
+void Sample_Edit::item_renamed_cbk( Q3ListViewItem * p_item, int col ) {
 
 	ListviewItem * item = dynamic_cast<ListviewItem *>(p_item);
 	if (item==NULL) {
@@ -354,28 +354,28 @@ void Sample_Edit::sample_freq_changed() {
 }
 
 
-Sample_Edit::Sample_Edit(QWidget *p_parent) : QHBox(p_parent)  {
+Sample_Edit::Sample_Edit(QWidget *p_parent) : Q3HBox(p_parent)  {
 
-	sample_list_group = new QGroupBox ( 1, Qt::Vertical,"Sample List",this);
+	sample_list_group = new Q3GroupBox ( 1, Qt::Vertical,"Sample List",this);
 
-	sample_props_vbox = new QVBox(this);
+	sample_props_vbox = new Q3VBox(this);
 
 	selected_sample=0;
 	/* listview */
-	sample_list = new QListView(sample_list_group);
+	sample_list = new Q3ListView(sample_list_group);
 	sample_list->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
-	sample_list->setDefaultRenameAction(QListView::Accept);
+	sample_list->setDefaultRenameAction(Q3ListView::Accept);
 
 	sample_list->addColumn("#",20);
 	sample_list->addColumn("A",20);
 	sample_list->addColumn("P",20);
 	sample_list->addColumn("Name");
 	sample_list->setAllColumnsShowFocus(true);
-	QObject::connect(sample_list, SIGNAL(returnPressed ( QListViewItem *)),
+	QObject::connect(sample_list, SIGNAL(returnPressed ( Q3ListViewItem *)),
 	                 this, SLOT(load_sample_from_keyboard(void)));
 
-	QObject::connect(sample_list, SIGNAL(selectionChanged ( QListViewItem * )),this, SLOT(item_selected_cbk ( QListViewItem * )) );
-	QObject::connect(sample_list, SIGNAL(itemRenamed ( QListViewItem *,int )),this, SLOT(item_renamed_cbk ( QListViewItem *,int )) );
+	QObject::connect(sample_list, SIGNAL(selectionChanged ( Q3ListViewItem * )),this, SLOT(item_selected_cbk ( Q3ListViewItem * )) );
+	QObject::connect(sample_list, SIGNAL(itemRenamed ( Q3ListViewItem *,int )),this, SLOT(item_renamed_cbk ( Q3ListViewItem *,int )) );
 
 	for (int i=1;i<100;i++) {
 
@@ -392,21 +392,21 @@ Sample_Edit::Sample_Edit(QWidget *p_parent) : QHBox(p_parent)  {
 	}
 
         /* properties */
-	sample_data_group = new QGroupBox(1, Qt::Vertical,"Sample Data",sample_props_vbox);
+	sample_data_group = new Q3GroupBox(1, Qt::Vertical,"Sample Data",sample_props_vbox);
 	sample_data_group->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 
 	sample_editor = new Sample_Editor(sample_data_group);
 
 	sample_editor->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding));
 
-	sample_vars_hbox = new QHBox(sample_editor->get_tabs());
+	sample_vars_hbox = new Q3HBox(sample_editor->get_tabs());
 	sample_vars_hbox->setMargin(5);
 
 	sample_vars_hbox->setSizePolicy(QSizePolicy(QSizePolicy::Expanding,QSizePolicy::Maximum));
 	sample_editor->get_tabs()->insertTab(sample_vars_hbox,"Volume/Vibrato",0);
 
-	sample_volpan_group = new QGroupBox(1, Qt::Horizontal,"Volume/Pan",sample_vars_hbox);
-	sample_vibrato_group = new QGroupBox(1, Qt::Horizontal,"Vibrato",sample_vars_hbox);
+	sample_volpan_group = new Q3GroupBox(1, Qt::Horizontal,"Volume/Pan",sample_vars_hbox);
+	sample_vibrato_group = new Q3GroupBox(1, Qt::Horizontal,"Vibrato",sample_vars_hbox);
 
 
 

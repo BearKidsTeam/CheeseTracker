@@ -13,7 +13,7 @@
 
 
 
-Clist_Manager::Clist_Manager(QWidget *p_parent) : QHBox(p_parent) {
+Clist_Manager::Clist_Manager(QWidget *p_parent) : Q3HBox(p_parent) {
 
 	add = new QPushButton("Add",this);
 	add->setSizePolicy(QSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum));

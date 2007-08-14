@@ -29,12 +29,11 @@
 #define KEYBOARD_INPUT_CONFIG_H
 
 
-#include <qgroupbox.h>
-#include <qscrollview.h>
+#include <q3groupbox.h>
+#include <q3scrollview.h>
 #include <qlabel.h>
-#include <qbutton.h>
-#include <qhbox.h>
-#include <qvbox.h>
+#include <q3hbox.h>
+#include <q3vbox.h>
 #include <qpushbutton.h>
 
 #include <vector>
@@ -44,7 +43,7 @@
 @author Juan Linietsky
 */
 
-class Key_Entry : public QHBox {
+class Key_Entry : public Q3HBox {
 
 	Q_OBJECT
 
@@ -61,11 +60,11 @@ public:
 	Key_Entry(QWidget *p_parent,int p_key_idx);
 };
 
-class Keyboard_Input_Config : public QGroupBox {
+class Keyboard_Input_Config : public Q3GroupBox {
 
         vector<Key_Entry*> key_entry_list;
-        QScrollView *scroll;
-	QVBox *vbox;
+        Q3ScrollView *scroll;
+	Q3VBox *vbox;
 public:
 
 	void update();
