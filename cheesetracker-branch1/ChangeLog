@@ -1,3 +1,11 @@
+Tue Aug 14 00:13:24 EDT 2007 J Phelps <godless@users.sf.net>
+	* instrument_edit.cpp(timer_callback): Made this function conform
+	to Qt4's requirement that all painting take place within
+	paintEvent calls. The new interface performs much more poorly
+	than the old one, such that the difference can be seen with the
+	naked eye.
+
+	Volume loops don't seem to work anymore, either.
 Mon Aug 13 21:18:55 EDT 2007 J Phelps <godless@users.sf.net>
 	* mdi_main_window.cpp: Changed all occurences of
 	action->addTo(menu) to menu->addAction(action).
