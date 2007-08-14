@@ -490,11 +490,12 @@ void MDI_Main_Window::play_prev_action_cbk() {
 	//m->get_n
 
 }
-void MDI_Main_Window::play_action_cbk() {
-
+void MDI_Main_Window::play_action_cbk()
+{
 	MDI_Sub_Window* m = (MDI_Sub_Window*)ws->activeWindow();
-	if ( !m )
+	if ( !m ) {
 		return;
+	}
 
 	m->get_interface()->play_song();
 
@@ -637,8 +638,8 @@ MDI_Main_Window::MDI_Main_Window() : Q3MainWindow( 0, "Main Window"/*, WDestruct
 
 	QAction * file_new_action = new QAction(QPixmap((const char**)file_disk_new_song_xpm),"&New Song",Qt::CTRL+Qt::Key_N,this, "New Song");
 	QObject::connect( file_new_action, SIGNAL( activated() ) , this, SLOT(newDoc()) );
-	file_new_action->addTo(file_menu_toolbar);
-	file_new_action->addTo(file);
+	file_menu_toolbar->addAction(file_new_action);
+	file->addAction(file_new_action);
 
 //	file->insertItem( "&New", this, SLOT(newDoc()), CTRL+Key_N );
 
@@ -646,8 +647,8 @@ MDI_Main_Window::MDI_Main_Window() : Q3MainWindow( 0, "Main Window"/*, WDestruct
 //	id = file->insertItem(  "&Open...",this, SLOT(load()), CTRL+Key_O );
 	QAction * file_open_action = new QAction(QPixmap((const char**)file_disk_open_xpm),"&Load...",Qt::CTRL+Qt::Key_L,this,"Open Song");
 	QObject::connect( file_open_action, SIGNAL( activated() ) , this, SLOT(load()) );
-	file_open_action->addTo(file_menu_toolbar);
-	file_open_action->addTo(file);
+	file_menu_toolbar->addAction(file_open_action);
+	file->addAction(file_open_action);
 
 	// F9_file_open_action is a hidden action: It has a
 	// key binding, but no corresponding menu entry.
@@ -659,10 +660,12 @@ MDI_Main_Window::MDI_Main_Window() : Q3MainWindow( 0, "Main Window"/*, WDestruct
 	QObject::connect(F9_file_open_action, SIGNAL( activated() ), this,
 	                 SLOT(load()) );
 
-	// Hidden actions must go into the hidden action list to prevent
+	this->addAction(F9_file_open_action);
+
+	// QT3: Hidden actions must go into the hidden action list to prevent
 	// a memory leak.
 
-	hidden_actions.push_back(F9_file_open_action);
+	// hidden_actions.push_back(F9_file_open_action);
 
 
 	// Make Ctrl+I load an instrument. This requires a QAction with
@@ -670,21 +673,21 @@ MDI_Main_Window::MDI_Main_Window() : Q3MainWindow( 0, "Main Window"/*, WDestruct
 
 	QAction * file_save_action = new QAction(QPixmap((const char**)file_disk_xpm),"&Save",Qt::CTRL+Qt::Key_S,this,"Save");
 	QObject::connect( file_save_action, SIGNAL( activated() ) , this, SLOT(save()) );
-	file_save_action->addTo(file_menu_toolbar);
-	file_save_action->addTo(file);
+	file_menu_toolbar->addAction(file_save_action);
+	file->addAction(file_save_action);
 
 	QAction * file_saveas_action = new QAction(QPixmap((const char**)file_disk_saveas_xpm),"Save &As..",Qt::CTRL+Qt::ALT+Qt::Key_S,this,"Save As");
 	QObject::connect( file_saveas_action, SIGNAL( activated() ) , this, SLOT(save_as()) );
-	file_saveas_action->addTo(file_menu_toolbar);
-	file_saveas_action->addTo(file);
+	file_menu_toolbar->addAction(file_saveas_action);
+	file->addAction(file_saveas_action);
 
 	file->insertSeparator();
 
 //	file->insertItem( "&Close", this, SLOT(close_window()), CTRL+Key_W );
 	QAction * file_close_action = new QAction(QPixmap((const char**)file_disk_close_xpm),"&Close",Qt::CTRL+Qt::Key_W,this,"Close");
 	QObject::connect( file_close_action, SIGNAL( activated() ) , this, SLOT(close_window()) );
-	file_close_action->addTo(file_menu_toolbar);
-	file_close_action->addTo(file);
+	file_menu_toolbar->addAction(file_close_action);
+	file->addAction(file_close_action);
 
 	file->insertItem( "&Quit", qApp, SLOT( closeAllWindows() ), Qt::CTRL+Qt::Key_Q );
 
@@ -804,40 +807,40 @@ MDI_Main_Window::MDI_Main_Window() : Q3MainWindow( 0, "Main Window"/*, WDestruct
 
 	QAction * play_prev_action = new QAction(QPixmap((const char**)control_play_prev_xpm),"Skip To P&revious Order",Qt::ALT+Qt::Key_Minus,this,"Skip To Previous Order");
 	QObject::connect( play_prev_action, SIGNAL( activated() ) , this, SLOT( play_prev_action_cbk() ) );
-	play_prev_action->addTo(play_commands);
-	play_prev_action->addTo(play_control_menu);
+	play_commands->addAction(play_prev_action);
+	play_control_menu->addAction(play_prev_action);
 
 	QAction * play_action = new QAction(QPixmap((const char**)control_play_xpm),"&Play Song",Qt::Key_F5,this,"Play Song");
 	QObject::connect( play_action, SIGNAL( activated() ) , this, SLOT( play_action_cbk() ) );
-	play_action->addTo(play_commands);
-	play_action->addTo(play_control_menu);
+	play_commands->addAction(play_action);
+	play_control_menu->addAction(play_action);
 
 	QAction * stop_action = new QAction(QPixmap((const char**)control_stop_xpm),"&Stop",Qt::Key_F8,this,"Stop");
 	QObject::connect( stop_action, SIGNAL( activated() ) , this, SLOT( stop_action_cbk() ) );
-	stop_action->addTo(play_commands);
-	stop_action->addTo(play_control_menu);
+	play_commands->addAction(stop_action);
+	play_control_menu->addAction(stop_action);
 
 	QAction * play_next_action = new QAction(QPixmap((const char**)control_play_next_xpm),"Skip To &Next Order",Qt::ALT+Qt::Key_Plus,this,"Skip To Next Order");
 	QObject::connect( play_next_action, SIGNAL( activated() ) , this, SLOT( play_next_action_cbk() ) );
-	play_next_action->addTo(play_commands);
-	play_next_action->addTo(play_control_menu);
+	play_commands->addAction(play_next_action);
+	play_control_menu->addAction(play_next_action);
 
 	play_commands->addSeparator();
 	play_control_menu->insertSeparator();
 
 	QAction * play_pattern_action = new QAction(QPixmap((const char**)control_play_pattern_xpm),"Play Pa&ttern",Qt::Key_F6,this,"Play Pattern");
 	QObject::connect( play_pattern_action, SIGNAL( activated() ) , this, SLOT( play_pattern_action_cbk() ) );
-	play_pattern_action->addTo(play_commands);
-	play_pattern_action->addTo(play_control_menu);
+	play_commands->addAction(play_pattern_action);
+	play_control_menu->addAction(play_pattern_action);
 
 	QAction * play_song_cursor_action = new QAction(QPixmap((const char**)control_play_pattern_all_xpm),"Play Song From &Cursor",Qt::Key_F7,this,"Play Song From Cursor");
 	QObject::connect( play_song_cursor_action, SIGNAL( activated() ) , this, SLOT( play_song_cursor_action_cbk() ) );
-	play_song_cursor_action->addTo(play_commands);
-	play_song_cursor_action->addTo(play_control_menu);
+	play_commands->addAction(play_song_cursor_action);
+	play_control_menu->addAction(play_song_cursor_action);
 
 	QAction * play_pattern_cursor_action = new QAction(QPixmap((const char**)control_play_pattern_all_xpm),"Play Song From &Cursor",Qt::SHIFT+Qt::Key_F6,this,"Play Pattern From Cursor");
 	QObject::connect( play_pattern_cursor_action, SIGNAL( activated() ) , this, SLOT( play_pattern_cursor_action_cbk() ) );
-	play_pattern_cursor_action->addTo(play_control_menu);
+	play_control_menu->addAction(play_pattern_cursor_action);
 
 	/*** Windows window */
 
@@ -961,6 +964,7 @@ MDI_Sub_Window *  MDI_Main_Window::newDoc() {
 	w->set_sound_driver_manager(sound_driver_manager);
 	w->set_info_lock(info_lock);
 	w->get_interface()->stop_song();
+	ws->addWindow(w);
 
 	if ( ws->windowList().isEmpty() )
 		w->showMaximized();

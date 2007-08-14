@@ -1,3 +1,21 @@
+Mon Aug 13 21:18:55 EDT 2007 J Phelps <godless@users.sf.net>
+	* mdi_main_window.cpp: Changed all occurences of
+	action->addTo(menu) to menu->addAction(action).
+	* mdi_main_window.cpp(newDoc): Added the (now required) call to
+	ws->addWindow(w) which officially makes the new sub-window "w"
+	a child of the QWorkspace object "ws". This revives most of the
+	keyboard functionality that was lost with Revision 100.
+
+	It is observed that the apparent lack of cursor-control
+	in the Pattern Editor (F2) is caused by Qt4's refusal to
+	perform paint operations outside of the context of a call by
+	Qt to paintEvent(). Covering and uncovering the window will
+	reveal all the cursor movement that has been going on in the
+	interim. This means that a lot of widgets need to be heavily
+	modified to conform.
+
+	Each widget inherits a function called repaint() that causes an
+	immediate paintEvent.
 Mon Aug 13 20:49:23 EDT 2007 J Phelps <godless@users.sf.net>
 	* Minimum changes required to compile against Qt 4.
 	Due to many, many differences in not only the

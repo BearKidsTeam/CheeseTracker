@@ -154,6 +154,8 @@ void Instrument_Edit::delete_instrument_with_samples() {
 }
 
 
+// FIXME: Qt4: All this must now be handled in a paint event. GOD DAMMIT!!!!!
+
 void Instrument_Edit::timer_callback() {
 
 	time_counter++;

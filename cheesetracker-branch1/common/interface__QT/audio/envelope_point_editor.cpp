@@ -503,7 +503,7 @@ void Envelope_Point_Editor::paintEvent( QPaintEvent * p_event ) {
 
 }
 
-
+// FIXME: Put this into a QPaintEvent somehow!!!
 
 void Envelope_Point_Editor::update_position_list(const vector<int>& p_positions) {
 
