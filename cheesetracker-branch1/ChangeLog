@@ -1,3 +1,12 @@
+Thu Aug 16 21:28:15 EDT 2007 J Phelps <godless@users.sf.net>
+	* interface_binds/editor.h: New methods set_flag_repaint() and
+	flag_repaint().
+	* orderlist_edit.cpp(draw_single_mode): Draw_single_mode is now
+	a wrapper for repaint().
+	* sample_instrument_table.cpp(draw_single_mode): Is now a wrapper
+	around repaint().
+	* pattern_edit.cpp(repaint_after_command,update_info_areas):
+	Converted into paintEvents.
 Thu Aug 16 21:08:18 EDT 2007 J Phelps <godless@users.sf.net>
 	* instrument_edit.cpp(timer_callback): Reverted to SVN Revision
 	101.

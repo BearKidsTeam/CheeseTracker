@@ -23,7 +23,9 @@
 
 
 void OrderList_Edit::draw_single_mode() {
-
+	this->repaint();
+}
+void OrderList_Edit::paintEvent( QPaintEvent * p_event ) {
 	int i;
        	char tmpnumb[4]={'0','0','0',0};
 
@@ -87,10 +89,6 @@ void OrderList_Edit::draw_single_mode() {
 		painter.drawRect(font_width+initx-1,inity-1,font_width+2,font_height+2);
 
 	}
-}
-void OrderList_Edit::paintEvent( QPaintEvent * p_event ) {
-
-	draw_single_mode();
 }
 bool OrderList_Edit::event(QEvent *e) {
 

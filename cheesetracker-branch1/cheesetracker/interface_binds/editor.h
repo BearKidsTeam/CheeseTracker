@@ -70,7 +70,9 @@ enum {
 	TRACKER_REDRAW_ALL=4,
 	TRACKER_REDRAW_TOP=8,
 	TRACKER_REDRAW_PLAYING_ROW=16,
- 	MAX_NOTE_INCR=32
+ 	MAX_NOTE_INCR=32,
+	TRACKER_REPAINT=64,
+	TRACKER_UPDATE_INFO_AREAS=128
 };
 
 
@@ -432,10 +434,12 @@ public:
         bool is_channel_muted(int p_track) { return song->initial_variables.channel[p_track].mute; };
 	/* REDRAW OPTIMIZATION CHECKS */
 
-	bool flag_redraw_row() { return (redraw_flags & TRACKER_REDRAW_ROW); };
-	bool flag_redraw_all() { return (redraw_flags==0) || (redraw_flags & TRACKER_REDRAW_ALL); };
-	bool flag_redraw_top() { return (redraw_flags & TRACKER_REDRAW_TOP); };
-        bool flag_redraw_playing_row() { return (redraw_flags & TRACKER_REDRAW_PLAYING_ROW); };
+	inline bool flag_redraw_row() { return (redraw_flags & TRACKER_REDRAW_ROW); };
+	inline bool flag_redraw_all() { return (redraw_flags==0) || (redraw_flags & TRACKER_REDRAW_ALL); };
+	inline bool flag_redraw_top() { return (redraw_flags & TRACKER_REDRAW_TOP); };
+        inline bool flag_redraw_playing_row() { return (redraw_flags & TRACKER_REDRAW_PLAYING_ROW); };
+	inline bool flag_repaint() { return redraw_flags & TRACKER_REPAINT; };
+	inline bool flag_update_info_areas() { return redraw_flags & TRACKER_UPDATE_INFO_AREAS; };
 
 	int get_playing_row() { return playing_row; };
 	int get_old_playing_row() { return playing_row_old; };
@@ -444,10 +448,13 @@ public:
 
 	void clear_redraw_flags() { redraw_flags=0; };
 
-	void set_flag_redraw_row() { redraw_flags|=TRACKER_REDRAW_ROW; };
-	void set_flag_redraw_all() { redraw_flags|=TRACKER_REDRAW_ALL; };
-	void set_flag_redraw_top() { redraw_flags|=TRACKER_REDRAW_TOP; };
-	void set_flag_redraw_playing_row() { redraw_flags|=TRACKER_REDRAW_PLAYING_ROW; };
+	inline void clear_flag_update_info_areas() { redraw_flags &= ~TRACKER_UPDATE_INFO_AREAS; };
+	inline void set_flag_redraw_row() { redraw_flags|=TRACKER_REDRAW_ROW; };
+	inline void set_flag_redraw_all() { redraw_flags|=TRACKER_REDRAW_ALL; };
+	inline void set_flag_redraw_top() { redraw_flags|=TRACKER_REDRAW_TOP; };
+	inline void set_flag_redraw_playing_row() { redraw_flags|=TRACKER_REDRAW_PLAYING_ROW; };
+	inline void set_flag_repaint() { redraw_flags |= TRACKER_REPAINT; };
+	inline void set_flag_update_info_areas() { redraw_flags |= TRACKER_UPDATE_INFO_AREAS; };
 
 	void notify_set_playing_row(int whichrow) { playing_row_old=playing_row; playing_row=whichrow; playing=true; set_flag_redraw_playing_row(); };
 	void notify_stopped_playing(int whichrow) { playing_row_old=playing_row; playing_row=-1; playing=false; set_flag_redraw_playing_row(); };

@@ -34,9 +34,10 @@
 #include <QPaintEvent>
 
 
-
 void Sample_Instrument_Table::draw_single_mode() {
-
+	this->repaint();
+}
+void Sample_Instrument_Table::paintEvent( QPaintEvent * p_event ) {
 	int i;
 
 
@@ -387,11 +388,6 @@ void Sample_Instrument_Table::InsertRepeat() {
 	MoveDown();
 }
 
-
-void Sample_Instrument_Table::paintEvent( QPaintEvent * p_event ) {
-
-	draw_single_mode();
-}
 
 void Sample_Instrument_Table::link_to_instrument_layer(Instrument::Layer *p_instrument) {
 

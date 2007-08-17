@@ -438,86 +438,45 @@ void Pattern_Edit::print_cursor(QPainter &painter) {
 	painter.drawRect(xinit-2, yinit,editor->get_font_width()+4,editor->get_font_height()+3);
 }
 
-/*
-
-void Pattern_Edit::draw_impl(GdkRectangle* p0){
-
-	int cursor_y_ofs_to_clear;
-
-      	if (editor==NULL) return;
-
-	adjust_editor();
-
-	window.draw_rectangle(GC[Col_BackGround],TRUE,0,editor->get_visible_rows()*editor->get_row_height()+editor->get_top_height(),width(),height()-(editor->get_visible_rows()*editor->get_row_height()+editor->get_row_height()));
-
-	if (editor->flag_redraw_all()) {
-
-		print_top();
-		print_rows();
-		print_cursor();
-
-	} else {
-
-		if (editor->flag_redraw_row()) {
-
-			cursor_y_ofs_to_clear=editor->get_previous_cursor_y()-editor->get_row_offset();
-
-	                print_single_row(painter,cursor_y_ofs_to_clear-1);
-	                print_single_row(painter,cursor_y_ofs_to_clear);
-	                print_single_row(painter,cursor_y_ofs_to_clear+1);
-
-	                print_single_row(painter,editor->get_cursor_y()-editor->get_row_offset());
-			print_cursor();
-		}
-
-		if (editor->flag_redraw_top()) {
-
-                        print_top();
-		}
-
-		if (editor->flag_redraw_playing_row()) {
-
-			print_single_row(painter,editor->get_playing_row()-editor->get_row_offset());
-			print_single_row(painter,editor->get_old_playing_row()-editor->get_row_offset());
-
-			print_cursor();
-		}
 
 
-	}
-
-	editor->set_previous_cursor_y(editor->get_cursor_y());
-	editor->set_previous_cursor_x(editor->get_cursor_x());
-	editor->clear_redraw_flags();
-
-}
-*/
 void Pattern_Edit::paintEvent( QPaintEvent * p_event ) {
+	if(editor->flag_update_info_areas()) {
+		QPainter painter(this);
+		painter.setFont(font);
+		bool current_row_marked =editor->is_mark_active() && (p_row_being_played==editor->get_marked_row()) && (editor->get_current_pattern()==editor->get_marked_pattern());
+		bool old_row_marked =editor->is_mark_active() && (old_row_to_draw==editor->get_marked_row()) && (editor->get_current_pattern()==editor->get_marked_pattern());
+
+		if (p_pattern_being_played==editor->get_current_pattern()) {
+
+			if (old_row_to_draw!=p_row_being_played) {
+
+				print_number(painter,old_row_to_draw-editor->get_row_offset(),false,old_row_marked);
+				print_number(painter,p_row_being_played-editor->get_row_offset(),true,current_row_marked);
+			}
+
+			old_row_to_draw=p_row_being_played;
+
+		} else {
+
+			print_number(painter,old_row_to_draw-editor->get_row_offset(),false,old_row_marked);
+			old_row_to_draw=-1;
+		}
+		return;
+	}
 
 	if ((editor==NULL) || (song==NULL))
 		return;
-
-	QPainter painter(this);
-	painter.setFont(font);
-	adjust_editor(painter);
-	print_top(painter);
-	print_rows(painter);
-	print_cursor(painter);
-
-}
-
-
-void Pattern_Edit::repaint_after_command() {
-
 	int cursor_y_ofs_to_clear;
 
-      	if (editor==NULL) return;
 	QPainter painter(this);
 	painter.setFont(font);
-
 	adjust_editor(painter);
 
-	if (editor->flag_redraw_all()) {
+	// editor->flag_repaint() is only true during an explicit
+	// repaint().
+
+	if ((!editor->flag_repaint()) || editor->flag_redraw_all()) {
 
 		print_top(painter);
 		print_rows(painter);
@@ -553,10 +512,15 @@ void Pattern_Edit::repaint_after_command() {
 
 	}
 
+}
+
+
+void Pattern_Edit::repaint_after_command() {
+	editor->set_flag_repaint();
+	this->repaint();
 	editor->set_previous_cursor_y(editor->get_cursor_y());
 	editor->set_previous_cursor_x(editor->get_cursor_x());
 	editor->clear_redraw_flags();
-
 }
 
 void Pattern_Edit::update_info_areas(int p_row_being_played,int p_pattern_being_played) {
@@ -573,27 +537,11 @@ void Pattern_Edit::update_info_areas(int p_row_being_played,int p_pattern_being_
 		if (old_row_to_draw!=p_row_being_played)
 			update();
 	}
-
-	QPainter painter(this);
-	painter.setFont(font);
-	bool current_row_marked =editor->is_mark_active() && (p_row_being_played==editor->get_marked_row()) && (editor->get_current_pattern()==editor->get_marked_pattern());
-	bool old_row_marked =editor->is_mark_active() && (old_row_to_draw==editor->get_marked_row()) && (editor->get_current_pattern()==editor->get_marked_pattern());
-
-	if (p_pattern_being_played==editor->get_current_pattern()) {
-
-		if (old_row_to_draw!=p_row_being_played) {
-
-			print_number(painter,old_row_to_draw-editor->get_row_offset(),false,old_row_marked);
-			print_number(painter,p_row_being_played-editor->get_row_offset(),true,current_row_marked);
-		}
-
-		old_row_to_draw=p_row_being_played;
-
-	} else {
-
-		print_number(painter,old_row_to_draw-editor->get_row_offset(),false,old_row_marked);
-		old_row_to_draw=-1;
-	}
+	editor->set_flag_update_info_areas();
+	this->p_row_being_played = p_row_being_played;
+	this->p_pattern_being_played = p_pattern_being_played;
+	this->repaint();
+	editor->clear_flag_update_info_areas();
 }
 
 void Pattern_Edit::configure(Song *p_song,Editor *p_editor,Player_Data *p_player) {

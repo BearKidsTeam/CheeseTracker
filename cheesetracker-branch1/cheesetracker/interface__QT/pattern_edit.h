@@ -73,6 +73,13 @@ private:
 
 	int old_row_to_draw;
 
+	// To accommodate Qt4's requirement that
+	// all update_info_areas's code be moved to
+	// paintEvent:
+
+	int p_row_being_played;
+	int p_pattern_being_played;
+
 	Song *song;
 	Editor *editor;
 
