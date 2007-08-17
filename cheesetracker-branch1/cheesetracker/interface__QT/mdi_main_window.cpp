@@ -566,7 +566,8 @@ void MDI_Main_Window::about_to_show_window_menu() {
 	}
 }
 
-void MDI_Main_Window::tools_menu_item_activated(int p_id) {
+void MDI_Main_Window::tools_menu_item_activated(int p_id)
+{
 
 	switch (p_id) {
 
@@ -602,7 +603,8 @@ void MDI_Main_Window::tools_menu_item_activated(int p_id) {
 		} break;
 	}
 }
-void MDI_Main_Window::about_to_show_tools_menu() {
+void MDI_Main_Window::about_to_show_tools_menu()
+{
 
 	settings_edit_menu->clear();
 	settings_edit_menu->setCheckable(true);
@@ -621,7 +623,8 @@ void MDI_Main_Window::about_to_show_tools_menu() {
 }
 
 
-MDI_Main_Window::MDI_Main_Window() : Q3MainWindow( 0, "Main Window"/*, WDestructiveClose*/ ) {
+MDI_Main_Window::MDI_Main_Window() : Q3MainWindow( 0, "Main Window"/*, WDestructiveClose*/ )
+{
 
 	caption_default=(string)APP_NAME_+(string)APP_VERSION_+" "+(string)APP_AUTHOR_;
 
@@ -1039,7 +1042,8 @@ void MDI_Main_Window::about()
                         "and more blah");
 }
 
-MDI_Main_Window::~MDI_Main_Window() {
+MDI_Main_Window::~MDI_Main_Window()
+{
 	list<QAction*>::iterator ix;
 
 	for(ix=hidden_actions.begin(); ix != hidden_actions.end(); ix++) {

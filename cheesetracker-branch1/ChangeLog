@@ -1,3 +1,16 @@
+Thu Aug 16 21:08:18 EDT 2007 J Phelps <godless@users.sf.net>
+	* instrument_edit.cpp(timer_callback): Reverted to SVN Revision
+	101.
+	* envelope_point_editor.cpp(update_position_list,paintEvent):
+	Replaced duplicate code in update_position_list with a call to
+	this->repaint(), which calls paintEvent. This avoids a recursive
+	paintEvent caused by calling update_position_list() from a
+	paintEvent (as was being done in Revision 102), but it does not
+	improve performance: Qt4's performance is degraded at the level of
+	its graphics primitives, to the point that drawing a vertical line
+	that moves across the graph of the volume envelope now requires
+	a high-end CPU, especially if you're drawing other things as well.
+	* mdi_main_window.cpp: Style changes.
 Tue Aug 14 00:13:24 EDT 2007 J Phelps <godless@users.sf.net>
 	* instrument_edit.cpp(timer_callback): Made this function conform
 	to Qt4's requirement that all painting take place within

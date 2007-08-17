@@ -154,28 +154,12 @@ void Instrument_Edit::delete_instrument_with_samples() {
 }
 
 
-// FIXME: Qt4: All this must now be handled in a paint event. GOD DAMMIT!!!!!
-
 void Instrument_Edit::timer_callback() {
 
 	time_counter++;
 
 	if (!(time_counter%2)) {
-		paint_in_timer=true;
-		this->repaint();
-		paint_in_timer=false;
-	}
-}
 
-void Instrument_Edit::set_player(Player_Data *p_player) {
-
-	player=p_player;
-}
-
-void
-Instrument_Edit::paintEvent(QPaintEvent *p_event)
-{
-	if(paint_in_timer) {
 		vol_envelope_positions.clear();
 		pan_envelope_positions.clear();
 		pitch_envelope_positions.clear();
@@ -193,9 +177,12 @@ Instrument_Edit::paintEvent(QPaintEvent *p_event)
                 volume.envelope_editor->get_point_editor()->update_position_list(vol_envelope_positions);
                 panning.envelope_editor->get_point_editor()->update_position_list(pan_envelope_positions);
                 pitch_filter.envelope_editor->get_point_editor()->update_position_list(pitch_envelope_positions);
-	} else {
-		Q3HBox::paintEvent(p_event);
 	}
+}
+
+void Instrument_Edit::set_player(Player_Data *p_player) {
+
+	player=p_player;
 }
 
 void Instrument_Edit::set_variables_lock(Mutex_Lock *p_lock) {
@@ -351,7 +338,6 @@ Instrument_Edit::Instrument_Edit(QWidget *p_parent) : Q3HBox(p_parent)  {
 
 	song=NULL;
 	editor=NULL;
-	paint_in_timer = false;
 
 	Q3VBox * instr_props_aux_vbox = new Q3VBox(this);
 

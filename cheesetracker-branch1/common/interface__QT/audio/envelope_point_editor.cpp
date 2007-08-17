@@ -483,9 +483,7 @@ void Envelope_Point_Editor::paintEvent( QPaintEvent * p_event ) {
 		old_position_cache.resize(width());
 	}
 
-//	float prev;
 	QPainter painter;
-//	painter.begin(backing_store, this );
 	painter.begin(this );
 
 
@@ -505,16 +503,16 @@ void Envelope_Point_Editor::paintEvent( QPaintEvent * p_event ) {
 
 // FIXME: Put this into a QPaintEvent somehow!!!
 
-void Envelope_Point_Editor::update_position_list(const vector<int>& p_positions) {
+void Envelope_Point_Editor::update_position_list(const vector<int>& p_positions)
+{
+	if (!this->isVisible())
+		return; //do nothing if not visible
 
 	if ( (int)position_cache.size()!=width() ){
 
 		position_cache.resize(width());
 		old_position_cache.resize(width());
 	}
-
-	if (!isVisible())
-		return; //do nothing if not visible
 
 
 	for (int i=0;i<(int)position_cache.size();i++) {
@@ -532,20 +530,9 @@ void Envelope_Point_Editor::update_position_list(const vector<int>& p_positions)
 		position_cache[(int)pos]=true;
 	}
 
-	QPainter painter;
-	painter.begin(this );
+	this->repaint();
 
-	for (int i=0;i<width();i++) {
-
-		if (position_cache[i] || old_position_cache[i]) {
-
-			draw_envelope_pos(i,painter);
-		}
-	}
-
-	paint_envelope_points(painter);
 	old_position_cache=position_cache;
-
 
 }
 

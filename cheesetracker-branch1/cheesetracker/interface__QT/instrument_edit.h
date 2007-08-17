@@ -81,8 +81,6 @@ class Instrument_Edit : public Q3HBox {
 	Q3VBox * instrument_pan_vbox;
 	Q3VBox * instrument_pitchfilter_vbox;
 
-	bool paint_in_timer;
-
 	Q3GroupBox * note_sample_table_group;
 	Sample_Instrument_Table *note_sample_edit;
 
@@ -188,7 +186,6 @@ public:
 	void set_file_format_manager(File_Format_Manager *p_file_manager) { file_manager=p_file_manager; }
 	void set_variables_lock(Mutex_Lock *p_lock);
 	void set_player(Player_Data *p_player);
-	void paintEvent(QPaintEvent *p_event);
 
 	void set_voice_status_info(vector<Player_Data::VoiceStatusInfo> *p_voice_status_info);
 	//sorry for this, but Qt forces me to expose it, since it eats keypresses :(
