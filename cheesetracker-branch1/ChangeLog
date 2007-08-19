@@ -1,3 +1,9 @@
+Fri Aug 17 02:12:20 EDT 2007 J Phelps <godless@users.sf.net>
+	* interface_binds/editor.h: Changed type of redraw_flags from
+	char to int.
+	* interface_binds/editor.cpp (get_visible_columns): Line 160:
+	fixed a divide-by-zero bug that is discovered by shrinking the
+	window to a very small size.
 Thu Aug 16 21:28:15 EDT 2007 J Phelps <godless@users.sf.net>
 	* interface_binds/editor.h: New methods set_flag_repaint() and
 	flag_repaint().

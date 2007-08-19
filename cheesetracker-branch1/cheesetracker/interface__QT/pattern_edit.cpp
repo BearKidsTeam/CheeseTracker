@@ -535,7 +535,7 @@ void Pattern_Edit::update_info_areas(int p_row_being_played,int p_pattern_being_
 		editor->set_cursor_y(p_row_being_played);
 
 		if (old_row_to_draw!=p_row_being_played)
-			update();
+			this->repaint();
 	}
 	editor->set_flag_update_info_areas();
 	this->p_row_being_played = p_row_being_played;

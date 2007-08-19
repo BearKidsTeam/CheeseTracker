@@ -193,7 +193,7 @@ private:
 
 	/* REDRAW OPTIMIZATION FLAGS */
 
- 	char redraw_flags;
+ 	int redraw_flags;
 
 	/* ORDERLIST EDITING */
 
