@@ -1,3 +1,7 @@
+Tue Aug 21 02:54:38 EDT 2007 J Phelps <godless@users.sf.net>
+	* interface_binds/editor.cpp (get_visible_columns): Line 160:
+	fixed a divide-by-zero bug that is discovered by shrinking the
+	window to a very small size.
 Mon Aug 13 17:22:24 EDT 2007 J Phelps <godless@users.sf.net>
 	* loader_ct.cpp: Incremented FILE_FORMAT_MINOR so that
 	older versions of CheeseTracker will issue a warning when

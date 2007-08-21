@@ -157,7 +157,7 @@ int Editor::get_visible_columns() {
 
 	int tmpint;
 
-	tmpint=(window_width-left_numbers_width())/get_column_width();
+	tmpint=get_column_width() ? (window_width-left_numbers_width())/get_column_width() : 0;
 
 	if (column_offset+tmpint>=PATTERN_WIDTH) tmpint-=((column_offset+tmpint)-PATTERN_WIDTH);
 
