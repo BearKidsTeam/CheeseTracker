@@ -56,7 +56,7 @@ void Edit_Effect_Reverse::process(Sample_Data *p_data,ptrdiff_t p_begin,ptrdiff_
 	//
 	for (i=0;i<size/2;i++) {
 
-		memcpy(aux_val, p_data->get_data_value(i+p_begin), channels);
+		memcpy(aux_val, p_data->get_data_value(i+p_begin), channels*sizeof(sample_int_t));
 		p_data->put_data_value(i+p_begin, p_data->get_data_value(p_end-i));
 		p_data->put_data_value(p_end-i, aux_val);
 	}
