@@ -77,7 +77,7 @@ void Sample_Editor_Effects::effect_apply_cbk() {
 			return; //nothing to apply
 
 		int begin=selection->is_active()?selection->get_begin():0;
-		int end=selection->is_active()?selection->get_end():(sample->get_size()-1);
+		int end=selection->is_active()?(selection->get_end()-1):(sample->get_size()-1);
 
 		if (effect_list[selected_effect]->is_destructive())
 			destructive_operation_begin();
