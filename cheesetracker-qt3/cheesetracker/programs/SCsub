@@ -1,0 +1,32 @@
+#-*-python-*-
+
+import os
+import string
+import sys
+
+Import('env')
+env2 = env.Copy()
+
+#env2.Append(CPPPATH = '#/client/lib/tools/mesh_editor')
+#env2.Append(CPPPATH = '#/client/lib/engine3d/animation')
+
+cheese_libs = [	'#/gui_gtk/lib_gui_gtk.a',
+		'#/loaders/lib_loaders.a',
+		'#/savers/lib_savers.a',
+		'#/trackercore/lib_trackercore.a',
+	      ];
+
+
+#libs=env2.common_libs;
+
+libs = cheese_libs;
+libs += env2.common_libs;
+
+env2.Append(LINKFLAGS=env2.sigc_libs['flags']);
+env2.Append(LIBS=env2.sigc_libs['libs']);
+
+env2.Append(CXXFLAGS = env.gtkmm_flags['flags'] + env.gtkmm_libs['flags']);
+env2.Append(LIBS = env.gtkmm_libs['libs']);
+
+env2.Program('cheeseplayer', ['cheeseplayer.cpp'] + libs);
+

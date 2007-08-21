@@ -1,0 +1,141 @@
+#include "resampler_raw.h"
+
+
+template <class Depth, bool FILTER_VERSION> static void
+mix_raw(Resampler::Mix_Data * mixdata) {
+
+    Uint8           fractional_size = mixdata->fractional_size;
+    Depth          *data_ptr = (Depth *) mixdata->sample->get_data_16();
+    sample_t       *dest_buffer = mixdata->dst_buff;
+    float           final_float[HARD_CODED_MIXER_CHANNELS];
+    for (size_t ix = 0; ix < HARD_CODED_MIXER_CHANNELS; ix++)
+	final_float[ix] = 0.0;
+    size_t          channels = mixdata->sample->num_channels();
+    float           pan_normalized =
+	(float) mixdata->panning / (float) 255;
+    bool            right_of_centre = pan_normalized > 0.5;
+    float           from_centre =
+	(right_of_centre ? (pan_normalized - 0.5) : (0.5 - pan_normalized))
+	* 2.0;
+    float           send_l = mixdata->l_volume;
+    float           send_r = mixdata->r_volume;
+    float           send_l_prev = mixdata->l_volume_prev;
+    float           send_r_prev = mixdata->r_volume_prev;
+    float           hist_a1 = mixdata->filter.hist_a1;
+    float           hist_a2 = mixdata->filter.hist_a2;
+    float           hist_b1 = mixdata->filter.hist_b1;
+    float           hist_b2 = mixdata->filter.hist_b2;
+    float           pre_filter;
+    float           f_a1 = mixdata->filter.coeffs.a1;
+    float           f_a2 = mixdata->filter.coeffs.a2;
+    float           f_b0 = mixdata->filter.coeffs.b0;
+    float           f_b1 = mixdata->filter.coeffs.b1;
+    float           f_b2 = mixdata->filter.coeffs.b2;
+    float           ramp_l_base =
+	(float) (send_l - send_l_prev) / (float) mixdata->samples_to_mix;
+    float           ramp_r_base =
+	(float) (send_r - send_r_prev) / (float) mixdata->samples_to_mix;
+    float           ramp_l = ramp_l_base;
+    float           ramp_r = ramp_r_base;
+    send_l = send_l_prev;
+    send_r = send_r_prev;
+    int             sample_increment_threshold = 5;
+    size_t          samples_to_mix = mixdata->samples_to_mix;
+    if (sample_increment_threshold > samples_to_mix)
+	sample_increment_threshold = samples_to_mix;
+    while (samples_to_mix--) {
+
+	// MIX ONE SAMPLE
+
+	for (size_t chan = 0; chan < HARD_CODED_MIXER_CHANNELS; chan++)
+	    final_float[chan] = 0.0;
+
+	for (size_t chan = 0;
+	     chan < std::max<size_t> (HARD_CODED_MIXER_CHANNELS, channels); chan++) {
+	    bool this_side_of_centre = (chan % HARD_CODED_MIXER_CHANNELS) ? !right_of_centre :
+					right_of_centre;
+	    float           temp_float = 0.0; 
+
+	    // PREPROCESS ROUTINE. In this case, it simply fetches the next sample.
+
+	    temp_float = mixdata->sample->get_f_sample(CURRENT_CHANNEL);
+
+	    // Panning towards one side makes the other side quieter.
+	    // But panning towards this side does not make this side get
+	    // louder.
+
+	    if (!this_side_of_centre) {
+		temp_float -= temp_float * from_centre;
+	    }
+	    final_float[chan % HARD_CODED_MIXER_CHANNELS] += temp_float;
+	}
+	// Renormalize
+	if (channels > HARD_CODED_MIXER_CHANNELS) {
+	    for (size_t chan = 0; chan < HARD_CODED_MIXER_CHANNELS; chan++)
+		final_float[chan] =
+		    final_float[chan] / ((float) channels /
+					 (float) HARD_CODED_MIXER_CHANNELS);
+	}
+	send_l += ramp_l;	// Volume ramp
+	// Perform filtering, contingent on template argument.
+	if (FILTER_VERSION) {
+	    pre_filter = final_float[0];
+	    for (size_t chan = 0; chan < HARD_CODED_MIXER_CHANNELS; chan++)
+		final_float[chan] *=
+		    f_b0 + hist_b1 * f_b1 + hist_b2 * f_b2 +
+		    hist_a1 * f_a1 + hist_a2 * f_a2;
+	    hist_a2 = hist_a1;
+	    hist_b2 = hist_b1;
+	    hist_b1 = pre_filter;
+	    hist_a1 = final_float[0];
+	}
+	// Mixdown
+	for (size_t chan = 0; chan < HARD_CODED_MIXER_CHANNELS; chan++)
+	    *dest_buffer++ += send_l * final_float[chan];
+    }
+    // Update mixdata status.
+    mixdata->filter.hist_a1 = hist_a1;
+    mixdata->filter.hist_a2 = hist_a2;
+    mixdata->filter.hist_b1 = hist_b1;
+    mixdata->filter.hist_b2 = hist_b2;
+    mixdata->sample_offset = mixdata->sample->get_current_pos(0);
+}
+
+
+void
+Resampler_Raw::mix(Resampler::Mix_Data * p_data) {
+
+
+    if (p_data->sample->is_16bit()) {
+
+	if (p_data->filter.enabled) {
+
+	    mix_raw < Sint16, true > (p_data);
+	} else {
+
+	    mix_raw < Sint16, false > (p_data);
+	}
+    } else {
+
+	if (p_data->filter.enabled) {
+
+	    mix_raw < Sint8, true > (p_data);
+	} else {
+
+	    mix_raw < Sint8, false > (p_data);
+	}
+
+    }
+}
+
+string
+Resampler_Raw::get_name() {
+
+    return "Raw";
+}
+
+bool
+Resampler_Raw::has_interpolation() {
+
+    return false;
+}

@@ -1,0 +1,23 @@
+
+Import('env_cheese');
+env2=env_cheese.Copy();
+Export('env2');
+
+file_list=[\
+'loader_it.cpp',\
+'loader_it_info.cpp',\
+'loader_it_instruments.cpp',\
+'loader_it_patterns.cpp',\
+'loader_it_samples.cpp',\
+'loader_s3m.cpp',\
+'loader_xm.cpp',\
+'loader_ct.cpp',\
+'loader_raw.cpp',\
+]
+
+if (env2.detect.have_libaudiofile) :
+	file_list.append('loader_libaudiofile.cpp');
+else: 
+	file_list.append('loader_wav.cpp');
+
+env2.Library('lib_loaders.a', file_list);

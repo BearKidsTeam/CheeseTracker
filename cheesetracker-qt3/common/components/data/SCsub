@@ -1,0 +1,6 @@
+
+Import('env');
+env2=env.Copy();
+env2.Append(CXXFLAGS = ['-Icommon/components/audio']);
+
+env2.make_targets(env.common_objects)

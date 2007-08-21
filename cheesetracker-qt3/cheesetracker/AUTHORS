@@ -1,0 +1,20 @@
+CheeseTracker.
+(c) 2000,2003 Juan Linietsky <coding@reduz.com.ar>
+http://reduz.com.ar/cheesetracker
+
+and Thanks to:
+
+Nicolas Lamana (Packaging)
+Calvin French (testing,some coding support)
+Lysander Lapine,Alex Garcia (testing)
+James Martin (TheHornet) for s3memu.txt and a lot of help regarding IT
+fromage people (support)
+Jeffrey Lim (for creating such a great piece of code)
+Mathew Valente (help with IT registered issues and filters)
+
+CheeseTracker still Includes some heavily modified portions of 
+libmikmod module playing section, inside the "Player_Data" class,
+I hope i will be able to get rid of them soon because they suck :)
+
+if you want to talk with me, you might find me at "american" night
+on IRC at "irc.esper.net" #fromage - or "irc.freenode.net" #lad

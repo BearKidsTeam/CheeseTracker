@@ -1,0 +1,13 @@
+
+Import('env_cheese');
+env2=env_cheese.Copy();
+
+
+file_list=[\
+'saver_ct.cpp',\
+'saver_it.cpp',\
+'saver_raw.cpp',\
+'saver_wav.cpp',\
+]
+
+env2.Library('lib_savers.a', file_list);
