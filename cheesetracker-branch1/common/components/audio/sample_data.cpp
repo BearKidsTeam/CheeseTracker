@@ -327,7 +327,7 @@ void Sample_Data::put_data_value(size_t p_pos, const sample_int_t *p_val)
 	if(data_ptr == NULL || p_pos >= size)
 		return;
 	for(size_t chan=0; chan<channels; chan++)
-		data_ptr[CURRENT_FRAME] = p_val[chan];
+		data_ptr[p_pos*channels+chan] = p_val[chan];
 }
 
 /*
