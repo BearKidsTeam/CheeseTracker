@@ -36,6 +36,9 @@
 #include <sigc++/sigc++.h>
 
 #include "voice.h"
+#ifndef NO_MUTEX
+#  define NO_MUTEX false
+#endif
 
 /* BASE MIXER CLASS, TO ABSTRACT INFO/DRIVER POLLING AND SPEED UP COMPILATION :) */
 
@@ -158,7 +161,7 @@ public:
 	  to avoid nasty sound artifacts such as clicks and
 	  pops.
 	*/
-	virtual void eliminate_voice(Voice* p_new_voice)=0;
+	virtual void eliminate_voice(Voice* p_new_voice, bool use_mutex=true)=0;
 	
 	
 	/*

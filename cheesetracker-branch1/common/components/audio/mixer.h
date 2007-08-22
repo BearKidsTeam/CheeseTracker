@@ -32,6 +32,7 @@
 
 #ifndef MIXER_H
 #define MIXER_H
+#define NO_MUTEX false
 
 #include "voice.h"
 
@@ -151,7 +152,7 @@ private:
         } config;
 
 	int get_voice_index(Voice* p_voice);
-	void eliminate_voice(int p_index);
+	void eliminate_voice(int p_index, bool use_mutex=true);
 
 	int write_samples_internal(int p_samples);
 
@@ -217,7 +218,7 @@ public:
 
 	void allocate_voice(Voice* p_new_voice);
 	void replace_voice(Voice* p_old_voice,Voice* p_new_voice);
-	void eliminate_voice(Voice* p_new_voice);
+	void eliminate_voice(Voice* p_new_voice, bool use_mutex=true);
 
 
 	void set_mix_frequency(float p_freq) {config.mix_freq=p_freq;}

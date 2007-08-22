@@ -38,7 +38,7 @@ void Sample_Edit::destructive_operation_begin_cbk() {
 	if (!dst_sample)
 		return;
 
-	rt_keyboard->sample_stop_all();
+	rt_keyboard->sample_stop_all(NO_MUTEX);
         player->lock_player_variables(__FILE__, __LINE__);
 	player->erase_voices_using_sample(dst_sample);
 

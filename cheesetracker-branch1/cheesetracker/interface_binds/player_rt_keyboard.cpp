@@ -220,14 +220,14 @@ void Player_Realtime_Keyboard::sample_stop_key(int p_note)
 
 }
 
-void Player_Realtime_Keyboard::sample_stop_all()
+void Player_Realtime_Keyboard::sample_stop_all(bool use_mutex)
 {
 	int i;
 
 	player->lock_player_variables(__FILE__, __LINE__);
 
 	if (current_sample!=NULL)
-		mixer->eliminate_voice(&voice);
+		mixer->eliminate_voice(&voice, use_mutex);
 	player->unlock_player_variables();
 
        	for (i=0;i<Note::NOTES;i++) key_pressed[i]=false;

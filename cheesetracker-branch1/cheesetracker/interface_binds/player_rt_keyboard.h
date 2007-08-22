@@ -35,6 +35,9 @@
 
 #include "player_data.h"
 
+#ifndef NO_MUTEX
+# define NO_MUTEX false
+#endif
 
 /**realtime keyboard for testing
 stuff
@@ -80,7 +83,7 @@ public:
 	int sample_pos_get();
 	void sample_press_key(int p_note);
 	void sample_stop_key(int p_note);
-	void sample_stop_all();
+	void sample_stop_all(bool use_mutex=true);
 	void sample_set_multichannel(bool p_multichannel);
 	bool is_multichannel_set();
         void sample_adjust_latest_key();

@@ -502,7 +502,7 @@ void Mixer::replace_voice(Voice* p_old_voice,Voice* p_new_voice) {
 }
 
 /* wrapper version  :)*/
-void Mixer::eliminate_voice(Voice* p_voice) {
+void Mixer::eliminate_voice(Voice* p_voice, bool use_mutex) {
 
 	int voice_index=get_voice_index(p_voice);
 
@@ -512,19 +512,19 @@ void Mixer::eliminate_voice(Voice* p_voice) {
 		return;
 	}
 
-	eliminate_voice(voice_index);
+	eliminate_voice(voice_index, use_mutex);
 }
 
 /* real version :) */
 
-void Mixer::eliminate_voice(int p_index) {
+void Mixer::eliminate_voice(int p_index, bool use_mutex) {
 
 
 	//zero declick voice
 	if (voice[p_index]->can_mix()) {
 
 		memset(&declick_buffer[0],0,sizeof(sample_t)*declick_buffer.size());
-		voice[p_index]->mix(declick_buffer.size()/2,&declick_buffer[0]);
+		voice[p_index]->mix(declick_buffer.size()/2,&declick_buffer[0], use_mutex);
 
 		for (int i=0;i<declick_buffer.size();i++) {
 

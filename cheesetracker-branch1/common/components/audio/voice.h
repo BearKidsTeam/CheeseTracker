@@ -122,7 +122,7 @@ public: /* MIXING! */
 	  buffer without needing to do extra data copying.
 	*/
 
-	virtual void mix(size_t p_amount,sample_t* p_where)=0; //set where to mix
+	virtual void mix(size_t p_amount,sample_t* p_where, bool use_mutex=true)=0; //set where to mix
 
 
 	virtual bool can_mix(); //return FALSE if the voice is not active, this hints the mixer to not do extra work
