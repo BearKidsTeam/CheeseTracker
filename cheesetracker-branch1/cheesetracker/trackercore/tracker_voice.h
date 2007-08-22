@@ -121,7 +121,7 @@ class Tracker_Voice : public Voice
 	virtual int get_channel();
 	virtual void set_mix_frequency(float p_mixfreq);
 	virtual void set_preamp(float p_preamp);
-	virtual void mix(size_t p_amount,sample_t* p_where); //set where to mix
+	virtual void mix(size_t p_amount,sample_t* p_where, bool use_mutex=true); //set where to mix
 
 	void add_to_mix_buffer(size_t p_amount,sample_t *p_buffer);
 

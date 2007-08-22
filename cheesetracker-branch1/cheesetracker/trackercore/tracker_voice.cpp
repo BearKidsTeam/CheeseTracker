@@ -83,7 +83,7 @@ bool Tracker_Voice::can_mix() {
 
 
 
-void Tracker_Voice::mix(size_t p_amount,sample_t* p_where) {
+void Tracker_Voice::mix(size_t p_amount,sample_t* p_where, bool use_mutex) {
 
 	if ( info.current_frequency==0 ) info.active=false;
 	if ( (info.sample_data_ptr==NULL) || (info.sample_data_ptr->is_empty()) ) info.active=false;
@@ -98,10 +98,14 @@ void Tracker_Voice::mix(size_t p_amount,sample_t* p_where) {
 	// Lock the sample, to prevent illegal attempts
 	// to modify or read the sample while we're in
 	// use_fixedpoint() mode.
-	Mutex_Lock_Container *sample_lock = info.sample_data_ptr->lock(__FILE__, __LINE__);  
-	// The sample will be automatically unlocked at
-	// the end of this scope.
-	ns_sample_lock.ptr_new(sample_lock); 
+	Mutex_Lock_Container *sample_lock;
+
+	if(use_mutex) {
+		sample_lock = info.sample_data_ptr->lock(__FILE__, __LINE__);  
+		// The sample will be automatically unlocked at
+		// the end of this scope.
+		ns_sample_lock.ptr_new(sample_lock); 
+	}
 
 	info.sample_data_ptr->use_fixedpoint(true);
 	info.sample_data_ptr->fixedpoint_set_resample_rate(info.current_frequency, mixfreq, info.playing_backwards);
