@@ -424,13 +424,13 @@ bool Voice_Control::process() {
 
 }
 
-void Voice_Control::deinitialize() {
+void Voice_Control::deinitialize(bool use_mutex) {
 
 	if (master_channel.ptr->layers[master_channel.layer].slave_voice==this) {
 
 		master_channel.ptr->layers[master_channel.layer].slave_voice=NULL;
 	}
-	mixer->eliminate_voice(&mixing.voice);
+	mixer->eliminate_voice(&mixing.voice, use_mutex);
 }
 
 void Voice_Control::reset() {

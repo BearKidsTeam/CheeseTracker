@@ -53,8 +53,8 @@ Overall Song structure!
 
 #define MAX_PATTERNS 200
 #define MAX_ORDERS 255
-#define MAX_SAMPLES 99
-#define MAX_INSTRUMENTS 99
+#define MAX_SAMPLES 200
+#define MAX_INSTRUMENTS 200
 
 class Song {
 

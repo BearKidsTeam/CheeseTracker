@@ -276,7 +276,7 @@ public:
 
 	void get_voice_status_info(vector<Player_Data::VoiceStatusInfo>& p_info);
 	//DANGEROUS!!! _LOCK_ variables_lock before calling from the gui thread
-	void erase_voices_using_sample(Sample *p_sample);
+	void erase_voices_using_sample(Sample *p_sample, bool use_mutex=true);
 
 	/* External player control - editor - */
 

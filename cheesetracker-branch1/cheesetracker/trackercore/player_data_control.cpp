@@ -74,7 +74,7 @@ void Player_Data::unlock_player_variables() {
 
 }
 
-void Player_Data::erase_voices_using_sample(Sample *p_sample) {
+void Player_Data::erase_voices_using_sample(Sample *p_sample, bool use_mutex) {
 
 	for (Voice_List::iterator I=voice_list.begin();I!=voice_list.end();){
 
@@ -83,7 +83,7 @@ void Player_Data::erase_voices_using_sample(Sample *p_sample) {
 		N++;
 
 		if ( (*I)->sample.ptr==p_sample ) {
-			(*I)->deinitialize();
+			(*I)->deinitialize(use_mutex);
 			delete *I;
 			voice_list.erase(I);
 		}

@@ -143,7 +143,7 @@ struct Voice_Control {
 
 	bool init(Mixer_Base *p_mixer);
 	bool process();
-	void deinitialize();
+	void deinitialize(bool use_mutex=true);
 
 
 
