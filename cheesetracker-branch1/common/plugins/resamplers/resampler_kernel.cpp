@@ -7,9 +7,12 @@
 
 void mix_sample(Resampler::Mix_Data *mixdata, sample_getter *get_sample, bool perform_filtering)
 {
+	// Prevent a division by zero
+	
+	if(samples_to_mix == 0) return;
+
 	// Copy certain values from {mixdata} onto the stack,
 	// where access will be faster.
-	//
 
 	// dest_buffer is a buffer into which we can copy samples_to_mix
 	// sample frames (defined below), which will eventually get
