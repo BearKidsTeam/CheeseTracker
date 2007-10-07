@@ -162,10 +162,14 @@ int File_Format_Manager::load_sample(const char *p_filename,int p_dest_index) {
 
 	for (I=loader_list.begin();I!=loader_list.end();I++) {
 
-		if ((*I)->load_sample(p_filename,p_dest_index)==FUNCTION_SUCCESS) {
-
-			return FUNCTION_SUCCESS;
-
+		try {
+			if ((*I)->load_sample(p_filename,p_dest_index)==FUNCTION_SUCCESS) {
+				return FUNCTION_SUCCESS;
+			}
+		} catch (File_Corrupt E) {
+			ERROR(E.what());
+		} catch (File_Error E) {
+			return Loader::CANNOT_OPEN_FILE;
 		}
 	}
 

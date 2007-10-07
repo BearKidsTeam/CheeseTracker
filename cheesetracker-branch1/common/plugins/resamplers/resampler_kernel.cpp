@@ -7,9 +7,6 @@
 
 void mix_sample(Resampler::Mix_Data *mixdata, sample_getter *get_sample, bool perform_filtering)
 {
-	// Prevent a division by zero
-	
-	if(samples_to_mix == 0) return;
 
 	// Copy certain values from {mixdata} onto the stack,
 	// where access will be faster.
@@ -24,6 +21,8 @@ void mix_sample(Resampler::Mix_Data *mixdata, sample_getter *get_sample, bool pe
 	bool right_of_centre	= pan_normalized > 0.5;
 	float from_centre 	= (right_of_centre ? (pan_normalized - 0.5) : (0.5 - pan_normalized)) * 2.0;
 	size_t samples_to_mix 	= mixdata->samples_to_mix;
+	// Prevent a division by zero
+	if(samples_to_mix == 0) return;
 	float send_volume 	= mixdata->l_volume;
 	float prev_volume	= mixdata->l_volume_prev;
 	float ramp_increment	= (float)(send_volume-prev_volume)/(float)samples_to_mix;
