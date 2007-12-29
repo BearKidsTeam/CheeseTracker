@@ -2,12 +2,11 @@
 #define PVECTOR_H
 
 #include <vector>
-	using std::vector;
 
 template<class T>
 class VectorPointer {
 
-	vector<T*> vector;
+	std::vector<T*> vector;
 
 public:
 
