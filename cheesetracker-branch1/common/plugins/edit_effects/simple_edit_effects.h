@@ -238,7 +238,27 @@ public:
 };
 
 
+class Edit_Effect_Trim : public Edit_Effect {
+public:
+
+	/* On Select info.. */
+	virtual void selected_notify(Sample_Data *p_data,ptrdiff_t p_begin,ptrdiff_t p_end) {}
+	virtual list<Property_Bridge*> get_property_list() { list<Property_Bridge*> empty; return empty; }
+
+	/* Processing */
+	virtual void process(Sample_Data *p_data,ptrdiff_t p_begin,ptrdiff_t p_end);
+
+	/* Info */
+	virtual bool is_destructive() { return true; }
+	virtual string get_name() { return "Trim to selectionn"; }
+	virtual string get_description() { return "Removes data before and after selection"; }
+
+
+};
+
+
 
 
 
 #endif
+

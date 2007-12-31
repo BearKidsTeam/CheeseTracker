@@ -397,17 +397,18 @@ void Editor::perform_action(Pattern_Actions p_action) {
 	switch (p_action) {
 
 		case Pattern_MARK_BLOCK_BEGIN: {
-
-		mark_block_begining();
-
+			mark_block_begining();
 		} break;
 		case Pattern_MARK_BLOCK_END: {
-
                 	mark_block_end();
 		} break;
 		case Pattern_MARK_COLUMN_SIXTEEN: {
-			mark_column_sixteen();
+			mark_column_sixteen();		  
 		} break;
+		case Pattern_MARK_COLUMN_QUARTER_HALF: {
+			mark_column_quarter_half();  	  
+		} break;
+
 		case Pattern_MARK_COLUMN_ALL: {
                 	mark_column_all();
 		} break;
@@ -415,42 +416,30 @@ void Editor::perform_action(Pattern_Actions p_action) {
 	                selection_copy();
 		} break;
 		case Pattern_BLOCK_PASTE_INSERT: {
-
                 	selection_paste_insert();
 		} break;
 		case Pattern_BLOCK_PASTE_OVERWRITE: {
-
 	                selection_paste_overwrite();
 		} break;
 		case Pattern_BLOCK_UNMARK: {
-
 	                selection_release();
-
 		} break;
 		case Pattern_BLOCK_CUT: {
-
 	                selection_zap();
 		} break;
 		case Pattern_BLOCK_RAISE_NOTES: {
-
 			selection_raise();
-
 		} break;
 		case Pattern_BLOCK_LOWER_NOTES: {
-
 	                selection_lower();
 		} break;
 		case Pattern_BLOCK_SET_CURRENT_INSTRUMENT: {
-
 			selection_set_instrument_mask();
-
 		} break;
 		case Pattern_BLOCK_SET_CURRENT_VOLUME: {
 	                selection_set_volume_mask();
-
 		} break;
 		case Pattern_BLOCK_WIPE_STRAY_VOLUMES: {
-
 	                selection_wipe_stray_volumes();
 		} break;
 		case Pattern_BLOCK_RAMP_WIPE_VOLUMES: {

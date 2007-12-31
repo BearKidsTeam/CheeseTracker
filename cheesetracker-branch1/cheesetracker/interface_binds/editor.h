@@ -83,6 +83,7 @@ public:
 		Pattern_MARK_BLOCK_BEGIN,
 		Pattern_MARK_BLOCK_END,
 		Pattern_MARK_COLUMN_SIXTEEN,
+		Pattern_MARK_COLUMN_QUARTER_HALF,
 		Pattern_MARK_COLUMN_ALL,
 		Pattern_BLOCK_COPY,
 		Pattern_BLOCK_PASTE_INSERT,
@@ -348,6 +349,7 @@ public:
         void selection_release();
         void mark_column_all();
 	void mark_column_sixteen();
+	void mark_column_quarter_half();
 
 	/* SELECTION INFO RETRIEVING */
 

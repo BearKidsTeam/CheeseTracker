@@ -1,6 +1,6 @@
 #include "dds.h"
 
-
+using std::vector;
 
 DDS::Data_Node::~Data_Node() {
 

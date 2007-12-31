@@ -112,6 +112,7 @@ class Sample_Edit : public QHBox {
 		Edit_Effect_Reverse reverse;
 		Edit_Effect_PreLoop_Cut pre_cut;
 		Edit_Effect_PostLoop_Cut post_cut;
+		Edit_Effect_Trim trim;;
 		Edit_Effect_SelToLoop sel_to_loop;
 		Edit_Effect_Center center;
 		Edit_Effect_Normalize normalize;

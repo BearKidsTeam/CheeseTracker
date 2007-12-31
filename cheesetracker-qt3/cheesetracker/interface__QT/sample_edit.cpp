@@ -440,6 +440,7 @@ Sample_Edit::Sample_Edit(QWidget *p_parent) : QHBox(p_parent)  {
 	sample_editor->add_edit_effect(&edit_effects.reverse);
 	sample_editor->add_edit_effect(&edit_effects.center);
 	sample_editor->add_edit_effect(&edit_effects.normalize);
+	sample_editor->add_edit_effect(&edit_effects.trim);
 	sample_editor->add_edit_effect(&edit_effects.pre_cut);
 	sample_editor->add_edit_effect(&edit_effects.post_cut);
 	sample_editor->add_edit_effect(&edit_effects.tunner);

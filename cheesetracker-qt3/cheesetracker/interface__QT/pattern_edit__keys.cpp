@@ -246,7 +246,6 @@ bool Pattern_Edit::event ( QEvent * e  ) {
 	// if-block.
 
 	if (control) {
-
 		switch (event->key()) {
 
 			case Qt::Key_Plus: {
@@ -286,23 +285,29 @@ bool Pattern_Edit::event ( QEvent * e  ) {
 		}
 
 	} else if (shift) {
-		switch (event->key()) {
-			case Qt::Key_F11: {
- 				// printf("Mute attempt\n");
-				editor->current_channel_mute_toggle();
-				must_repaint=true;
+	  switch (event->key()) {
+	  case Qt::Key_F11: {
+	    //printf("Mute attempt\n");
+	    editor->current_channel_mute_toggle();
+	    must_repaint=true;
+	  }break;
+	  
+	  case Qt::Key_F10: {
+	    //printf("Solo attempt\n");
+	    editor->current_channel_solo_toggle();
+	    must_repaint=true;
+	  }break;
+	  
+	  case Qt::Key_Backtab: {
+	    editor->cursor_back_tab();
+	    must_repaint=true;
+	    grab_event=true;
+	  } break;
 
-			} break;
-
-			case Qt::Key_F12: {
- 				// printf("Solo attempt\n");
-				editor->current_channel_solo_toggle();
-				must_repaint=true;
-			} break;
-		}
+	  }
 	} else if (alt) {
 
-		grab_event=true;
+	  grab_event=true;
 		switch (key_value) {
 			case '1': {
 				editor->set_cursor_spacing(1);
@@ -349,7 +354,8 @@ bool Pattern_Edit::event ( QEvent * e  ) {
 			} break;
 
 			case 'D': {
-				editor->mark_column_sixteen();
+
+				editor->mark_column_quarter_half();
 			} break;
 
 			case 'E': {
@@ -494,13 +500,11 @@ bool Pattern_Edit::event ( QEvent * e  ) {
 
 
 			case Qt::Key_Tab: {
-
 				editor->cursor_tab();
 				must_repaint=true;
 				grab_event=true;
 			} break;
 			case Qt::Key_Backtab: {
-
 				editor->cursor_back_tab();
 				must_repaint=true;
 				grab_event=true;
@@ -714,9 +718,8 @@ bool Pattern_Edit::event ( QEvent * e  ) {
 		event->accept();
 		return false;
 	} else {
-		//printf("Doing nothing!!\n");
-		//event->ignore();
-		return QWidget::event(e);
-//		return true;
+	  //printf("Doing nothing!!\n");
+	  //event->ignore();
+	  return QWidget::event(e);
 	}
 }

@@ -132,6 +132,20 @@ void Editor::mark_column_sixteen()
 	normalize_selection();
 }
 
+void Editor::mark_column_quarter_half()
+{
+  int ll = get_hl_major();
+  if(selection_end_y-selection_begin_y==ll-1 && selection_begin_x==cursor_x && selection_begin_y == cursor_y)
+    ll*=2;
+
+  selection_begin_x = selection_end_x = cursor_x;
+  selection_begin_y = cursor_y;
+  selection_end_y	= cursor_y + (ll-1);
+  selection_active= true;
+  normalize_selection();
+}
+
+
 void Editor::mark_column_all()
 {
 	if ( selection_active

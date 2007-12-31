@@ -263,8 +263,8 @@ void Saver_IT::write_instrument(int p_instrument_index) {
 
 void Saver_IT::write_instrument_internal(Instrument *p_aux_instr) {
 
-	char *instrument_head="IMPI";
-	char *filename="XXXXXXXX.YYY";
+	const char *instrument_head="IMPI";
+	const char *filename="XXXXXXXX.YYY";
 	char name[26];
 	int tmpint,i;
 	bool sample_used[MAX_SAMPLES];

@@ -25,9 +25,9 @@ using std::list;
 
 class DDS;
 
-typedef vector<int> vector_int;
-typedef vector<string> vector_string;
-typedef vector<float> vector_float;
+typedef std::vector<int> vector_int;
+typedef std::vector<string> vector_string;
+typedef std::vector<float> vector_float;
 typedef VectorPointer<DDS> vector_dds;
 typedef int data_size;
 
@@ -79,9 +79,9 @@ protected:
 
 		};
 
-		vector<string> string_array;
-		vector<int> int_array;
-		vector<float> float_array;
+		std::vector<string> string_array;
+		std::vector<int> int_array;
+		std::vector<float> float_array;
 
 		VectorPointer<DDS> dds_array;
 
@@ -116,9 +116,9 @@ private:
 
 public:
 
-	typedef vector<int> vector_int;
-	typedef vector<string> vector_string;
-	typedef vector<float> vector_float;
+	typedef std::vector<int> vector_int;
+	typedef std::vector<string> vector_string;
+	typedef std::vector<float> vector_float;
 	typedef VectorPointer<DDS> vector_dds;
 
 	Data_Node_List::const_iterator get_iterator_begin();

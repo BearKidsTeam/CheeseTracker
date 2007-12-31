@@ -404,3 +404,44 @@ void Edit_Effect_PreLoop_Cut::process(Sample_Data *p_data,ptrdiff_t p_begin,ptrd
 
 }
 
+
+void Edit_Effect_Trim::process(Sample_Data *p_data,ptrdiff_t p_begin,ptrdiff_t p_end) {
+  //Trim sample to selection
+  //Like using pre+post loop cut, but
+  //all in one operation and doesn't need looping to be
+  //enabled and disabled
+
+  if (!p_data->get_size()) //Sample length 0
+    return;
+  if (p_end-p_begin<=0) //No selection
+    return;
+
+  //Work out how big the new sample will be and make space for it
+  int new_size=1+p_end-p_begin;
+  sample_int_t * new_data = new sample_int_t[new_size*p_data->num_channels()];
+
+
+  //Lock
+  Mutex_Lock_Container *p_data_lock = p_data->lock(__FILE__, __LINE__);
+  ns_autoptr<Mutex_Lock_Container> ns_p_data_lock;
+  ns_p_data_lock.ptr_new(p_data_lock);
+
+  //Move to the start of the selection and grab a selection's length
+  p_data->seek(p_begin);
+  p_data->get_sample_array(new_data, new_size);
+
+  //Move to 0 and paste the data
+  p_data->seek(0);
+  p_data->put_sample_array(new_data, new_size);
+  delete new_data;
+
+  //Paste should leave the position at the end of the pasted data,
+  //so remove all data after that point
+  p_data->truncate();
+
+  //I couldn't think of anything clever to do with loop points
+  //in this situation, so I've set them to start and end.
+  p_data->set_loop_end( new_size );
+  p_data->set_loop_begin( 0 );
+
+}
