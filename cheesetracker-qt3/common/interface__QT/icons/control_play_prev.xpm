@@ -1,5 +1,5 @@
 /* XPM */
-static char * control_play_prev_xpm[] = {
+static const char * control_play_prev_xpm[] = {
 "24 24 204 2",
 "  	c None",
 ". 	c #939393",

@@ -1,5 +1,5 @@
 /* XPM */
-static char * icon_volume_xpm[] = {
+static const char * icon_volume_xpm[] = {
 "20 20 46 1",
 " 	c None",
 ".	c #100F10",

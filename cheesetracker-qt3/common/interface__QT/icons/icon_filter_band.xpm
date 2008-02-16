@@ -1,5 +1,5 @@
 /* XPM */
-static char * icon_filter_band_xpm[] = {
+static const char * icon_filter_band_xpm[] = {
 "20 20 52 1",
 " 	c None",
 ".	c #FF0606",

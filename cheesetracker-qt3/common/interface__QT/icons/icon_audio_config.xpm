@@ -1,5 +1,5 @@
 /* XPM */
-static char * icon_audio_config_xpm[] = {
+static const char * icon_audio_config_xpm[] = {
 "24 24 192 2",
 "  	c None",
 ". 	c #32306F",

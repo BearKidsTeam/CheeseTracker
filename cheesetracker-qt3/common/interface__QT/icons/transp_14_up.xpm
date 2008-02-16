@@ -1,5 +1,5 @@
 /* XPM */
-static char * transp_14_up_xpm[] = {
+static const char * transp_14_up_xpm[] = {
 "24 24 4 1",
 " 	c None",
 ".	c #000000",

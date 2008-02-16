@@ -1,5 +1,5 @@
 /* XPM */
-static char * instrument_xpm[] = {
+static const char * instrument_xpm[] = {
 "16 16 11 1",
 " 	c None",
 ".	c #D3D3D3",

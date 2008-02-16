@@ -1,5 +1,5 @@
 /* XPM */
-static char * icon_filter_lowpass1_xpm[] = {
+static const char * icon_filter_lowpass1_xpm[] = {
 "20 20 71 1",
 " 	c None",
 ".	c #FF0606",

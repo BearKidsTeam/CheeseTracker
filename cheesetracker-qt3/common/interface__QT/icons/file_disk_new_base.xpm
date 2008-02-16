@@ -1,5 +1,5 @@
 /* XPM */
-static char * file_disk_new_base_xpm[] = {
+static const char * file_disk_new_base_xpm[] = {
 "24 24 120 2",
 "  	c None",
 ". 	c #686868",

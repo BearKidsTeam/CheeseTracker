@@ -1,5 +1,5 @@
 /* XPM */
-static char * pattern_xpm[] = {
+static const char * pattern_xpm[] = {
 "16 16 7 1",
 " 	c None",
 ".	c #D3D3D3",

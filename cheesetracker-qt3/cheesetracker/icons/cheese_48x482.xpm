@@ -1,5 +1,5 @@
 /* XPM */
-static char * cheese_48x482_xpm[] = {
+static const char * cheese_48x482_xpm[] = {
 "48 48 414 2",
 "  	c None",
 ". 	c #A1A1A1",

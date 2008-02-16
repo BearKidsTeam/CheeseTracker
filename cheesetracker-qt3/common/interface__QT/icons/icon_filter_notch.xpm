@@ -1,5 +1,5 @@
 /* XPM */
-static char * icon_filter_notch_xpm[] = {
+static const char * icon_filter_notch_xpm[] = {
 "20 20 76 1",
 " 	c None",
 ".	c #100F10",

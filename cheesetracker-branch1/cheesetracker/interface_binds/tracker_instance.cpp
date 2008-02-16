@@ -168,7 +168,9 @@ Tracker_Instance::Tracker_Instance()
 
 	format_manager.link_to_song(&song);
 	loader_ct.set_mixer(&mixer);
+#ifdef HAVE_LIBAUDIOFILE
 	format_manager.register_loader(&loader_libaudiofile);
+#endif
 	format_manager.register_loader(&loader_ct);
 	format_manager.register_loader(&loader_it);
 	format_manager.register_loader(&loader_xm);

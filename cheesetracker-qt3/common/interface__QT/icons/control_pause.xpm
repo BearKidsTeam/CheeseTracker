@@ -1,5 +1,5 @@
 /* XPM */
-static char * control_pause_xpm[] = {
+static const char * control_pause_xpm[] = {
 "24 24 119 2",
 "  	c None",
 ". 	c #C5C5C5",

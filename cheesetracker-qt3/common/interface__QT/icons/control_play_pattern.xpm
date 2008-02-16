@@ -1,5 +1,5 @@
 /* XPM */
-static char * control_play_pattern_xpm[] = {
+static const char * control_play_pattern_xpm[] = {
 "24 24 175 2",
 "  	c None",
 ". 	c #E2E2E2",

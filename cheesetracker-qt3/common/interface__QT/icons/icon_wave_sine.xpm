@@ -1,5 +1,5 @@
 /* XPM */
-static char * icon_wave_sine_xpm[] = {
+static const char * icon_wave_sine_xpm[] = {
 "20 20 3 1",
 " 	c None",
 ".	c #539AF3",

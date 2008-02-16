@@ -1,5 +1,5 @@
 /* XPM */
-static char * icon_colors_xpm[] = {
+static const char * icon_colors_xpm[] = {
 "24 24 474 2",
 "  	c None",
 ". 	c #057F7F",

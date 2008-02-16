@@ -1,5 +1,5 @@
 /* XPM */
-static char * file_disk_open_xpm[] = {
+static const char * file_disk_open_xpm[] = {
 "24 24 201 2",
 "  	c None",
 ". 	c #010000",

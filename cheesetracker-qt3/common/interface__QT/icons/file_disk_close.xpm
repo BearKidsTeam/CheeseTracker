@@ -1,5 +1,5 @@
 /* XPM */
-static char * file_disk_close_xpm[] = {
+static const char * file_disk_close_xpm[] = {
 "24 24 177 2",
 "  	c None",
 ". 	c #DA7283",

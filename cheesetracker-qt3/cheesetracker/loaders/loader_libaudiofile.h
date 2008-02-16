@@ -33,6 +33,7 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifdef HAVE_LIBAUDIOFILE
 #ifndef LOADER_LIBAUDIOFILE_H
 #define LOADER_LIBAUDIOFILE_H
 
@@ -65,4 +66,5 @@ struct Loader_libaudiofile : public Loader  {
 
 
 
+#endif
 #endif

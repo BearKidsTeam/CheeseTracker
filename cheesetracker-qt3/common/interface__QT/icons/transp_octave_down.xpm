@@ -1,5 +1,5 @@
 /* XPM */
-static char * transp_octave_down_xpm[] = {
+static const char * transp_octave_down_xpm[] = {
 "24 24 4 1",
 " 	c None",
 ".	c #000000",

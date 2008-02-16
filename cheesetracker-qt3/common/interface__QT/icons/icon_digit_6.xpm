@@ -1,5 +1,5 @@
 /* XPM */
-static char * icon_digit_6_xpm[] = {
+static const char * icon_digit_6_xpm[] = {
 "24 24 24 1",
 " 	c #EFEFEF",
 ".	c #888888",

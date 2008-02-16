@@ -101,7 +101,9 @@ class Tracker_Instance
 	Loader_WAV loader_wav;
 #endif
 	Loader_RAW loader_raw;
+#ifdef HAVE_LIBAUDIOFILE
 	Loader_libaudiofile loader_libaudiofile;
+#endif
 
 
 	Saver_IT saver_it;
