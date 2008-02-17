@@ -205,21 +205,7 @@ void Audio_Config::set_sound_driver_manager(Sound_Driver_Manager *p_driver_manag
 
 void Audio_Config::button_choose_file_callback() {
 
-	QString filter;
-
-	filter="Output File/Device";
-
-	if (driver_manager->get_active_driver_disk_write_extension()!="") {
-
-		filter = filter+(QString)"( "+driver_manager->get_active_driver_disk_write_extension().c_str()+ (QString)")";
-	} else {
-
-		filter = filter = "( *.* )";
-	}
-
-
-
-	QString fn = QFileDialog::getOpenFileName( save_name->text(), filter, this );
+	QString fn = QFileDialog::getOpenFileName( save_name->text(), QString::null, this );
 	if ( !fn.isEmpty() ) {
 		entry_file_changed_callback(fn);
 	}
