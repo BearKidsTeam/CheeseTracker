@@ -30,9 +30,9 @@
 //
 
 #define APP_NAME_ "CheeseTracker "
-#define APP_VERSION_ "0.9.15.3"
+#define APP_VERSION_ "0.9.15.4"
 #define APP_AUTHOR_ "(c) 1999,2004 Juan Linietsky"
-#define APP_RELEASE_DATE_ "Mon Dec 31 06:19:03 EST 2007"
+#define APP_RELEASE_DATE_ "Sat Feb 16 22:03:52 EST 2008"
 #define APP_MAINTAINER_ "J Phelps <godless@users.sf.net>"
 #define APP_WEBSITE_ "http://cheesetracker.sf.net/"
 
