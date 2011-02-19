@@ -26,6 +26,7 @@
 //
 //
 #include "font_bridge.h"
+#include <cstdio>
 #include <qfontdialog.h>
 //Added by qt3to4:
 #include <QLabel>
