@@ -405,6 +405,7 @@ void Editor::perform_action(Pattern_Actions p_action) {
 		case Pattern_MARK_COLUMN_SIXTEEN: {
 			mark_column_sixteen();		  
 		} break;
+
 		case Pattern_MARK_COLUMN_QUARTER_HALF: {
 			mark_column_quarter_half();  	  
 		} break;
