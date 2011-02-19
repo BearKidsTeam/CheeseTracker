@@ -14,6 +14,7 @@
 #ifdef LADSPA_ENABLED
 #include "typedefs.h"
 
+#include <cstring>
 #include <sys/types.h>
 #include <dirent.h>
 #include <dlfcn.h>

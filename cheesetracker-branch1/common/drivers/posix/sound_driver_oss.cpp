@@ -33,6 +33,7 @@
 #ifdef OSS_ENABLED
 
 #include <cerrno>
+#include <cstdlib>
 #include <unistd.h>
 #include "Error.h"
 #include "sound_driver_oss.h"

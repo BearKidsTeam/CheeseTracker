@@ -1,3 +1,4 @@
+#include <cstring>
 #include "bridge_converter.h"
 
 int BridgeConverter::get_short_string(BufferControl& p_buffer, string& p_string) {

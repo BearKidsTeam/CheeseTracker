@@ -18,6 +18,7 @@
 
 #include "common/plugins/effects/ladspa/ladspa.h"
 #include "components/audio/effect.h"
+#include <cstring>
 #include <vector>
 	using std::vector;
 

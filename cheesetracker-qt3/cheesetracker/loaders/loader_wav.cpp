@@ -263,6 +263,7 @@ Loader::Error Loader_WAV::load_sample_func(const char *p_filename, Sample_Data *
 	// with the ERROR message or the FILE_ERROR return value.
 
 	if (file_read.open(p_filename)) {
+		perror(p_filename);
 		ERROR("Cannot open file");
 		return FILE_ERROR;
 	}

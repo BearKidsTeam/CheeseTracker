@@ -31,6 +31,7 @@
  ***************************************************************************/
 
 #include <cassert>
+#include <cstring>
 #include "instrument.h"
 
 void

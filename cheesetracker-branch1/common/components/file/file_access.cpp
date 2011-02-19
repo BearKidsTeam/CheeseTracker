@@ -13,6 +13,7 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+#include <cstring>
 #include "file_access.h"
 
 File_Manager::File_Manager() {

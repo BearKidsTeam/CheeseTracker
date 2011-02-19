@@ -368,8 +368,8 @@ int Sample_Viewer::get_factor() {
 }
 
 void Sample_Viewer::screen_to_sample(int p_int, float *p_max_peak,float *p_min_peak, int sample_cache_idx,int cur_width,int *p_final_sample) {
-	float sample_idx;
-	float size=sample_data->get_size();
+	size_t sample_idx;
+	size_t size=sample_data->get_size();
 	float factor=1;
 
 	if (sample_cache_idx!=-1) { //have cache

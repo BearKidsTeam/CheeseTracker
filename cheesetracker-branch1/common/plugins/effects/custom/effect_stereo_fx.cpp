@@ -9,6 +9,7 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
+#include <cstring>
 #include "effect_stereo_fx.h"
 
 

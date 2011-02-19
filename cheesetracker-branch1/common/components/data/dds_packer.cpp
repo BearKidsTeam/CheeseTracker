@@ -1,3 +1,4 @@
+#include <cstring>
 #include "dds_packer.h"
 
 

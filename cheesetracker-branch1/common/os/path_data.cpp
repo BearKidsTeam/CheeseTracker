@@ -27,6 +27,7 @@
 //
 #include "path_data.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 string Path_Data::get_home_dir() {
 

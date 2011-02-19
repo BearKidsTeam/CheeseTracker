@@ -31,6 +31,7 @@
  ***************************************************************************/
 
 #include "file_writer.h"
+#include <cstring>
 
 File_Writer::File_Writer(){
 

@@ -1,3 +1,103 @@
+Sun, 16 Mar 2008 22:03:06 -0500 J Phelps <godless@users.sf.net>
+	* mdi_main_window.cpp: Updated version string and release date.
+
+Sun, 16 Mar 2008 19:07:56 -0500 J Phelps <godless@users.sf.net>
+	* audio_config.cpp: Fixed bug #1887850: When selecting which
+	OSS device file to use, the DOSism "*.*" is no longer used.
+
+	At the same time, I have discovered that CheeseTracker
+	was written with the idea that device files can have
+	extensions.  Each sound driver has a method called via
+	get_active_driver_disk_write_extension() that returns the string
+	"" for the extension. get_active_driver_disk_write_extension()
+	and the methods in the drivers that it depends on should be
+	removed, but I don't have time to track everything down and
+	make sure it still compiles. So I'm leaving this note in the
+	ChangeLog instead.  Eventually I might get around to converting
+	this into a bug report.
+
+
+Sun, 16 Mar 2008 05:23:35 -0500 J Phelps <godless@users.sf.net>
+	* interface_binds/tracker_instance.(cpp|h): Fixed bug #1887846:
+	Program can now be compiled and linked without libaudiofile.
+	* *.xpm: Fixed compiler warning: No more "deprecated conversion"
+	warnings with newer GCC versions.
+
+Thu, 31 Jan 2008 06:18:42 -0500 J Phelps <godless@users.sf.net>
+Changed release date and version string.
+
+Thu, 31 Jan 2008 06:09:54 -0500 J Phelps <godless@users.sf.net>
+	* mdi_main_window.cpp: Changed menu caption: "Mark - Sixteen notes"
+	becomes "Mark- quarter/half pattern length notes". Alt+D is still
+	the accelerator key.
+
+	* pattern_edit__keys.cpp (event): Changed the key-binding for
+	Solo to shift+F10 (previous binding was Shift+F12). Also added
+	a response for Shift+Tab.
+
+	Some indentation was modified, and some commented-out code was
+	removed.
+
+	sample_edit.(cpp|h) (Sample_Edit): Added a new edit effect:
+	edit_effects.trim.
+
+	* editor.h: The Pattern_Actions value Pattern_MARK_COLUMN_SIXTEEN
+	was renamed to Pattern_MARK_COLUMN_QUARTER_HALF
+
+	* editor_commands.cpp (perform_action): Added case for
+	Pattern_MARK_COLUMN_QUARTER_HALF
+
+	* editor_selection.cpp (mark_column_quarter_half): New method.
+
+
+Sun, 14 Oct 2007 04:22:27 -0400 J Phelps <godless@users.sf.net>
+	* sample_edit.cpp
+	  voice_control.cpp
+	  player_data_control.cpp
+	  voice_control.h
+	  player_data.h: Added use_mutex argument to allow calling of
+	Tracker_Voice::mix() without causing a deadlock.
+
+	* song.h: Increased MAX_INSTRUMENTS and MAX_SAMPLES from 99 to
+	200 as a workaround until the static structures used with these
+	can be replaced with dynamic ones.
+
+
+Sun, 23 Sep 2007 03:50:47 -0400 J Phelps <godless@users.sf.net>
+	* SCsub: Added the line "env2.Append(CXXFLAGS = env2.detect.qt_flags);"
+	to make the Qt-dependant Error.cpp compile.
+
+
+Sat, 22 Sep 2007 03:03:44 -0400 J Phelps <godless@users.sf.net>
+	* mdi_main_window.cpp: Updated APP_RELEASE_DATE_.
+
+Sat, 22 Sep 2007 02:35:29 -0400 J Phelps <godless@users.sf.net>
+	* tracker_voice.(cpp|h)(mix): Mutex is now only locked if the
+	optional argument use_mutex is true.
+	* mixer.(cpp|h)(eliminate_voice): Added optional argument
+	"use_mutex", which defaults to "true", so that it is possible to
+	call Tracker_Voice::mix() without having it lock its sample's
+	mutex.	This will fix part of SF Bug Item #1777800 (Debian Bug
+	#438853), the "Cut sample freezes the program" deadlock.
+	* mixer_base.h: Added "use_mutex" argument to virtual function
+	eliminate_voice().
+	* player_rt_keyboard.(cpp|h)(sample_stop_all): New optional
+	argument use_mutex, which gets passed down, eventually being
+	received by Tracker_Voice::mix(). Default value is true.
+	* sample_edit.cpp(destructive_operation_begin_cbk): The call
+	to rt_keyboard->sample_stop_all() is now made with the argument
+	"NO_MUTEX", which prevents this function from locking the playing
+	sample's mutex, which in this special case is already locked.
+
+Fri, 21 Sep 2007 03:42:37 -0400 J Phelps <godless@users.sf.net>
+	 * sample_editor_effects(effect_apply_cbk): Fixed an off-by-one bug.
+
+Fri, 21 Sep 2007 03:21:00 -0400 J Phelps <godless@users.sf.net>
+	* simple_edit_effects.cpp: Fixed a bug where memcpy was passed
+	the wrong size.  This is likely to be the cause of one of the
+	elements of SourceForge Bug Item #1777800, AKA Debian Bug #438853
+	(reverse doesn't work).
+
 Tue Aug 21 02:54:38 EDT 2007 J Phelps <godless@users.sf.net>
 	* interface_binds/editor.cpp (get_visible_columns): Line 160:
 	fixed a divide-by-zero bug that is discovered by shrinking the

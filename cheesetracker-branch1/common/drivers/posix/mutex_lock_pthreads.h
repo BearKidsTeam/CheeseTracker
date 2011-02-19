@@ -39,6 +39,7 @@
 #include <pthread.h>
 #include <errno.h>
 #include <string.h>
+#include <stdlib.h>
 /**
   *@author Juan Linietsky
   */

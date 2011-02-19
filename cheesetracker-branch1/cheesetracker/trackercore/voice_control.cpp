@@ -14,6 +14,7 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <cstdlib>
 #include "voice_control.h"
 #include "freq_conversion.h"
 
