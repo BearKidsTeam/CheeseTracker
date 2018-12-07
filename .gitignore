@@ -1,0 +1,6 @@
+# misc
+.directory
+.sconsign.dblite
+*.user
+.vscode/
+.svn/

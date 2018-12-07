@@ -1,3 +1,0 @@
-Import('env');
-
-env.make_targets(env.common_objects);

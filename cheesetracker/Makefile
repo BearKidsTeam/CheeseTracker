@@ -1,2 +1,0 @@
-all:
-	cat INSTALL | more

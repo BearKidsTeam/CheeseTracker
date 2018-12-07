@@ -1,8 +1,0 @@
-
-Import('env');
-Export('env');
-
-
-SConscript('custom/SCsub');
-SConscript('freeverb/SCsub');
-SConscript('ladspa/SCsub');

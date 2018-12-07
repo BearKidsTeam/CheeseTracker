@@ -1,8 +1,0 @@
-
-Import('env');
-Export('env');
-
-
-SConscript('win32/SCsub');
-SConscript('posix/SCsub');
-SConscript('rtaudio/SCsub');
