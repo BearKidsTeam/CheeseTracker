@@ -1,0 +1,9 @@
+
+Import('env');
+Export('env');
+
+
+SConscript('audio/SCsub');
+SConscript('midi/SCsub');
+SConscript('file/SCsub');
+SConscript('data/SCsub');

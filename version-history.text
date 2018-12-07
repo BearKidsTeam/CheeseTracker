@@ -1,0 +1,387 @@
+CHEESETRACKER!
+--------------
+
+Mail me your patches.
+godless@users.sf.net
+
+0.9.15.1
+------
+Added the Ctrl+D (Select 16 notes) keystroke to the Pattern Editor (F2).
+
+Fixed some bugs that caused CheeseTracker to crash when copying a
+selection.
+
+0.9.15
+------
+Added libaudiofile support. Many new sample formats will load, including
+compressed and floating-point WAV files.
+
+0.9.14.3
+------
+Fixed a long-standing bug with the live keyboard feature. Notes
+played with the live keyboard no longer get cut off by notes from
+the song if it is played at the same time that a song is playing.
+
+Also fixed a bug which makes operations on selections in the
+Pattern Editor fail.
+
+0.9.14.1
+------
+Fixed some bugs that made the release of 0.9.13 unacceptable. 0.9.13
+didn't display samples correctly in the Sample Editor, and it completely
+distorted instruments whose Pitch Envelope had the "Use As Filter"
+option enabled.
+
+0.9.13
+------
+-Multi-channel samples can now be loaded and saved (either in
+ WAV format, or within *.ct modules). Stereo samples can be
+ played back. (Samples with more than two channels will be
+ mixed down to stereo before playback).
+
+ Stereo samples saved within modules saved with this version
+ of CheeseTracker cannot be loaded by previous versions of
+ CheeseTracker.
+
+ *.ct modules that only contain mono samples are saved in
+ a format compatible with old versions of CheeseTracker-- IOW,
+ the format change only affects multi-channel samples.
+
+-Greater-than-16-bit samples can be loaded, but all saving
+ of samples causes them to be downgraded to 16 bits. 8-bit
+ samples are promoted to 16 bits upon loading.
+-Looping bug introduced in 0.9.10 has been fixed. Consequently,
+ the demo songs that come with CheeseTracker now sound the same
+ when played in 0.9.13 as they did in version 0.9.9.
+-Totally restructured the "resampler" classes. There is now only
+ one copy of the main resampling algorithm.
+-CheeseTracker now compiles with G++ 4.1.2, thanks to patches originally
+ submitted to the Debian project and sent to me by Wesley J. Landaker
+ <wjl@icecavern.net>
+
+-Other Debian patches applied, fixing more bugs.
+
+-Fixed a bug created in 0.9.12 where holding SHIFT and the arrow keys in the
+ Pattern Editor (F2) no longer caused the data to be highlighted.
+
+-Totally changed the way the resampler works.
+
+-Laid the foundation for stereo sample support. The C++ class that
+ represents sample data is in the process of being made more
+ object oriented. The new, object-oriented interface takes arguments
+ for multi-channel support. Some of the sample-loading code has been made
+ ready to load stereo samples. The WAV loader is ready to load
+ multiple-channel samples. However, the underlying Sample_Data
+ class still only supports mono, even though it presents an
+ interface for handling multi-channel samples.
+
+ Multi-channel samples may be limited to stereo output until I gain access
+ to multi-channel hardware on which to test such functionality.
+
+-Removed the last vestiges of code that accesses the data_ptr member of the
+ Sample_Data class directly.
+
+-Inlined the byte and word-at-a-time methods of the file-reading class.
+
+-Moved the ChangeLog to the top directory.
+
+-Removed some stray temp files that were distributed with previous
+ versions.
+
+Unofficial Release 0.9.12
+------
+-Deleted the remnants of the undeveloped GTK+ interface.
+
+-Investigated Debian bug report #327709 (Crash while loading large
+ files)... This version did not crash, but the songs mentioned in
+ the report sound like shit, even with "old effects" and "compatible GXX"
+ enabled, and even after I fixed the bug where stereo samples are simply
+ thrown away.
+
+-Changed Channel Mute key to Shift+F11 and Channel Solo key to Shift+F12.
+ The old F9/F10 keybinding was in conflict with the new F9 key for
+ opening files.
+
+ The original IT keybindings were Alt+F9 and Alt+F10, but these are
+ trapped by the popular XFWM window manager, as are Ctrl+F9 and Ctrl+F10.
+
+ Shift+F9 and Shift+F10 were attempted, but Qt seems to ignore the
+ state of the shift key when checking if the F9 menu accelerator has
+ been pressed.
+ 
+-Within IT songs, stereo samples are now converted to mono instead of
+ being discarded.
+
+-Wrote an mmap-based file-reading class. The class from 0.9.11 is used if 
+ SCons cannot find mmap. 
+
+
+Planned for 1.0.0:
+-=-=-=-=-=-=-=-=-
+
+Since the code has changed hands, so have the plans. Here they are:
+
+- A return to per-channel effect buffers, instead of the "two kinds
+  of channels" system that is currently implemented.
+- Implementation of the above will enable the effect buffers to be
+  controllable from the pattern editor, just as the old-fashioned
+  DOS-era effects are. The control column will widen to accommodate
+  all the parameters of all the effects in use on a channel. Tooltips
+  will assist in associating a control column in the Pattern Editor
+  with the corresponding effect parameter in the Buffer screen.
+- Fix all the really obvious bugs
+- Support for multi-channel samples.
+- Support for samples with greater than 16-bit precision
+- Support for simultaneous output to multiple, multi-channel sound devices.
+- Proper error handling
+- WAV and OGG exporting
+
+No longer planned for 1.0.0: Porting to Windows or Mac OS.
+
+Unofficial Release 0.9.11
+------
+-Faster file-reading algorithm implemented. Large samples and modules will
+ load faster.
+-Removed stupid bug in which CheeseTracker arbitrarily refuses to load
+ *.ct files bigger than 50 MB.
+-Fixed the incredibly STUPID bug that prevented the use of samples
+ containing more than 1,048,576 data points (2 MB worth of 16-bit data). 
+-Stuffed the code with asserts-- The original author made lots of
+ calls to functions that return NULL without checking! CT dumped core
+ on me because of it. 
+-Replaced all the sprintf's with snprintf's, except in rtaudio.cpp
+ (which contains TONS of sprintf's, but it's only for Mac OS X,
+  so I can't test-build it)
+-Merged more duplicate functions
+-Started updating this ChangeLog
+
+Unofficial Release 0.9.10
+------
+-New maintainer: godless@users.sf.net
+-Applied the Debian security patch
+-Fixed the memory leak created by the Debian patch
+-Added F9 (Load File) and Ctrl+I (Load Instrument).
+-As a result, broke the Mute key in the Pattern Editor
+ (it was also F9)
+-Pressing Enter in the Sample and Instrument lists now
+ opens the Load Sample/Load Instrument dialog.
+-Fixed behavior of F7 when pressed in the order list.
+-Added support for raw samples. Unknown sample types are treated as raw.
+-Project now compiles with -Wall and -g
+-Changed blank-order behavior: Song now loops at blank orders, as
+ in Impulse Tracker.
+-Loaded samples will now list with just the filename, instead of the
+ full pathname. If the undocumented GNU version of the 'basename()'
+ function cannot be detected by SCons, then this involves a C++ wrapper
+ around the POSIX-compliant basename(3) function, or a from-scratch
+ implementation if that doesn't exist. 
+-A few duplicate functions have been merged into single functions.
+-New COMPILER_ASSERT macro in common/defines/typedefs.h
+-A COMPILER_ASSERT macro will prevent compilation on one's complement
+ machines-- The original author made assumptions that are only true
+ on two's complement hardware.
+-Typedefs for Uint8, Uint16, etc. now point to the corresponding
+ types in <stdint.h>. The old definitions are still available
+ via conditional compilation, and will be enabled by SCons if
+ <stdint.h> cannot be found.
+-A COMPILER_ASSERT macro will prevent compilation if <stdint.h>
+ doesn't exist and the default definitions for Uint8, etc. don't
+ have the correct number of bytes.
+
+v0.9.9
+------
+-Fixed OSS detection for REAL
+-Disabled RtAudio, must reenable it at least for OSX, but that will be version 1.0.0
+-All engine converted to floating point, may be a bit slower on pre p4/athlon computers, 
+ though a bit more accurate
+-Old FX core deprecated, sorry, this wont load effects on pre-9.9 songs, though it will keep the routes :(
+-NEW FILTERS!!! rewrote the filters, they are MUCH better now..
+-New effect!: Distortion (with many distortion modes)
+-New effect! Pitch Shifter (not amazing, but very tweakeable)
+-New effect! Stereo FX (kickass post-production helper)
+-New bugs! report them please!
+
+v0.9.6 (private)
+------
+
+-Added shift-f6, play pattern from cursor
+-Added sample-being-played notification in sample screen.
+-Added stereo-expander effect
+-Fixed wave-loading bug, should work until i get libaudiofile working
+-Fixed OSS detection issue, it's somewhat hacked for now
+-Windows version.. for the adventurous..
+
+v0.9.5 (private)
+------
+-Fixed ugly bug in GXX introduced in 0.9.1
+-New Effect: Multiband equalizer.
+-More resamplers (FM/Cosine/Cubic Spline).
+-Doubled filter range.
+-Added Bandpass/Highpass to instrument, which can be enveloped.
+-Managed to reduce the source file size a bit
+
+v0.9.1
+------
+
+-Oops, ITs being saved were corrupt, really stupid bug. My apologies if some work was lost! Better use t
+-Fixed a bug where notes not were beign terminated properly
+-Due to popular request, removed all the printfs!
+-Fixes to OSX build system, made LADSPA support more portable (Benjamin Reed)
+-Some things missing, but hey are minor. Expect a 0.9.5 with fixed/improved JACK support and friendlier
+
+
+
+
+v0.9.0
+------
+
+-Removed sample mode (Scream Tracker 3 mode) as It's obsolete and not needed for backwards compatibility.
+-Instruments are now layered and can perform up to 4 simultaneous voices with individual parameters each.
+-Added an effect buffers system. Instruments are now routed to custom buffers (each with individual effect chains), which can also re-route to other buffers. This allows to create very complex effect routes for realtime processing.
+-Effect buffers are "process on demand", which means they are smart enough to notice when they are doing nothing, thus disabling themselves.
+-Added a few internal effects: Amplifier, Clipping/Distortion, Recursive Delay Line, Stereo Enhancer, Chorus and Reverb.
+-Added a LADSPA effect source plugin. LADSPA plugins can be added to the chains.
+-Created new file formats that save all the new features: .CT (CheeseTracker Module) .CI (Cheesetracker Instrument) and .CS (CheeseTracker Sample)
+-Added preview to the sample file selection box, just hilite a file and use your keyboard to play notes (/ and * work in there too).
+-Readded JACK Driver (Kasper Souren)
+-Added RTAUDIO driver, allows for porting to Win32/ASIO and OSX/CoreAudio
+-Fixed some big endian compatibility issues. CheeseTracker should work fine again on big endian machines.
+-MacOSX port and build system/build fixes courtesy of Benjamin Reed
+-Fixed tons and tons of bugs.
+
+AND NOW PLEASE READ: How fast CheeseTracker reaches version 1.0 depends on YOU. The focus of this version is STABILITY. Because of this, I need to receive as many bug reports as I can, both program and build system. If you find a bug, I'd be enormously grateful if you submit it. Even if it is an obvious bug to you, chances that other people will find and report the same bug are much smaller than what you may think. If you dont report a bug that annoys you, the chances of it reappearing in the next version will allways be higher.
+
+Planned for 1.0.0:
+-=-=-=-=-=-=-=-=-
+
+-Rock Solid stability
+-WAV exporting
+-A hopefully working Windows port. This depends mainly on the Qt-Win32 project. If you are a good Windows programmer and would like to see CheeseTracker working in there sooner, please give those guys a hand!
+
+
+v0.8.0
+------
+-Total rewrite of the interface and half the core player engine :)
+-CheeseTracker now uses the Qt toolkit.
+-Nicely featured sample editor
+-Lots of customization thinguies
+-Interface improvements in nearly all aspects, MUCH more userfriendly
+-MDI support, load many songs, play them together, exchange data between them,etc
+
+Features dropped:
+-Per channel chorus/reverb. But they will come back as effect buffers soon!
+-NSF export, I am really sorry about this one, I will make a standalone app soon
+
+PLEASE TEST! I'm sure it has lots of bugs
+
+v0.5.5
+------
+
+Chorus!!
+
+activate it with S1X -> X == 0..F
+
+v0.5.1
+------
+bugfixes
+
+v0.5.0
+------
+BIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIG RELEASE@!#$)@(#$
+ok, changes are just too many.
+Let's see...
+First, a huge amount of bugfixes
+A lot of interface improvements for usability
+A context sensitive help system
+XM/XI loading
+fixed the inside-module-sample-browser
+more menus
+made popups nicer
+cool buttons
+saving of native IT instruments and samples..
+added options to change font for the editor
+customizable key bindings
+constomizable sample/song paths
+options are saved to a file and restored when next using cheesetracker
+fixed something that  made it crash when using pgcc due to a pgcc bug.
+Added a directsound driver by James Martin (yesso), 
+it's untested, althought it worked with saturno.. so you can try to compile it using cygwin.
+more stuff that i forgot..
+
+
+v0.2.7
+------
+Implemented per channel reverb!!! (using freeverb)
+use Z90/ZFF to set reverb send. A note of warning,
+Impulse Tracker modules do not support reverb, so this
+will only work within cheesetracker.
+
+Volume ramps are now STABLE, that means, you shouldnt hear ugly
+hisses/clicks anymore unless you're doing something really stupid
+OR running in sample mode/notecut and using chipsamples, or 
+something odd like that. All in all, It shouldnt click, but it may rarely do
+if are doing something "the wrong way". 
+
+WAVE EXPORT TOO!!
+Yes! you can export a WAVE FILE out of your song, select that driver,
+push F5 and wait untilit finishes, it should create a DUMP.WAV file.
+
+Also many bugfixes i dont remember.
+
+
+
+
+
+
+
+
+v0.2.6
+------
+
+FILTERZ FOR DA TRANZD00DS
+Z00-Z7F sets cutoff and
+Z80-Z8F sets resonance (Q factor).
+also filter envelopes work, and default cutoff/resonance do
+too.
+
+haf fun.
+
+
+v0.2.5
+------
+
+wave saver... and i think a declicker
+
+v0.2.4
+------
+-bugfixes as allways
+-NSF file export, if you dont know what this is, 
+ you may not want to know..
+ NSF is the nintendo file format, I added an output
+ driver for it just because i allways wanted to be
+ able to make NSFs :) number use the first two channels
+ for square waves (samples 1-4 should be the sw duty) 
+ second one for triangle and fourth  for noise. set 
+ both mixing/global volume to 128 (max)
+ select the driver, and play the song! you should
+ get the resulting NSF.
+
+
+v0.2.3
+------
+
+-bugfixes
+-volume ramp support (no clicking!)
+-much nicer config scripts
+
+v0.2.2  
+------
+
+-Added preliminary WAV sample loading (Calvin French)
+-Fixed some crash bugs
+
+v0.2.1
+------
+
+-Initial release!
+

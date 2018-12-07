@@ -1,0 +1,37 @@
+
+Import('env');
+env2=env.Copy();
+env.Append(CXXFLAGS=['-Icommon/','-Icommon/defines/','-Itrackercore/']);
+env2.Append(CXXFLAGS = env2.detect.qt_flags);
+
+file_list=[\
+#'envelope.cpp',\
+'file_format_manager.cpp',\
+'file_reader.cpp',\
+'file_writer.cpp',\
+'instrument.cpp',\
+'loader.cpp',\
+'pattern.cpp',\
+'player_data.cpp',\
+'player_data_control.cpp',\
+'player_data_effects.cpp',\
+'player_data_envelopes.cpp',\
+'player_data_events.cpp',\
+'player_data_nna.cpp',\
+'player_data_notes.cpp',\
+'player_data_reserved.cpp',\
+'player_data_utils.cpp',\
+'sample.cpp',\
+#'sample_data.cpp',\
+'saver.cpp',\
+'song.cpp',\
+#'tables.cpp',\
+'player_data_filter.cpp',\
+'tracker_voice.cpp',\
+'voice_control.cpp',\
+'freq_conversion.cpp',\
+'channel_control.cpp',\
+'Error.cpp',\
+]
+
+env2.Library('lib_trackercore.a', file_list);

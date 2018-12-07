@@ -1,0 +1,18 @@
+
+Import('env');
+env2=env.Copy();
+env2.Append(CXXFLAGS = ['-Icommon/components/data']);
+env2.Append(CXXFLAGS = env2.qt_flags);
+
+moc_list=[\
+'property_bridge_edit.h',\
+'cspinbutton.h',\
+'ccolor_bridge.h',\
+'ccolor_list.h',\
+'font_bridge.h',\
+'keyboard_input_config.h',\
+]
+
+env2.process_moc_list(moc_list);
+
+env2.make_targets(env.qt_objects)

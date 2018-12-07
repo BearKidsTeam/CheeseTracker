@@ -1,0 +1,317 @@
+{
+   Inscrutable PTHREADS error
+   Memcheck:Param
+   write(buf)
+   fun:write
+   fun:main
+}
+{
+   Inscrutable QT Error
+   Memcheck:Cond
+   fun:*
+   fun:*
+   fun:*
+   fun:*
+   fun:*
+   fun:*
+   fun:_ZN12QApplication6notifyEP7QObjectP6QEvent
+   fun:_ZN9QETWidget19translatePaintEventEPK7_XEvent
+   fun:_ZN12QApplication15x11ProcessEventEP7_XEvent
+   fun:_ZN10QEventLoop13processEventsEj
+   fun:_ZN10QEventLoop9enterLoopEv
+   fun:_ZN10QEventLoop4execEv
+}
+{
+   Inscrutable QT Error
+   Memcheck:Cond
+   fun:_vgrZU_libcZdsoZa_strlen
+   obj:/usr/lib/libqt-mt.so.3.3.3
+   fun:_ZN7QStringC1EPKc
+   fun:_ZN12Pattern_Edit9print_topER8QPainter
+   fun:_ZN12Pattern_Edit10paintEventEP11QPaintEvent
+   fun:_ZN7QWidget5eventEP6QEvent
+   fun:_ZN12Pattern_Edit5eventEP6QEvent
+   fun:_ZN12QApplication14internalNotifyEP7QObjectP6QEvent
+   fun:_ZN12QApplication6notifyEP7QObjectP6QEvent
+   fun:_ZN9QETWidget19translatePaintEventEPK7_XEvent
+   fun:_ZN12QApplication15x11ProcessEventEP7_XEvent
+   fun:_ZN10QEventLoop13processEventsEj
+}
+
+{
+   <insert a suppression name here>
+   Memcheck:Value4
+   fun:_ZN12Pattern_Edit9print_topER8QPainter
+   fun:_ZN12Pattern_Edit10paintEventEP11QPaintEvent
+   fun:_ZN7QWidget5eventEP6QEvent
+   fun:_ZN12Pattern_Edit5eventEP6QEvent
+   fun:_ZN12QApplication14internalNotifyEP7QObjectP6QEvent
+   fun:_ZN12QApplication6notifyEP7QObjectP6QEvent
+   fun:_ZN9QETWidget19translatePaintEventEPK7_XEvent
+   fun:_ZN12QApplication15x11ProcessEventEP7_XEvent
+   fun:_ZN10QEventLoop13processEventsEj
+   fun:_ZN10QEventLoop9enterLoopEv
+   fun:_ZN10QEventLoop4execEv
+   fun:_ZN12QApplication4execEv
+}
+
+{
+   <insert a suppression name here>
+   Memcheck:Cond
+   fun:_vgrZU_libcZdsoZa_strlen
+   obj:/usr/lib/libqt-mt.so.3.3.3
+   fun:_ZN7QStringC1EPKc
+   fun:_ZN12Pattern_Edit9print_topER8QPainter
+   fun:_ZN12Pattern_Edit10paintEventEP11QPaintEvent
+   fun:_ZN7QWidget5eventEP6QEvent
+   fun:_ZN12Pattern_Edit5eventEP6QEvent
+   fun:_ZN12QApplication14internalNotifyEP7QObjectP6QEvent
+   fun:_ZN12QApplication6notifyEP7QObjectP6QEvent
+   fun:_ZN9QETWidget19translatePaintEventEPK7_XEvent
+   fun:_ZN12QApplication15x11ProcessEventEP7_XEvent
+   fun:_ZN10QEventLoop13processEventsEj
+}
+{
+   <insert a suppression name here>
+   Memcheck:Cond
+   fun:_ZNK7QString15checkSimpleTextEv
+   fun:_ZN8QPainter8drawTextEiiRK7QStringiiNS_13TextDirectionE
+   fun:_ZN8QPainter8drawTextEiiRK7QStringiNS_13TextDirectionE
+   fun:_ZN12Pattern_Edit9print_topER8QPainter
+   fun:_ZN12Pattern_Edit10paintEventEP11QPaintEvent
+   fun:_ZN7QWidget5eventEP6QEvent
+   fun:_ZN12Pattern_Edit5eventEP6QEvent
+   fun:_ZN12QApplication14internalNotifyEP7QObjectP6QEvent
+   fun:_ZN12QApplication6notifyEP7QObjectP6QEvent
+   fun:_ZN9QETWidget19translatePaintEventEPK7_XEvent
+   fun:_ZN12QApplication15x11ProcessEventEP7_XEvent
+   fun:_ZN10QEventLoop13processEventsEj
+}
+{
+   <insert a suppression name here>
+   Memcheck:Cond
+   fun:_ZNK14QFontEngineXft12stringToCMapEPK5QChariPtPiS4_b
+   obj:/usr/lib/libqt-mt.so.3.3.3
+   obj:/usr/lib/libqt-mt.so.3.3.3
+   fun:_ZNK11QTextEngine5shapeEi
+   fun:_ZN11QTextLayout11currentItemEv
+   fun:_ZN8QPainter8drawTextEiiRK7QStringiiNS_13TextDirectionE
+   fun:_ZN8QPainter8drawTextEiiRK7QStringiNS_13TextDirectionE
+   fun:_ZN12Pattern_Edit9print_topER8QPainter
+   fun:_ZN12Pattern_Edit10paintEventEP11QPaintEvent
+   fun:_ZN7QWidget5eventEP6QEvent
+   fun:_ZN12Pattern_Edit5eventEP6QEvent
+   fun:_ZN12QApplication14internalNotifyEP7QObjectP6QEvent
+}
+{
+   <insert a suppression name here>
+   Memcheck:Value4
+   fun:_ZNK14QFontEngineXft12stringToCMapEPK5QChariPtPiS4_b
+   obj:/usr/lib/libqt-mt.so.3.3.3
+   obj:/usr/lib/libqt-mt.so.3.3.3
+   fun:_ZNK11QTextEngine5shapeEi
+   fun:_ZN11QTextLayout11currentItemEv
+   fun:_ZN8QPainter8drawTextEiiRK7QStringiiNS_13TextDirectionE
+   fun:_ZN8QPainter8drawTextEiiRK7QStringiNS_13TextDirectionE
+   fun:_ZN12Pattern_Edit9print_topER8QPainter
+   fun:_ZN12Pattern_Edit10paintEventEP11QPaintEvent
+   fun:_ZN7QWidget5eventEP6QEvent
+   fun:_ZN12Pattern_Edit5eventEP6QEvent
+   fun:_ZN12QApplication14internalNotifyEP7QObjectP6QEvent
+}
+
+{
+   <insert a suppression name here>
+   Memcheck:Value4
+   fun:XftCharIndex
+   fun:_ZNK14QFontEngineXft12stringToCMapEPK5QChariPtPiS4_b
+   obj:/usr/lib/libqt-mt.so.3.3.3
+   obj:/usr/lib/libqt-mt.so.3.3.3
+   fun:_ZNK11QTextEngine5shapeEi
+   fun:_ZN11QTextLayout11currentItemEv
+   fun:_ZN8QPainter8drawTextEiiRK7QStringiiNS_13TextDirectionE
+   fun:_ZN8QPainter8drawTextEiiRK7QStringiNS_13TextDirectionE
+   fun:_ZN12Pattern_Edit9print_topER8QPainter
+   fun:_ZN12Pattern_Edit10paintEventEP11QPaintEvent
+   fun:_ZN7QWidget5eventEP6QEvent
+   fun:_ZN12Pattern_Edit5eventEP6QEvent
+}
+{
+   <insert a suppression name here>
+   Memcheck:Value4
+   fun:FcCharSetHasChar
+   fun:XftCharExists
+   fun:XftCharIndex
+   fun:_ZNK14QFontEngineXft12stringToCMapEPK5QChariPtPiS4_b
+   obj:/usr/lib/libqt-mt.so.3.3.3
+   obj:/usr/lib/libqt-mt.so.3.3.3
+   fun:_ZNK11QTextEngine5shapeEi
+   fun:_ZN11QTextLayout11currentItemEv
+   fun:_ZN8QPainter8drawTextEiiRK7QStringiiNS_13TextDirectionE
+   fun:_ZN8QPainter8drawTextEiiRK7QStringiNS_13TextDirectionE
+   fun:_ZN12Pattern_Edit9print_topER8QPainter
+   fun:_ZN12Pattern_Edit10paintEventEP11QPaintEvent
+}
+{
+   <insert a suppression name here>
+   Memcheck:Cond
+   fun:_vgrZU_libcZdsoZa_strlen
+   obj:/usr/lib/libqt-mt.so.3.3.3
+   fun:_ZN7QStringC1EPKc
+   fun:_ZN12Pattern_Edit9print_topER8QPainter
+   fun:_ZN12Pattern_Edit10paintEventEP11QPaintEvent
+   fun:_ZN7QWidget5eventEP6QEvent
+   fun:_ZN12Pattern_Edit5eventEP6QEvent
+   fun:_ZN12QApplication14internalNotifyEP7QObjectP6QEvent
+   fun:_ZN12QApplication6notifyEP7QObjectP6QEvent
+   fun:_ZN9QETWidget19translatePaintEventEPK7_XEvent
+   fun:_ZN12QApplication15x11ProcessEventEP7_XEvent
+   fun:_ZN10QEventLoop13processEventsEj
+}
+
+{
+   <insert a suppression name here>
+   Memcheck:Cond
+   fun:XftCharIndex
+   fun:_ZNK14QFontEngineXft12stringToCMapEPK5QChariPtPiS4_b
+   obj:/usr/lib/libqt-mt.so.3.3.3
+   obj:/usr/lib/libqt-mt.so.3.3.3
+   fun:_ZNK11QTextEngine5shapeEi
+   fun:_ZN11QTextLayout11currentItemEv
+   fun:_ZN8QPainter8drawTextEiiRK7QStringiiNS_13TextDirectionE
+   fun:_ZN8QPainter8drawTextEiiRK7QStringiNS_13TextDirectionE
+   fun:_ZN12Pattern_Edit9print_topER8QPainter
+   fun:_ZN12Pattern_Edit10paintEventEP11QPaintEvent
+   fun:_ZN7QWidget5eventEP6QEvent
+   fun:_ZN12Pattern_Edit5eventEP6QEvent
+}
+
+{
+   <insert a suppression name here>
+   Memcheck:Cond
+   fun:_vgrZU_libcZdsoZa_strlen
+   obj:/usr/lib/libqt-mt.so.3.3.3
+   fun:_ZN7QStringC1EPKc
+   fun:_ZN12Pattern_Edit9print_topER8QPainter
+   fun:_ZN12Pattern_Edit10paintEventEP11QPaintEvent
+   fun:_ZN7QWidget5eventEP6QEvent
+   fun:_ZN12Pattern_Edit5eventEP6QEvent
+   fun:_ZN12QApplication14internalNotifyEP7QObjectP6QEvent
+   fun:_ZN12QApplication6notifyEP7QObjectP6QEvent
+   fun:_ZN9QETWidget19translatePaintEventEPK7_XEvent
+   fun:_ZN12QApplication15x11ProcessEventEP7_XEvent
+   fun:_ZN10QEventLoop13processEventsEj
+}
+{
+   <insert a suppression name here>
+   Memcheck:Cond
+   fun:pcf_cmap_char_index
+   fun:FT_Get_Char_Index
+   fun:FcFreeTypeCharIndex
+   fun:XftCharIndex
+   fun:_ZNK14QFontEngineXft12stringToCMapEPK5QChariPtPiS4_b
+   obj:/usr/lib/libqt-mt.so.3.3.3
+   obj:/usr/lib/libqt-mt.so.3.3.3
+   fun:_ZNK11QTextEngine5shapeEi
+   fun:_ZN11QTextLayout11currentItemEv
+   fun:_ZN8QPainter8drawTextEiiRK7QStringiiNS_13TextDirectionE
+   fun:_ZN8QPainter8drawTextEiiRK7QStringiNS_13TextDirectionE
+   fun:_ZN12Pattern_Edit9print_topER8QPainter
+}
+{
+   <insert a suppression name here>
+   Memcheck:Value4
+   obj:/usr/lib/libqt-mt.so.3.3.3
+   obj:/usr/lib/libqt-mt.so.3.3.3
+   fun:_ZNK11QTextEngine5shapeEi
+   fun:_ZN11QTextLayout11currentItemEv
+   fun:_ZN8QPainter8drawTextEiiRK7QStringiiNS_13TextDirectionE
+   fun:_ZN8QPainter8drawTextEiiRK7QStringiNS_13TextDirectionE
+   fun:_ZN12Pattern_Edit9print_topER8QPainter
+   fun:_ZN12Pattern_Edit10paintEventEP11QPaintEvent
+   fun:_ZN7QWidget5eventEP6QEvent
+   fun:_ZN12Pattern_Edit5eventEP6QEvent
+   fun:_ZN12QApplication14internalNotifyEP7QObjectP6QEvent
+   fun:_ZN12QApplication6notifyEP7QObjectP6QEvent
+}
+{
+   <insert a suppression name here>
+   Memcheck:Cond
+   fun:_ZN6Editor19get_visible_columnsEv
+   fun:_ZN12Pattern_Edit16print_single_rowER8QPainteri
+   fun:_ZN12Pattern_Edit10print_rowsER8QPainter
+   fun:_ZN12Pattern_Edit10paintEventEP11QPaintEvent
+   fun:_ZN7QWidget5eventEP6QEvent
+   fun:_ZN12Pattern_Edit5eventEP6QEvent
+   fun:_ZN12QApplication14internalNotifyEP7QObjectP6QEvent
+   fun:_ZN12QApplication6notifyEP7QObjectP6QEvent
+   fun:_ZN9QETWidget19translatePaintEventEPK7_XEvent
+   fun:_ZN12QApplication15x11ProcessEventEP7_XEvent
+   fun:_ZN10QEventLoop13processEventsEj
+   fun:_ZN10QEventLoop9enterLoopEv
+}
+{
+   <insert a suppression name here>
+   Memcheck:Cond
+   fun:_ZN7Pattern8get_noteEii
+   fun:_ZN6Editor15get_note_stringEiiPc
+   fun:_ZN12Pattern_Edit16print_single_rowER8QPainteri
+   fun:_ZN12Pattern_Edit10print_rowsER8QPainter
+   fun:_ZN12Pattern_Edit10paintEventEP11QPaintEvent
+   fun:_ZN7QWidget5eventEP6QEvent
+   fun:_ZN12Pattern_Edit5eventEP6QEvent
+   fun:_ZN12QApplication14internalNotifyEP7QObjectP6QEvent
+   fun:_ZN12QApplication6notifyEP7QObjectP6QEvent
+   fun:_ZN9QETWidget19translatePaintEventEPK7_XEvent
+   fun:_ZN12QApplication15x11ProcessEventEP7_XEvent
+   fun:_ZN10QEventLoop13processEventsEj
+}
+{
+   <insert a suppression name here>
+   Memcheck:Cond
+   fun:_ZN7Pattern24process_retrieve_requestEii
+   fun:_ZN7Pattern8get_noteEii
+   fun:_ZN6Editor15get_note_stringEiiPc
+   fun:_ZN12Pattern_Edit16print_single_rowER8QPainteri
+   fun:_ZN12Pattern_Edit10print_rowsER8QPainter
+   fun:_ZN12Pattern_Edit10paintEventEP11QPaintEvent
+   fun:_ZN7QWidget5eventEP6QEvent
+   fun:_ZN12Pattern_Edit5eventEP6QEvent
+   fun:_ZN12QApplication14internalNotifyEP7QObjectP6QEvent
+   fun:_ZN12QApplication6notifyEP7QObjectP6QEvent
+   fun:_ZN9QETWidget19translatePaintEventEPK7_XEvent
+   fun:_ZN12QApplication15x11ProcessEventEP7_XEvent
+}
+{
+   <insert a suppression name here>
+   Memcheck:Cond
+   fun:_ZN6Editor19get_visible_columnsEv
+   fun:_ZN19Pattern_Edit_Widget14timer_callbackEv
+   fun:_ZN9Interface19widget_update_timerEv
+   fun:_ZN9Interface9qt_invokeEiP8QUObject
+   fun:_ZN7QObject15activate_signalEP15QConnectionListP8QUObject
+   fun:_ZN7QObject15activate_signalEi
+   fun:_ZN6QTimer7timeoutEv
+   fun:_ZN6QTimer5eventEP6QEvent
+   fun:_ZN12QApplication14internalNotifyEP7QObjectP6QEvent
+   fun:_ZN12QApplication6notifyEP7QObjectP6QEvent
+   fun:_ZN10QEventLoop14activateTimersEv
+   fun:_ZN10QEventLoop13processEventsEj
+}
+{
+   <insert a suppression name here>
+   Memcheck:Cond
+   fun:_ZN19Pattern_Edit_Widget14timer_callbackEv
+   fun:_ZN9Interface19widget_update_timerEv
+   fun:_ZN9Interface9qt_invokeEiP8QUObject
+   fun:_ZN7QObject15activate_signalEP15QConnectionListP8QUObject
+   fun:_ZN7QObject15activate_signalEi
+   fun:_ZN6QTimer7timeoutEv
+   fun:_ZN6QTimer5eventEP6QEvent
+   fun:_ZN12QApplication14internalNotifyEP7QObjectP6QEvent
+   fun:_ZN12QApplication6notifyEP7QObjectP6QEvent
+   fun:_ZN10QEventLoop14activateTimersEv
+   fun:_ZN10QEventLoop13processEventsEj
+   fun:_ZN10QEventLoop9enterLoopEv
+}
+

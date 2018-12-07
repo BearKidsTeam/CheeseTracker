@@ -1,0 +1,42 @@
+Installing CheeseTracker:
+-------------------------
+
+**** MAKEFILE IS DEPRECATED ******
+
+To compile CheeseTracker, you need to download the "Scons" build system,
+It is a python-based build system, and it needs Python 2.2
+(make sure your /usr/??/bin/python is symliked to the 2.2 one)
+
+Get this build system from: http://www.scons.org , version 0.9 or greater
+is requiered.
+
+INSTRUCTIONS:
+
+* To get build options:
+
+$ scons --help
+
+* To build cheesetracker
+
+$ scons
+
+* To install cheesetracker in /usr/local , become root and then
+
+# scons install
+
+* To install cheesetracker somewhere else add prefix=<path>
+
+# scons install prefix=/usr
+
+  or
+
+# scons install prefix=~
+
+  are valid examples
+  
+* To clean the installation
+
+$ scons -c
+
+
+

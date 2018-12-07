@@ -1,0 +1,98 @@
+//
+// C++ Implementation: effect_echo
+//
+// Description:
+//
+//
+// Author: Juan Linietsky <coding@reduz.com.ar>, (C) 2003
+//
+// Copyright: See COPYING file that comes with this distribution
+//
+//
+#include "effect_stereo_enhancer.h"
+
+
+void Effect_Stereo_Enhancer::reset() {
+
+	memset(&buffer[0],0,buffer.size()*sizeof(sample_t));
+	buffer_pos=0;
+
+}
+inline static double get_samples_from_msecs(double p_msecs,double p_mixfreq) {
+
+	return (p_msecs*p_mixfreq)/1000.0;
+
+}
+void Effect_Stereo_Enhancer::check_buffer_length() {
+
+	int desired_length=get_samples_from_msecs(delay,mix_freq)*2; //stereo
+
+        if (desired_length!=buffer.size()) {
+
+		buffer.resize(desired_length);
+		reset();
+	}
+
+}
+
+void Effect_Stereo_Enhancer::process_buffer(sample_t* p_buffer,int p_length,bool p_stereo_samples,int p_buffer_freq) {
+
+	mix_freq=p_buffer_freq;
+	check_buffer_length();
+
+	float multiplier=(float)feedback/100.0;
+	int buflength=buffer.size();
+
+	sample_t *dst_buffer=&buffer[0];
+
+        for (int i=0;i<p_length;i++) {
+
+		sample_t val_l=dst_buffer[buffer_pos];
+		sample_t val_r=dst_buffer[buffer_pos+1];
+		sample_t buf_l=p_buffer[i*2];
+		sample_t buf_r=p_buffer[i*2+1];
+		p_buffer[i*2]+=val_l;
+		p_buffer[i*2+1]+=val_r;
+		dst_buffer[buffer_pos]=buf_r * multiplier;
+		dst_buffer[buffer_pos+1]=buf_l * multiplier;
+
+		buffer_pos+=2;
+		buffer_pos%=buflength;
+	}
+}
+
+string Effect_Stereo_Enhancer::get_name() {
+
+	return "stereo_enhancer";
+}
+
+string Effect_Stereo_Enhancer::get_display_name() {
+
+	return "Stereo Enhancer";
+}
+
+list<Property_Bridge*> Effect_Stereo_Enhancer::get_properties() {
+
+	list<Property_Bridge*> copoto;
+        copoto.push_back(&prop_delay);
+        copoto.push_back(&prop_feedback);
+	return copoto;
+
+
+}
+
+
+Effect_Stereo_Enhancer::Effect_Stereo_Enhancer() :
+
+	prop_delay("Delay(ms)",&delay,1,500,"delay"),
+	prop_feedback("Feedback%",&feedback,0,100,"feedback") {
+
+	feedback=50;
+	delay=10;
+
+}
+
+Effect_Stereo_Enhancer::~Effect_Stereo_Enhancer() {
+
+}
+

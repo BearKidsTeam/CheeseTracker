@@ -1,0 +1,15 @@
+
+Import('env');
+
+env_cheese=env.Copy();
+env_cheese.Append(CPPPATH=['#cheesetracker/','#cheesetracker/trackercore/','#cheesetracker/loaders/','#cheesetracker/savers/','#cheesetracker/interface_binds/',]);
+Export('env_cheese');
+
+SConscript('trackercore/SCsub');
+SConscript('interface_binds/SCsub');
+SConscript('loaders/SCsub');
+SConscript('savers/SCsub');
+SConscript('interface__QT/SCsub');
+SConscript('program__QT/SCsub');
+
+

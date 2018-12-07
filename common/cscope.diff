@@ -1,0 +1,56 @@
+diff -r -c2 cscope-15.6/ChangeLog installed/cscope-15.6/ChangeLog
+*** cscope-15.6/ChangeLog	Sat Sep 30 10:26:44 2006
+--- installed/cscope-15.6/ChangeLog	Sun Jun 10 06:46:11 2007
+***************
+*** 1,2 ****
+--- 1,23 ----
++ Sun Jun 10 02:59:38 EDT 2007 J Phelps <godless@users.sf.net>
++ 	* src/scanner.l (yylex): Added a check for strpbrk()'s NULL
++ 	return value, just as in src/fscanner.l.
++ Sun Jun 10 01:46:53 EDT 2007 J Phelps <godless@users.sf.net>
++ 	* src/fscanner.l (yylex, line 342): Added a test to handle the
++ 	case where strpbrk() returns NULL. This caused a SIGSEGV when
++ 	I ran cscope on a directory that contained an ELF with a .C
++ 	extension.
++ 
++ 	* src/scanner.h: Added new constant UNKNOWN as a return value
++ 	for yylex above.
++ 
+  2006-09-30  Hans-Bernhard Broeker  <broeker@physik.rwth-aachen.de>
+  
+diff -r -c2 cscope-15.6/src/fscanner.l installed/cscope-15.6/src/fscanner.l
+*** cscope-15.6/src/fscanner.l	Sat Sep 30 10:43:06 2006
+--- installed/cscope-15.6/src/fscanner.l	Sun Jun 10 01:46:09 2007
+***************
+*** 340,343 ****
+--- 340,345 ----
+  			my_yymore();
+  			s = strpbrk(my_yytext, "\"<");
++ 			if(s == NULL)
++ 				return UNKNOWN;
+  			my_yytext[my_yyleng-1] = '\0';
+  			incfile(s + 1, s);
+Only in cscope-15.6/src: scanner.c
+diff -r -c2 cscope-15.6/src/scanner.h installed/cscope-15.6/src/scanner.h
+*** cscope-15.6/src/scanner.h	Sat Sep 30 04:13:00 2006
+--- installed/cscope-15.6/src/scanner.h	Sun Jun 10 01:46:27 2007
+***************
+*** 64,67 ****
+--- 64,68 ----
+  #define	IDENT	1
+  #define	NEWLINE	2
++ #define UNKNOWN 3
+  
+  /* scanner.l global data */
+diff -r -c2 cscope-15.6/src/scanner.l installed/cscope-15.6/src/scanner.l
+*** cscope-15.6/src/scanner.l	Sat Sep 30 04:13:00 2006
+--- installed/cscope-15.6/src/scanner.l	Sun Jun 10 03:04:07 2007
+***************
+*** 575,578 ****
+--- 575,580 ----
+  			
+  			s = strpbrk(yytext, "\"<");
++ 			if(s == NULL)
++ 				return UNKNOWN;
+  			incfile(s + 1, s);
+  			/* HBB: avoid pointer mismatch if yytext is

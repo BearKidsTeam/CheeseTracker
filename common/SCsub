@@ -1,0 +1,23 @@
+Import('env');
+
+env.Append(CXXFLAGS=['-Icommon/','-Icommon/defines/']);
+#env.Append(CXXFLAGS=" -Icommon/defines ");
+env.Append(CXXFLAGS = env.detect.qt_flags);
+
+env.common_objects = ['message_box.o']
+env.qt_objects = []
+
+Export('env');
+
+SConscript('plugins/SCsub');
+SConscript('os/SCsub');
+SConscript('components/SCsub');
+SConscript('defines/SCsub');
+SConscript('drivers/SCsub');
+SConscript('interface__QT/SCsub');
+SConscript('property_server/SCsub');
+SConscript('system/SCsub');
+
+env.make_targets(env.common_objects)
+env.Library('common', env.common_objects)
+env.Library('interface__qt', env.qt_objects)

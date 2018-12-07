@@ -1,0 +1,16 @@
+
+Import('env_cheese');
+env2=env_cheese.Copy();
+
+file_list=[\
+	'editor_commands.cpp',\
+	'editor.cpp',\
+	'editor_insertion.cpp',\
+	'editor_orderlist.cpp',\
+	'editor_selection.cpp',\
+	'editor_undo.cpp',\
+	'tracker_instance.cpp',\
+	'player_rt_keyboard.cpp',\
+]
+
+env2.Library('lib_interface_binds.a', file_list);
