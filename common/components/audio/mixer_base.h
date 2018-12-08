@@ -50,7 +50,7 @@
 class MIDI_Controls;
 
 
-class Mixer_Base : public SigC::Object {
+class Mixer_Base : public sigc::trackable {
 
 
 public:
@@ -177,7 +177,7 @@ public:
 	  This signal is emitted when the mixer processes every X samples,
 	*/
 	
-	SigC::Signal0<void> process_callback;
+	sigc::signal0<void> process_callback;
 	
 	Mixer_Base();
 	virtual ~Mixer_Base();

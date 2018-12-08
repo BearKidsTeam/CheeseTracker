@@ -74,7 +74,7 @@ class Envelope_Editor : public Q3GroupBox {
 
 	void update_envelope_variables();
 
-public slots:
+public Q_SLOTS:
 
 	void envelope_changed();
 	void loop_begin_changed(int p_val);

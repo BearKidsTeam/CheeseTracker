@@ -82,7 +82,7 @@ Effect::Effect(Parameters *p_data) {
 
 	data=p_data;
 	Sound_Driver_Manager::get_singleton_instance()->sampling_rate_changed_signal.connect(
-		SigC::slot(*this,&Effect::sampling_rate_changed)
+		sigc::slot(*this,&Effect::sampling_rate_changed)
 	);
 
 	sampling_rate=Sound_Driver_Manager::get_singleton_instance()->get_mix_frequency();

@@ -57,7 +57,7 @@ class Sample_Editor_Format : public Q3VBox {
 
 	void update_format();
 	void update_loop();
-protected slots:
+protected Q_SLOTS:
 
 	void loop_begin_changed_cbk(int p_idx);
 	void loop_end_changed_cbk(int p_idx);
@@ -75,7 +75,7 @@ protected slots:
 	void transpose_down_1_cbk();
 	void transpose_down_12_cbk();
 
-signals:
+Q_SIGNALS:
 
 	void sample_base_freq_changed();
 

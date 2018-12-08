@@ -44,11 +44,12 @@
 #include "song.h"
 #include "components/audio/mixer.h"
 
-#ifdef HAVE_GNU_BASENAME
-#	include <cstring>
-#else
-	string basename(const char*);
-#endif
+#include <cstring>
+//#ifdef HAVE_GNU_BASENAME
+//#	include <cstring>
+//#else
+//	string basename(const char*);
+//#endif
 
 /******************************
  loader.h

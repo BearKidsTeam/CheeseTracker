@@ -68,7 +68,7 @@ private:
 
 	QComboBox *preset_combo;
 	vector<Preset*> preset_list;
-public slots:
+public Q_SLOTS:
 
 	void preset_selected_cbk(int p_which);
 

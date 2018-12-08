@@ -46,7 +46,7 @@ class Sample_Player_FDialog : public Q3FileDialog {
 	bool eventFilter(QObject *p_obj,QEvent *p_event);
 	void position_audition_checkbox();
 
-protected slots:
+protected Q_SLOTS:
 	void filename_hilite_slot(const QString& p_file);
 	void audition_slot(bool p_on);
 public:

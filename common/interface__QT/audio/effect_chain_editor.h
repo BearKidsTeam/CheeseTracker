@@ -24,7 +24,7 @@
 /**
 @author Juan Linietsky
 */
-class Effect_Chain_Editor : public Q3HBox, public SigC::Object {
+class Effect_Chain_Editor : public Q3HBox, public sigc::trackable {
 
 	Q_OBJECT
 
@@ -34,13 +34,13 @@ class Effect_Chain_Editor : public Q3HBox, public SigC::Object {
 	struct Vars {
 		Effect_Parameter_Chain *chain;
 		int selected_chain;
-		SigC::Connection chain_connection;
+		sigc::connection chain_connection;
 	} vars;
 	Effect_Select_Popup * esp;
 
 
 	void update_chain();
-protected slots:
+protected Q_SLOTS:
 
 	void effect_selected_slot(int p_which);
 	void add_effect_slot();

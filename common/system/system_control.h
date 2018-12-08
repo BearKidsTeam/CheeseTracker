@@ -17,7 +17,7 @@
 /**
 @author Juan Linietsky
 */
-class System_Control : public SigC::Object {
+class System_Control : public sigc::trackable {
 
 	System *system;
 	

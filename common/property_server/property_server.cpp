@@ -52,7 +52,7 @@ void PropertyServerSlave::got_message_signal(Uint8* p_buf, int p_size) {
 PropertyServerSlave::PropertyServerSlave() {
 
 	client = TcpClient::create_client();
-	client->deliver_event.connect(SigC::slot<void,Uint8*,int>(*this,&PropertyServerSlave::got_message_signal));
+	client->deliver_event.connect(sigc::slot<void,Uint8*,int>(*this,&PropertyServerSlave::got_message_signal));
 };
 
 PropertyServerSlave::~PropertyServerSlave() {
@@ -262,7 +262,7 @@ PropertyServerMaster::PropertyServerMaster() {
 	};
 
 	server = new TcpServerPosix;
-	server->deliver_event.connect(SigC::slot<void,Uint8*,int,int>(*this,&PropertyServerMaster::got_message_signal));
+	server->deliver_event.connect(sigc::slot<void,Uint8*,int,int>(*this,&PropertyServerMaster::got_message_signal));
 };
 
 PropertyServerMaster::~PropertyServerMaster() {

@@ -52,7 +52,7 @@ but I think it needs something to know
 when the song begins/ends
 ********************************/
 
-class Sound_Driver : public SigC::Object {
+class Sound_Driver : public sigc::trackable {
 
 	vector<Mixer_Base*> *mixer_list;
 public:
@@ -79,7 +79,7 @@ protected:
 
 public:
 
-	SigC::Signal0<void> callback;
+	sigc::signal0<void> callback;
 
 
 	ProcessMode get_process_mode() { return process_mode; };

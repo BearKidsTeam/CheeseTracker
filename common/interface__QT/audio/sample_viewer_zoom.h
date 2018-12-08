@@ -55,7 +55,7 @@ class Sample_Viewer_Zoom : public Q3VBox {
 	QLabel * zoom_slider_label;
 
 
-protected slots:
+protected Q_SLOTS:
 
 	void zoom_more_cbk();
 	void zoom_less_cbk();

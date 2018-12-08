@@ -66,8 +66,8 @@ void Effect_Chain::set_chain_params(Effect_Parameter_Chain *p_chain_params) {
 	
 	chain_params=p_chain_params;
 	
-	chain_connection_change=chain_params->chain_changed_internal_signal.connect( SigC::slot( *this, &Effect_Chain::update_chain ) );
-	chain_connection_delete=chain_params->chain_deleted_internal_signal.connect( SigC::slot( *this, &Effect_Chain::erase_chain ) );
+	chain_connection_change=chain_params->chain_changed_internal_signal.connect( sigc::slot( *this, &Effect_Chain::update_chain ) );
+	chain_connection_delete=chain_params->chain_deleted_internal_signal.connect( sigc::slot( *this, &Effect_Chain::erase_chain ) );
 	
 	
 	update_chain();

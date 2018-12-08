@@ -53,13 +53,13 @@ class Sample_Editor_Clipboard : public Q3HBox {
         QPushButton *paste;
 
 
-private slots:
+private Q_SLOTS:
 
 	void copy_cbk();
 	void cut_cbk();
 	void paste_cbk();
 
-signals:
+Q_SIGNALS:
 
 	void destructive_operation_begin();
 	void destructive_operation_end();

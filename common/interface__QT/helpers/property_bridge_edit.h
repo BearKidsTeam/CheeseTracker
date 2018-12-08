@@ -45,7 +45,7 @@ enum WidgetInputSource {
 };
 
 
-class Q_Property_Bridge_Int : public Q3VBox, public SigC::Object {
+class Q_Property_Bridge_Int : public Q3VBox, public sigc::trackable {
 
  Q_OBJECT
 
@@ -60,11 +60,11 @@ class Q_Property_Bridge_Int : public Q3VBox, public SigC::Object {
 	Int_Property_Bridge *bridge;
 	Q_Property_Bridge_Int();
 
-	SigC::Connection connection;
+	sigc::connection connection;
 	void update_value(int p_newval);
 	void bridge_changed();
 
-private slots:
+private Q_SLOTS:
 	void value_changed(int p_newval);
 
 public:
@@ -73,7 +73,7 @@ public:
 	Q_Property_Bridge_Int(QWidget *p_parent, bool p_vertical=false);
 };
 
-class Q_Property_Bridge_Int_CSpinButon : public Q3HBox, public SigC::Object {
+class Q_Property_Bridge_Int_CSpinButon : public Q3HBox, public sigc::trackable {
 
  Q_OBJECT
 
@@ -82,10 +82,10 @@ class Q_Property_Bridge_Int_CSpinButon : public Q3HBox, public SigC::Object {
 	Int_Property_Bridge *bridge;
 	Q_Property_Bridge_Int_CSpinButon();
 
-	SigC::Connection connection;
+	sigc::connection connection;
 	void bridge_changed();
 
-private slots:
+private Q_SLOTS:
 	void value_changed(int p_newval);
 
 
@@ -95,7 +95,7 @@ public:
 	Q_Property_Bridge_Int_CSpinButon(QWidget *p_parent);
 };
 
-class Q_Property_Bridge_Float : public Q3VBox, public SigC::Object {
+class Q_Property_Bridge_Float : public Q3VBox, public sigc::trackable {
 
  Q_OBJECT
 
@@ -114,13 +114,13 @@ class Q_Property_Bridge_Float : public Q3VBox, public SigC::Object {
 
 	WidgetInputSource input_source;
 
-	SigC::Connection connection;
+	sigc::connection connection;
 	void update_value(int p_newval);
 	void update_value(float p_newval);
 	void bridge_changed();
 	bool changing_bridge;
 
-private slots:
+private Q_SLOTS:
 	void value_changed(int p_newval);
 	void text_changed();
 
@@ -131,7 +131,7 @@ public:
 	Q_Property_Bridge_Float(QWidget *p_parent, bool textbox_visible = false);
  };
 
-class Q_Property_Bridge_Float_Dial : public Q3VBox, public SigC::Object {
+class Q_Property_Bridge_Float_Dial : public Q3VBox, public sigc::trackable {
 
 	 Q_OBJECT
 
@@ -146,12 +146,12 @@ class Q_Property_Bridge_Float_Dial : public Q3VBox, public SigC::Object {
 	Float_Property_Bridge *bridge;
 	Q_Property_Bridge_Float_Dial();
 
-	SigC::Connection connection;
+	sigc::connection connection;
 	void update_value(int p_newval);
 	void update_value(float p_newval);
 	void bridge_changed();
 
-private slots:
+private Q_SLOTS:
 	void value_changed(int p_newval);
 
 public:
@@ -161,7 +161,7 @@ public:
  };
 
 
-class Q_Property_Bridge_Bool : public Q3VBox, public SigC::Object {
+class Q_Property_Bridge_Bool : public Q3VBox, public sigc::trackable {
 
  Q_OBJECT
 	Q_Property_Bridge_Bool();
@@ -171,10 +171,10 @@ class Q_Property_Bridge_Bool : public Q3VBox, public SigC::Object {
 	bool vertical;
 	Bool_Property_Bridge *bridge;
 
-	SigC::Connection connection;
+	sigc::connection connection;
 	void bridge_changed();
 
-private slots:
+private Q_SLOTS:
 	void toggled_cbk(bool p_on);
 public:
 	void set_bridge(Bool_Property_Bridge *p_bridge);
@@ -183,7 +183,7 @@ public:
 };
 
 
-class Q_Property_Bridge_Options: public Q3VBox, public SigC::Object {
+class Q_Property_Bridge_Options: public Q3VBox, public sigc::trackable {
 
  Q_OBJECT
 
@@ -193,11 +193,11 @@ class Q_Property_Bridge_Options: public Q3VBox, public SigC::Object {
 	Q_Property_Bridge_Options();
 	Options_Property_Bridge *bridge;
 
-	SigC::Connection connection;
+	sigc::connection connection;
 	void update_value(int p_newval);
 	void bridge_changed();
 
-private slots:
+private Q_SLOTS:
 	void value_changed(int p_newval);
 
 public:
@@ -207,7 +207,7 @@ public:
  };
 
 
- class Q_Property_Bridge_String: public Q3VBox, public SigC::Object {
+ class Q_Property_Bridge_String: public Q3VBox, public sigc::trackable {
 
  Q_OBJECT
 
@@ -218,10 +218,10 @@ public:
 	String_Property_Bridge *bridge;
 	bool validating;
 
-	SigC::Connection connection;
+	sigc::connection connection;
 	void bridge_changed();
 
-private slots:
+private Q_SLOTS:
 	void value_changed(const QString& p_text);
 
 public:
@@ -230,7 +230,7 @@ public:
 	Q_Property_Bridge_String(QWidget *p_parent);
  };
 
-class Q_Property_Bridge_String_Multiline: public Q3VBox, public SigC::Object {
+class Q_Property_Bridge_String_Multiline: public Q3VBox, public sigc::trackable {
 
 Q_OBJECT
 
@@ -241,10 +241,10 @@ Q_OBJECT
 	String_Property_Bridge *bridge;
         bool validating;
 
-	SigC::Connection connection;
+	sigc::connection connection;
 	void bridge_changed();
 
-private slots:
+private Q_SLOTS:
 	void value_changed();
 
 public:

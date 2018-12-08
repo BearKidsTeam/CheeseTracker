@@ -59,12 +59,12 @@ class Sample_Editor_Effects : public Q3VBox {
 	Sample_Data *sample;
 	Property_Bridge_Edit_List *bridge_list_edit;
 
-protected slots:
+protected Q_SLOTS:
 
 	void effect_selected_cbk(int p_which);
 	void effect_apply_cbk();
 
-signals:
+Q_SIGNALS:
 
 	//this is emited if data is modifierd
 	void data_modification_begin_notify();

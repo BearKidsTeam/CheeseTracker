@@ -102,7 +102,7 @@ void Q_Property_Bridge_Int::set_bridge(Int_Property_Bridge *p_bridge) {
 	vlabel->setText(bridge->get_name().c_str());
 	value_changed(bridge_val);
 
-	connection = bridge->changed_signal.connect(SigC::slot<void>(*this, &Q_Property_Bridge_Int::bridge_changed));
+	connection = bridge->changed_signal.connect(sigc::slot<void>(*this, &Q_Property_Bridge_Int::bridge_changed));
 }
 
 Q_Property_Bridge_Int::Q_Property_Bridge_Int(QWidget *p_parent,bool p_vertical) :  Q3VBox(p_parent) {
@@ -232,7 +232,7 @@ void Q_Property_Bridge_Float::set_bridge(Float_Property_Bridge *p_bridge) {
 	};
 	bridge_changed();
 
-	connection = bridge->changed_signal.connect(SigC::slot<void>(*this, &Q_Property_Bridge_Float::bridge_changed));
+	connection = bridge->changed_signal.connect(sigc::slot<void>(*this, &Q_Property_Bridge_Float::bridge_changed));
 }
 
 Q_Property_Bridge_Float::Q_Property_Bridge_Float(QWidget *p_parent, bool p_text_visible) :  Q3VBox(p_parent) {
@@ -305,7 +305,7 @@ void Q_Property_Bridge_Float_Dial::set_bridge(Float_Property_Bridge *p_bridge) {
 
 	bridge_changed();
 
-	connection = bridge->changed_signal.connect(SigC::slot<void>(*this, &Q_Property_Bridge_Float_Dial::bridge_changed));
+	connection = bridge->changed_signal.connect(sigc::slot<void>(*this, &Q_Property_Bridge_Float_Dial::bridge_changed));
 }
 
 Q_Property_Bridge_Float_Dial::Q_Property_Bridge_Float_Dial(QWidget *p_parent) :  Q3VBox(p_parent) {
@@ -346,7 +346,7 @@ void Q_Property_Bridge_Int_CSpinButon::set_bridge(Int_Property_Bridge *p_bridge)
 	label->setText(bridge->get_name().c_str());
 	value_changed(bridge_val);
 
-	connection = bridge->changed_signal.connect(SigC::slot<void>(*this, &Q_Property_Bridge_Int_CSpinButon::bridge_changed));
+	connection = bridge->changed_signal.connect(sigc::slot<void>(*this, &Q_Property_Bridge_Int_CSpinButon::bridge_changed));
 }
 
 void Q_Property_Bridge_Int_CSpinButon::bridge_changed() {
@@ -414,7 +414,7 @@ void Q_Property_Bridge_Bool::set_bridge(Bool_Property_Bridge *p_bridge) {
 	else
 		check->setText(bridge->get_name().c_str());
 
-	connection = bridge->changed_signal.connect(SigC::slot<void>(*this, &Q_Property_Bridge_Bool::bridge_changed));
+	connection = bridge->changed_signal.connect(sigc::slot<void>(*this, &Q_Property_Bridge_Bool::bridge_changed));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -451,7 +451,7 @@ void Q_Property_Bridge_Options::set_bridge(Options_Property_Bridge *p_bridge) {
 
 	combo->setCurrentItem(bridge->get());
 
-	connection = bridge->changed_signal.connect(SigC::slot<void>(*this, &Q_Property_Bridge_Options::bridge_changed));
+	connection = bridge->changed_signal.connect(sigc::slot<void>(*this, &Q_Property_Bridge_Options::bridge_changed));
 }
 
 Q_Property_Bridge_Options::Q_Property_Bridge_Options(QWidget *p_parent) :  Q3VBox(p_parent) {
@@ -500,7 +500,7 @@ void Q_Property_Bridge_String::set_bridge(String_Property_Bridge *p_bridge) {
 	label->setText(bridge->get_name().c_str());
 	text_edit->setText(p_bridge->get().c_str());
 
-	connection = bridge->changed_signal.connect(SigC::slot<void>(*this, &Q_Property_Bridge_String::bridge_changed));
+	connection = bridge->changed_signal.connect(sigc::slot<void>(*this, &Q_Property_Bridge_String::bridge_changed));
 }
 
 Q_Property_Bridge_String::Q_Property_Bridge_String(QWidget *p_parent) :  Q3VBox(p_parent) {
@@ -545,7 +545,7 @@ void Q_Property_Bridge_String_Multiline::set_bridge(String_Property_Bridge *p_br
 	bridge=p_bridge;
 	label->setText(bridge->get_name().c_str());
 	text_edit->setText(p_bridge->get().c_str());
-	connection = bridge->changed_signal.connect(SigC::slot<void>(*this, &Q_Property_Bridge_String_Multiline::bridge_changed));
+	connection = bridge->changed_signal.connect(sigc::slot<void>(*this, &Q_Property_Bridge_String_Multiline::bridge_changed));
 }
 
 Q_Property_Bridge_String_Multiline::Q_Property_Bridge_String_Multiline(QWidget *p_parent) :  Q3VBox(p_parent) {

@@ -55,13 +55,13 @@ class Sample_Editor : public Q3VBox {
 
 
 
-protected slots:
+protected Q_SLOTS:
 
 	void destructive_operation_end_cbk();
 	void data_modification_begin_notify_cbk();
 	void data_modification_end_notify_cbk();
 
-signals:
+Q_SIGNALS:
 	void destructive_operation_begin();
 	void destructive_operation_end();
 	void sample_freq_changed();

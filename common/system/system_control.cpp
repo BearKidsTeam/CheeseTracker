@@ -35,7 +35,7 @@ void System_Control::audio_process_callback() {
 void System_Control::set_system(System *p_system) {
 
 	system=p_system;
-	system->audio.mixer.process_callback.connect(SigC::slot(*this,&System_Control::audio_process_callback));
+	system->audio.mixer.process_callback.connect(sigc::slot(*this,&System_Control::audio_process_callback));
 	system->audio.mixer.set_process_callback_interval(200); //200 for now, will change later
 }
 

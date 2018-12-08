@@ -52,7 +52,7 @@ class Key_Entry : public Q3HBox {
 	QPushButton *change;
 	int key_idx;
 
-protected slots:
+protected Q_SLOTS:
 
 	void keybind_change_request();
 public:

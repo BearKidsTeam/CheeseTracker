@@ -31,7 +31,7 @@ class Resampler_Config : public Q3GroupBox
         Q3ListBox *resampler_list_box;
 
 	void update_resampler_list();
-protected slots:
+protected Q_SLOTS:
 
 	void resampler_selected(int p_which);
 public:

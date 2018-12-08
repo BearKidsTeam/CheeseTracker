@@ -18,7 +18,7 @@ public:
 	static BridgeList::iterator bridge_npos;
 
 	struct PropertyPath {
-		SigC::Signal1<void,string> signal;
+		sigc::signal1<void,string> signal;
 		BridgeList bridges;
 		PropertyPath& operator=(const PropertyPath& rv) {
 			bridges = rv.bridges;

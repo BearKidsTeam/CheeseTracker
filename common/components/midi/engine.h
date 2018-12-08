@@ -24,7 +24,7 @@
   * Base class for engine
   */
 
-class Engine : public SigC::Object {
+class Engine : public sigc::trackable {
 public:
 
 	virtual string get_name()=0; // get engine name

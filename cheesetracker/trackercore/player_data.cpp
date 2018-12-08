@@ -182,7 +182,7 @@ void Player_Data::link_to_mixer(Mixer_Base *p_mixer) {
 
 	mixer=p_mixer;
 	//handle callback
-	mixer->process_callback.connect(SigC::slot(*this,&Player_Data::handle_tick));
+	mixer->process_callback.connect(sigc::slot(*this,&Player_Data::handle_tick));
 	set_tick_size();
 	reset();
 }

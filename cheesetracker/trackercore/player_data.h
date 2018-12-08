@@ -63,7 +63,7 @@ I hope you dont get sick reading this
 
 
 
-class Player_Data : public SigC::Object {
+class Player_Data : public sigc::trackable {
 public:
 
 	struct VoiceStatusInfo {
@@ -93,8 +93,8 @@ public:
 private:
 
 
-	Song *song;
-	Mixer_Base *mixer;
+    Song *song;
+    Mixer_Base *mixer;
 
 
 	struct Control_Variables { // control variables (dynamic version) of initial variables

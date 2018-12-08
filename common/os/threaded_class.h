@@ -19,7 +19,7 @@
 #include <sigc++/sigc++.h>
 #include <typedefs.h>
 
-class ThreadedClass : public SigC::Object {
+class ThreadedClass : public sigc::trackable {
 
 public:
 
@@ -28,7 +28,7 @@ public:
 
 	virtual ThreadedClass* create_thread_type()=0;
 
-	SigC::Signal0<void> thread_callback;
+	sigc::signal0<void> thread_callback;
 	virtual void start_thread() = 0;
 	virtual void cleanup_thread() = 0;
 };

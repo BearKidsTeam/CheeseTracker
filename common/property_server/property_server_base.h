@@ -9,20 +9,20 @@
 
 typedef long int mcmd_peer_t;
 
-class PropertyServer : public SigC::Object {
+class PropertyServer : public sigc::trackable {
 public:
 	struct Bridge {
 		Property_Bridge* bridge;
 		Uint32 last_modified;
 		string path;
-		SigC::Connection connection;
+		sigc::connection connection;
 		Bridge(Property_Bridge* p_bridge, string p_path);
 		Bridge(){};
 	};
 	typedef hash_map<string,Bridge,String_Hash> BridgeList;
 
 	struct PropertyPath {
-		SigC::Signal1<void,string> signal;
+		sigc::signal1<void,string> signal;
 		BridgeList bridges;
 		PropertyPath& operator=(const PropertyPath& rv) {
 			bridges = rv.bridges;
@@ -108,7 +108,7 @@ public:
 	void unregister_property_bridge(string p_path, string p_name);
 	void unregister_path(string p_path);
 
-	void register_notification(string p_path, SigC::Slot1<void,string>& p_slot);
+	void register_notification(string p_path, sigc::Slot1<void,string>& p_slot);
 
 	void poll();
 

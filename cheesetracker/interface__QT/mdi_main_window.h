@@ -179,7 +179,7 @@ class MDI_Main_Window: public Q3MainWindow
 
 	Mutex_Lock *info_lock;
 	
-private slots:
+private Q_SLOTS:
 
 	void timer_callback();
 	void default_octave_changed_cbk(int p_to_which);

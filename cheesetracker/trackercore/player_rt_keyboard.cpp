@@ -175,7 +175,7 @@ void Player_Realtime_Keyboard::sample_stop_key(int p_note) {
 
 }
 
-void Player_Realtime_Keyboard::sample_stop_all() {
+void Player_Realtime_Keyboard::sample_stop_all(bool use_mutex) {
 
 	int i;
 

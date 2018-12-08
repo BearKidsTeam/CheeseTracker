@@ -44,7 +44,7 @@
 /* for now public libsigc, so it can notify when it's been killed */
 /* this will probably be dropped soon */
 
-class Voice : public SigC::Object {
+class Voice : public sigc::trackable {
 
 	bool removed;
 protected:
@@ -52,7 +52,7 @@ protected:
 public:
 	/* This emits when the voice is removed from the mixer */
 
-	SigC::Signal0<void> on_removal;
+	sigc::signal0<void> on_removal;
 
 
 	/* Voice Priority:

@@ -116,7 +116,7 @@ private:
 
 	static bool use_backing_store;
 
-signals:
+Q_SIGNALS:
 
 	void instrument_changed_signal(int p_new_one);
 	void operation_performed_signal();

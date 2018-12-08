@@ -59,7 +59,7 @@ void Instrument_Edit::save_instrument() {
 	if (s==QString::null)
 		return; //nothing selected
 
-	FILE *f=fopen(s.ascii(),"rb");
+	FILE *f=fopen(s.toLatin1(),"rb");
 	if (f) { //file exists
 		fclose(f);
 		if ( QMessageBox::warning( this, "Question:","File exists! Overwrite?","Yes", "No") ) {

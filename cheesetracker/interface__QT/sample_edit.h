@@ -125,7 +125,7 @@ class Sample_Edit : public Q3HBox {
 
 	} edit_effects;
 
-protected slots: //protect your sluts
+protected Q_SLOTS: //protect your sluts
 
 	void item_selected_cbk(Q3ListViewItem *p_item);
 	void item_renamed_cbk( Q3ListViewItem * item, int col );
@@ -135,7 +135,7 @@ protected slots: //protect your sluts
 	void destructive_operation_end_cbk();
 
 	void sample_freq_changed();
-signals:
+Q_SIGNALS:
 
 	void selected_sample_signal(int p_which);
 

@@ -41,7 +41,7 @@
 #include "components/audio/mixer_base.h"
 
   
-class Midi_Control_Base : public SigC::Object {
+class Midi_Control_Base : public sigc::trackable {
 public:
 
 	virtual void set_drums_channel(int p_chan)=0;

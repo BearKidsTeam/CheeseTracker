@@ -74,7 +74,7 @@ class Pattern_Edit_Widget : public Q3VBox {
 
 
 
-public slots:
+public Q_SLOTS:
 
 	void pattern_spin_changed_cbk(int p_to_which);
 	void order_spin_changed_cbk(int p_to_which);
@@ -88,7 +88,7 @@ public slots:
 	void row_offset_changed_callback(int p_to_which);
 	void column_offset_changed_callback(int p_to_which);
 public:
-signals:
+Q_SIGNALS:
 
 	void instrument_changed(int p_new_one);
 

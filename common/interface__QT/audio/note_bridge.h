@@ -42,7 +42,7 @@
 	CSpinButton * spin;
 	Int_Property_Bridge *bridge;
 	Q_Note_Bridge();
-private slots:
+private Q_SLOTS:
 	void value_changed(int p_newval);
 
 

@@ -21,13 +21,13 @@
 /**
 @author Juan Linietsky
 */
-class Effect_Chain : public SigC::Object {
+class Effect_Chain : public sigc::trackable {
 
 	vector<Effect*> chain;
 	Effect_Parameter_Chain *chain_params;
 	
-	SigC::Connection chain_connection_change;
-	SigC::Connection chain_connection_delete;
+    sigc::connection chain_connection_change;
+    sigc::connection chain_connection_delete;
 
 	void erase_chain();
 	void update_chain();	

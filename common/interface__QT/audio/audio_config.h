@@ -75,7 +75,7 @@ class Audio_Config : public Q3GroupBox {
 
         void update_driver_variables();
 
-protected slots:
+protected Q_SLOTS:
 
 	void listbox_driver_changed(int p_idx);
 

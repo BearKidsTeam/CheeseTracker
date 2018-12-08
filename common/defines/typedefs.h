@@ -137,6 +137,8 @@
 #	define UINT32_MAX	UINT_MAX
 #	define UINT64_MAX	ULLONG_MAX
 
+#define BITS_PER_BYTE 8
+
 	extern "C" {
 
 	// If any of these cause a compiler error, then the

@@ -71,7 +71,7 @@ Q_OBJECT
         Mutex_Lock * envelope_lock;
 
 public:
-signals:
+Q_SIGNALS:
 
 	void envelopeChanged();
 

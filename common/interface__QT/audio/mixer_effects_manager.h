@@ -58,7 +58,7 @@ class Mixer_Effects_Manager : public Q3HBox {
 	QLineEdit *selected_name;
 
 
-public slots:
+public Q_SLOTS:
 
 	void buffer_name_changed(const QString& p_str);
 

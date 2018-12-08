@@ -74,10 +74,10 @@ class Variables_Edit : public Q3HBox {
 
 
 
-public slots:
+public Q_SLOTS:
 
 
-signals:
+Q_SIGNALS:
 
 	void update_instrument_list_needed();
 

@@ -80,7 +80,7 @@ private:
 	vector<Player_Data::VoiceStatusInfo> voice_status_info;
 
 
-protected slots:
+protected Q_SLOTS:
 	void midi_check_timer();
 	void widget_update_timer();
 	void selected_sample_in_editor(int p_which);

@@ -29,11 +29,11 @@ class Effect_Parameter_Chain{
 protected:
 friend class Effect_Chain;	
 	
-	SigC::Signal0<void> chain_changed_internal_signal;
-	SigC::Signal0<void> chain_deleted_internal_signal;
+	sigc::signal0<void> chain_changed_internal_signal;
+	sigc::signal0<void> chain_deleted_internal_signal;
 public:
 	
-	SigC::Signal0<void> chain_changed_signal;
+	sigc::signal0<void> chain_changed_signal;
 	
 	void add_effect(Effect::Parameters *p_effect);
 	int get_effect_count();

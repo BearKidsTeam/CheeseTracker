@@ -34,7 +34,7 @@ public:
 	QPushButton *cancel_button;
 	Q3ListBox *list_box;
 	int selected_effect_index;
-public slots:
+public Q_SLOTS:
 
 	void selected_effect(int p_which);
 

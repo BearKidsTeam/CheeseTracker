@@ -46,7 +46,7 @@ class Font_Bridge : public Q3HBox {
 
         void update_font_descr();
 
-protected slots:
+protected Q_SLOTS:
 
 	void select_new_font();
 public:

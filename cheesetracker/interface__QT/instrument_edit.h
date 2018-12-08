@@ -165,7 +165,7 @@ class Instrument_Edit : public Q3HBox {
 	int time_counter;
 	Player_Data *player;
 	File_Format_Manager *file_manager;
-protected slots:
+protected Q_SLOTS:
 
 	void item_selected_cbk(Q3ListViewItem *p_item);
 	void item_renamed_cbk( Q3ListViewItem * item, int col );
@@ -178,7 +178,7 @@ protected slots:
 	void dct_action_selected(int p_which);
 	void layer_selected(int p_which);
 
-signals:
+Q_SIGNALS:
 
 	void update_sample_editor();
 

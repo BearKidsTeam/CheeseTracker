@@ -61,7 +61,7 @@ protected:
 
 public:
 
-	SigC::Signal0<void> changed_signal;
+    sigc::signal0<void> changed_signal;
 
 	virtual void set_display_preference(string p_pref);
 	virtual string get_display_preference();

@@ -43,7 +43,7 @@
   *@author red
   */
 
-class Effect : public SigC::Object {
+class Effect : public sigc::trackable {
 public:	
 	class Parameters {
 	public:		

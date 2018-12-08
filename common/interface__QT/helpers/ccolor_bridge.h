@@ -35,7 +35,7 @@ class CColor_Bridge : public Q3HBox {
 	QColor *bridge;
 
 
-public slots:
+public Q_SLOTS:
 
 	void color_select();
 

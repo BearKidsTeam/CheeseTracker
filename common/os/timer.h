@@ -51,7 +51,7 @@ protected:
 
 public:
 
-	SigC::Signal1<void,float> timer_callback;
+	sigc::signal1<void,float> timer_callback;
 
 	virtual void start() {};
 	virtual void config(int milliseconds) {};

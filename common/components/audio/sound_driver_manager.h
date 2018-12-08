@@ -55,7 +55,7 @@ C++ is r0x0rs.
 #define DEFAULT_MIX_16BITS true
 #define DEFAULT_MIX_BUFFSIZE 4096
 
-class Sound_Driver_Manager : public SigC::Object {
+class Sound_Driver_Manager : public sigc::trackable {
 
 	static Sound_Driver_Manager * singleton_instance;
 
@@ -83,9 +83,9 @@ public:
 	static Sound_Driver_Manager * get_singleton_instance();
 	
 
-	SigC::Signal0<void> callback;
+	sigc::signal0<void> callback;
 
-	SigC::Signal1<void,int> sampling_rate_changed_signal;
+    sigc::signal1<void,int> sampling_rate_changed_signal;
 	
 	Mutex_Lock* get_variables_lock() { return variables_lock; };
 	void request_mix_frequency(int p_mix_frequency);
