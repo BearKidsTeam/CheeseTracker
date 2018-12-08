@@ -6,7 +6,7 @@
 //              being able to figure out how sample data is being
 //              interpreted in the saver_ct and loader_ct modules,
 //              to make it more difficult to make those modules support
-//              wide, multi-channel samples. 
+//              wide, multi-channel samples.
 //
 //              Fortunately, those two modules are the only ones
 //              that use this class.
@@ -112,7 +112,8 @@ void DDS_Helpers::set_effect_chain_data(DDS* p_dds,Effect_Parameter_Chain *p_cha
 		p_chain->add_effect(new_fx);
 
 		vector_dds &controls=effect.get_dds_array_var("controls");
-		set_property_bridge_list_data(controls,&new_fx->get_property_list());
+		list<Property_Bridge*> p_list = new_fx->get_property_list();
+		set_property_bridge_list_data(controls,&p_list);
 	}
 }
 
@@ -341,7 +342,7 @@ void DDS_Helpers::get_effect_chain_data(Effect_Parameter_Chain *p_chain,DDS* p_d
 
 		DDS effect;
 		list<Property_Bridge*> property_list = p_chain->get_effect(i)->get_property_list();
-		
+
 
 		effect.set_str_var("name",p_chain->get_effect(i)->get_identifier_name());
 		effect.set_dds_array_var("controls",aux_vector_dds);

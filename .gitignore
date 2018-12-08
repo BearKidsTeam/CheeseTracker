@@ -4,3 +4,12 @@
 *.user
 .vscode/
 .svn/
+
+# build
+moc__*
+*.o
+*.a
+*.pyc
+
+# log
+*.log

@@ -377,8 +377,8 @@ void Player_Data::do_arpegio(int p_track) {
 		for (int i=0;i<Instrument::MAX_LAYERS;i++) {
 
 			if (song->variables.use_linear_slides) {
-
-				control.channel[p_track].layers[i].period=control.channel[p_track].layers[i].aux_period-abs(get_period((Uint16)46,0,song->variables.use_linear_slides)-get_period((Uint16)44,0,song->variables.use_linear_slides))*note;
+				int64_t delta = (int64_t)get_period((Uint16)46,0,song->variables.use_linear_slides)-get_period((Uint16)44,0,song->variables.use_linear_slides);
+				control.channel[p_track].layers[i].period=control.channel[p_track].layers[i].aux_period-abs(delta)*note;
 			} else { //@TODO fix this in some non-hacking way
 
 				control.channel[p_track].layers[i].period=get_period( (((Uint16)control.channel[p_track].layers[i].note)+note)<<1,0,song->variables.use_linear_slides);
@@ -533,7 +533,7 @@ void Player_Data::do_effect_S(int p_track) {
         Uint8 inf,c,dat;
 
 	dat=control.channel[p_track].current_parameter;
-	
+
         inf=dat&0xf;
         c=dat>>4;
 
@@ -641,7 +641,7 @@ void Player_Data::do_effect_S(int p_track) {
 
                                 control.channel[p_track].note_delay--;
                         }
-			
+
                 } break;
                 case 0xF: {/* SEx patterndelay */
 
@@ -674,7 +674,7 @@ void Player_Data::run_volume_column_effects(int p_track) {
 
 			if (param>0) control.channel[p_track].volcol_volume_slide=param;
 			else param=control.channel[p_track].volcol_volume_slide;
-			
+
    			do_volume_slide(p_track,param*0x10+0xF);
 
 		} break;
@@ -797,7 +797,7 @@ void Player_Data::run_effects(int p_track) {
        				// Do we have a "next order?"
        				control.position.current_pattern=song->get_order(next_order);
        				control.position.force_next_order=next_order;
-					
+
        			} else {
        				// no, probably the user deleted the orderlist.
        				control.play_mode=PLAY_NOTHING;
@@ -843,7 +843,7 @@ void Player_Data::run_effects(int p_track) {
 
 		} break;
 		case 'D': {
-		
+
 			Uint8 inf ;
 			//explicitslides=1;
 			inf=control.channel[p_track].current_parameter;
@@ -1035,7 +1035,7 @@ void Player_Data::run_effects(int p_track) {
 			}
 
 			dat=control.channel[p_track].tremolo_info;
-		
+
 			if (!control.ticks_counter && dat) {
 
 				if (dat&0x0f) control.channel[p_track].tremolo_depth=dat&0xf;
@@ -1044,7 +1044,7 @@ void Player_Data::run_effects(int p_track) {
 
 			do_tremolo(p_track);
 			control.channel[p_track].has_own_volume=true;
-	
+
 		} break;
 		case 'S': {
 
@@ -1066,13 +1066,13 @@ void Player_Data::run_effects(int p_track) {
 			if (dat>=0x20) {
 
 				if (control.ticks_counter) break;
-				control.tempo=dat;	
+				control.tempo=dat;
 			} else {
 
 				if (!control.ticks_counter) break;
 
 				if (dat&0x10) {
-			
+
 					temp+=(dat&0x0f);
 				} else {
 

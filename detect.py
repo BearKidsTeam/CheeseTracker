@@ -532,7 +532,7 @@ def check_qt(libdata):
 			print "Skipping moc test because libraries weren't found";
 			break;
 
-		command="moc";
+		command="moc-qt4";
 		if (len(x)):
 			command=x+"/moc";
 
