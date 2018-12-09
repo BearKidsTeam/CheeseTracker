@@ -98,7 +98,7 @@ void Sound_Driver_Manager::register_driver(Sound_Driver* p_new_driver) {
 	driver_list.push_back(p_new_driver);
 
 
-	p_new_driver->callback.connect(SigC::slot(*this,&Sound_Driver_Manager::internal_poll_active_driver));
+	p_new_driver->callback.connect(sigc::mem_fun(*this,&Sound_Driver_Manager::internal_poll_active_driver));
 //	if (driver_list.size()==1) internal_driver_init();
 	//if (driver_list.size()==1) active_driver_index=0;
 }
@@ -398,7 +398,7 @@ void Sound_Driver_Manager::internal_driver_init() {
 	} catch (Error E) {
 		message_box("Error", E.what(), "OK");
 	} catch (std::bad_alloc B) {
-		message_box("SENILE.SYS loaded", "Out of memory", "¡Chinga!");
+		message_box("SENILE.SYS loaded", "Out of memory", "Â¡Chinga!");
 	} 
 }
 int Sound_Driver_Manager::get_mix_frequency() {

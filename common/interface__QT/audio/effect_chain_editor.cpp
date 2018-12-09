@@ -135,7 +135,7 @@ void Effect_Chain_Editor::set_effect_chain(Effect_Parameter_Chain *p_chain) {
 	vars.selected_chain=-1;
 	update_chain();
 	vars.chain_connection.disconnect();
-	vars.chain_connection=p_chain->chain_changed_signal.connect(sigc::slot( *this, &Effect_Chain_Editor::update_chain ) );
+	vars.chain_connection=p_chain->chain_changed_signal.connect(sigc::mem_fun( *this, &Effect_Chain_Editor::update_chain ) );
 }
 
 

@@ -12,7 +12,7 @@
 class TcpClient {
 public:
 
-	sigc::Signal2<void,Uint8*,int> deliver_event;
+	sigc::signal2<void,Uint8*,int> deliver_event;
 
 	static TcpClient *default_type; ///< a tcp client of a specific class has to be initialized and linked here. why not a function pointer? no clue. blame C++. It didnt allow me. I suppose i can try again at some other time
 	static TcpClient *create_client();

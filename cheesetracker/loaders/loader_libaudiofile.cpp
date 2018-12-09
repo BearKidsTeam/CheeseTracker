@@ -13,7 +13,7 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-
+#if 0
 #include "loader_libaudiofile.h"
 #include "ns_autoptr.h"
 #include "Error.h"
@@ -222,3 +222,4 @@ Loader::Error Loader_libaudiofile::load_instrument(const char *p_filename,int p_
 };
 
 
+#endif

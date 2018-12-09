@@ -10,7 +10,7 @@
 class TcpServer {
 public:
 
-	sigc::Signal3<void,Uint8*,int,int> deliver_event;
+	sigc::signal3<void,Uint8*,int,int> deliver_event;
 
 	virtual bool start_server(int p_port,int p_max_connections=10)=0;
 	virtual void stop_server()=0;

@@ -1,6 +1,8 @@
 QT += widgets qt3support
 CONFIG += link_pkgconfig
 CONFIG += no_keywords
+DEFINES += POSIX_ENABLED HAVE_GNU_BASENAME
+LIBS += -lz
 
 
 HEADERS += \
@@ -238,9 +240,7 @@ SOURCES += \
     cheesetracker/loaders/loader_s3m.cpp \
     cheesetracker/loaders/loader_wav.cpp \
     cheesetracker/loaders/loader_xm.cpp \
-    cheesetracker/player/cheeseplayer.cpp \
     cheesetracker/program__QT/cheesetracker_qt.cpp \
-    cheesetracker/programs/cheeseplayer.cpp \
     cheesetracker/savers/saver_ct.cpp \
     cheesetracker/savers/saver_it.cpp \
     cheesetracker/savers/saver_raw.cpp \
@@ -264,11 +264,9 @@ SOURCES += \
     cheesetracker/trackercore/player_data_notes.cpp \
     cheesetracker/trackercore/player_data_reserved.cpp \
     cheesetracker/trackercore/player_data_utils.cpp \
-    cheesetracker/trackercore/player_rt_keyboard.cpp \
     cheesetracker/trackercore/sample.cpp \
     cheesetracker/trackercore/saver.cpp \
     cheesetracker/trackercore/song.cpp \
-    cheesetracker/trackercore/tracker_instance.cpp \
     cheesetracker/trackercore/tracker_voice.cpp \
     cheesetracker/trackercore/voice_control.cpp \
     common/components/audio/dds_helpers.cpp \
@@ -289,7 +287,6 @@ SOURCES += \
     common/components/audio/resampler.cpp \
     common/components/audio/resampler_instance.cpp \
     common/components/audio/resampler_manager.cpp \
-    common/components/audio/resampler_new.cpp \
     common/components/audio/ring_buffer.cpp \
     common/components/audio/sample_converison.cpp \
     common/components/audio/sample_conversion.cpp \

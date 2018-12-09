@@ -46,7 +46,7 @@ void PropertyServer::send_bridge(const string& p_path, Property_Bridge* p_bridge
 	};
 };
 
-void PropertyServer::register_notification(string p_path, sigc::Slot1<void,string>& p_slot) {
+void PropertyServer::register_notification(string p_path, sigc::slot1<void, std::string> &p_slot) {
 
 	PropertyPathList::iterator I = paths.find(p_path);
 	if (I != paths.end()) {
@@ -78,7 +78,7 @@ void PropertyServer::register_property_bridge(string p_path, Property_Bridge* p_
 		Bridge aux(p_bridge, p_path);
 		I->second.bridges[p_bridge->get_short_name()] = aux;
 		J = I->second.bridges.find(p_bridge->get_short_name());
-		J->second.connection = p_bridge->changed_signal.connect(sigc::bind<string,BridgeList::iterator>(sigc::slot<void>(*this, &PropertyServer::property_changed), p_path, J));
+		J->second.connection = p_bridge->changed_signal.connect(sigc::bind<string,BridgeList::iterator>(sigc::mem_fun(*this, &PropertyServer::property_changed), p_path, J));
 	} else {
 
 		WARN("Trying to register an alredy registered bridge: "<< p_path << "/" << p_bridge->get_short_name()<< ", aborting.");

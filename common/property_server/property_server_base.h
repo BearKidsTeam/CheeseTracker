@@ -108,7 +108,7 @@ public:
 	void unregister_property_bridge(string p_path, string p_name);
 	void unregister_path(string p_path);
 
-	void register_notification(string p_path, sigc::Slot1<void,string>& p_slot);
+	void register_notification(string p_path, sigc::slot1<void,string>& p_slot);
 
 	void poll();
 

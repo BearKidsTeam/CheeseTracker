@@ -64,19 +64,19 @@ void Player_Realtime_Keyboard::instrument_set(int p_instrument_index) {
 void Player_Realtime_Keyboard::instrument_press_key(int p_note,int p_volume) {
 
 	if ((p_note>=Note::NOTES) || (p_note<0)) return;
-	
+
 	int channel;
 
 	Note note;
 
 	note.clear();
 	note.note=p_note;
-        note.volume=p_volume;
+		note.volume=p_volume;
 	note.instrument=current_instrument;
 
 
-        channel=find_empty_channel();
-	
+		channel=find_empty_channel();
+
 	channel_per_note[channel]=p_note;
 
 	player->play_note(channel,note);
@@ -120,7 +120,7 @@ void Player_Realtime_Keyboard::instrument_stop_all() {
 		}
 	}
 
-       	for (i=0;i<Note::NOTES;i++) key_pressed[i]=false;
+		for (i=0;i<Note::NOTES;i++) key_pressed[i]=false;
 }
 
 void Player_Realtime_Keyboard::sample_set(Sample_Data *p_sample_data) {
@@ -139,13 +139,13 @@ void Player_Realtime_Keyboard::sample_press_key(int p_note) {
 
 	/* URGENT
 	player->reserved_voice_start_sample(0,current_sample,get_frequency(get_period((p_note+current_sample->note_offset) << 1,current_sample->finetune,song->variables.use_linear_slides),song->variables.use_linear_slides));
-        */
+		*/
 
 	//player->reserved_voice_start_sample(0,current_sample,freq);
 
 	////printf("C-5 Constant is %i\n",Tables::get_linear_frequency(Tables::get_linear_period(60<<1,0)));
 
-	mixing.voice.set_frequency((Uint32)freq);
+	/*mixing.*/voice.set_frequency(/*(Uint32)freq*/get_frequency(get_period((p_note) << 1,0,player->get_song()->variables.use_linear_slides),player->get_song()->variables.use_linear_slides));
 
 
 //	player->reserved_voice_start_sample(0,current_sample,player->get_frequency(get_period((p_note+current_sample->note_offset) << 1,current_sample->finetune,song->variables.use_linear_slides)));
@@ -169,7 +169,7 @@ void Player_Realtime_Keyboard::sample_stop_key(int p_note) {
 
 	if (latest_key_pressed!=p_note) return;
 
-/* Commented for IT behavior	
+/* Commented for IT behavior
 	if (current_sample!=NULL) player->reserved_voice_stop(0);
 */
 
@@ -181,9 +181,20 @@ void Player_Realtime_Keyboard::sample_stop_all(bool use_mutex) {
 
 	if (current_sample!=NULL) player->reserved_voice_stop(0);
 
-       	for (i=0;i<Note::NOTES;i++) key_pressed[i]=false;
+		for (i=0;i<Note::NOTES;i++) key_pressed[i]=false;
 
-        latest_key_pressed=-1;
+		latest_key_pressed=-1;
+}
+Sample_Data* Player_Realtime_Keyboard::sample_get()
+{
+	if (sample_playing)
+		return current_sample;
+	else
+		return NULL;
+}
+int Player_Realtime_Keyboard::sample_pos_get()
+{
+	return voice.get_current_sample_pos();
 }
 
 void Player_Realtime_Keyboard::sample_set_multichannel(bool p_multichannel) {
@@ -212,7 +223,6 @@ Player_Realtime_Keyboard::Player_Realtime_Keyboard(){
 	for (i=0;i<Note::NOTES;i++) key_pressed[i]=false;
 	current_sample=NULL;
 	latest_key_pressed=-1;
-	song=NULL;
 }
 Player_Realtime_Keyboard::~Player_Realtime_Keyboard(){
 }

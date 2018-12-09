@@ -7,7 +7,7 @@ PropertyManager::BridgeList::iterator PropertyManager::register_property_bridge(
 	if (p_path.size() > MAX_STR_SIZE || p_bridge->get_short_name().size() > MAX_STR_SIZE) {
 
 		ERROR("Name or path for "<< p_path << "/" << p_bridge->get_short_name() << " is longer than "<< MAX_STR_SIZE << ", Aborting");
-		return bridge_npos;
+		return paths.begin()->second.bridges.end(); //this makes no sense, but fsck it.
 	};
 	PropertyPathList::iterator I = paths.find(p_path);
 	if (I == paths.end()) {
@@ -25,7 +25,7 @@ PropertyManager::BridgeList::iterator PropertyManager::register_property_bridge(
 	} else {
 
 		WARN("Trying to register an alredy registered bridge: "<< p_path << "/" << p_bridge->get_short_name()<< ", aborting.");
-		return bridge_npos;
+		return paths.begin()->second.bridges.end(); //ditto.
 	};
 
 	return J;

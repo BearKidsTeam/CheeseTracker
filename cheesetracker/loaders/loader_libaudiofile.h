@@ -35,7 +35,7 @@
 
 #ifndef LOADER_LIBAUDIOFILE_H
 #define LOADER_LIBAUDIOFILE_H
-
+#if 0
 #include "loader.h"
 
 
@@ -63,6 +63,6 @@ struct Loader_libaudiofile : public Loader  {
    ~Loader_libaudiofile();
 };
 
-
+#endif
 
 #endif

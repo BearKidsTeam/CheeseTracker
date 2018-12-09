@@ -211,7 +211,7 @@ public:
 		PLAY_SONG =2
 	};
 
-
+	Song* get_song(){return song;}
 	int get_current_tempo() { return control.tempo; };
 	int get_current_speed() { return control.speed; };
 
@@ -295,8 +295,7 @@ public:
         void set_force_external_vibratos(bool p_force);
 
         void set_filters_enabled(bool p_enable);
-        bool are_filters_enabled() { return control.filters; }
-        Song *get_song() { return song; };
+		bool are_filters_enabled() { return control.filters; }
 
 
 

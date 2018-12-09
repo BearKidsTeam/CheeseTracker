@@ -11,11 +11,11 @@ public:
 		Property_Bridge* bridge;
 		Uint32 last_modified;
 		string path;
-		Bridge(Property_Bridge* p_bridge, string p_path);
-		Bridge(){};
+		Bridge(Property_Bridge* p_bridge, string p_path):bridge(p_bridge),path(p_path){}
+		Bridge(){}
 	};
 	typedef hash_map<string,Bridge,String_Hash> BridgeList;
-	static BridgeList::iterator bridge_npos;
+	//static BridgeList::iterator bridge_npos;
 
 	struct PropertyPath {
 		sigc::signal1<void,string> signal;
