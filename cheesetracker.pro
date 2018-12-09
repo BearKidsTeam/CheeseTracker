@@ -401,9 +401,7 @@ SOURCES += \
 PKGCONFIG += sigc++-2.0
 
 INCLUDEPATH += common
-INCLUDEPATH += common/*
 INCLUDEPATH += common/defines
 INCLUDEPATH += cheesetracker
-INCLUDEPATH += cheesetracker/*
 INCLUDEPATH += cheesetracker/trackercore
 INCLUDEPATH += cheesetracker/interface_binds

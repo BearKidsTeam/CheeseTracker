@@ -9,8 +9,8 @@ file_list=[\
 	'editor_orderlist.cpp',\
 	'editor_selection.cpp',\
 	'editor_undo.cpp',\
-	'tracker_instance.cpp',\
-	'player_rt_keyboard.cpp',\
+#	'tracker_instance.cpp',\
+#	'player_rt_keyboard.cpp',\
 ]
 
 env2.Library('lib_interface_binds.a', file_list);

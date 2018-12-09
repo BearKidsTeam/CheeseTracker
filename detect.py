@@ -378,18 +378,18 @@ def check_jack(libdata):
 
 def check_sigc(libdata):
 
-	print "Checking for libsigc++-1.2... ",
+	print "Checking for libsigc++-2.0... ",
 
-	errorval=os.system("pkg-config sigc++-1.2 --modversion");
+	errorval=os.system("pkg-config sigc++-2.0 --modversion");
 
 	if (errorval):
 		return 1;
 
-	print "libsigc++-1.2 found!";
+	print "libsigc++-2.0 found!";
 
-	res=parse_libs("pkg-config sigc++-1.2 --cflags");
+	res=parse_libs("pkg-config sigc++-2.0 --cflags");
 	libdata.sigc_flags=res['flags'];
-	res=parse_libs("pkg-config sigc++-1.2 --libs");
+	res=parse_libs("pkg-config sigc++-2.0 --libs");
 	libdata.sigc_link_flags=res['flags'];
 	libdata.sigc_libs=res['libs'];
 
@@ -488,7 +488,7 @@ def check_qt(libdata):
 			pos=ver_str.find("4.");
 			if (pos >=0 ): #found QT header
 				print "Found Qt Version " + ver_str;
-				libdata.qt_flags=["-I"+x,"-I"+x+"/Qt","-I"+x+"/QtCore","-I"+x+"/QtGui","-I"+x+"/Qt3Support","-DQT_NO_EMIT","-DQT3_SUPPORT"];
+				libdata.qt_flags=["-I"+x,"-I"+x+"/Qt","-I"+x+"/QtCore","-I"+x+"/QtGui","-I"+x+"/Qt3Support","-DQT_NO_EMIT","-DQT3_SUPPORT", "-DQT_NO_KEYWORDS"];
 				qt_inc_found=1;
 				break;
 
